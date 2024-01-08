@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <style>
+        body {
+            background-image: url('https://img.lovepik.com/photo/45009/7677.jpg_wh860.jpg');
+            height: 700px;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            color: rgb(128, 128, 255);
+            padding-top: 10px;
+        }
+
+        #registrationForm {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: rgb(128, 128, 255);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+
+    <form id="registrationForm" method="post">
+		<h2>User Registration</h2>
+
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Register</button>
+            
+       <p style="text-align: center; margin-top: 10px;">
+          Already have an account? <a href="http://localhost:8181/users/loginUser">Login here</a>.
+      </p>
+
+    </form>
+
+    <div id="successMessage" style="display: none; text-align: center; color: green; margin-top: 20px;">
+        Registration successful!
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            registerUser(); // Call your custom function
+        });
+
+        function registerUser() {
+            const registrationForm = document.getElementById('registrationForm');
+
+            // Extract form values
+            const firstName = registrationForm.querySelector('[name="firstName"]').value;
+            const lastName = registrationForm.querySelector('[name="lastName"]').value;
+            const email = registrationForm.querySelector('[name="email"]').value;
+            const password = registrationForm.querySelector('[name="password"]').value;
+
+            // Validate fields
+            if (!firstName || !lastName || !email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const requestBody = {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password
+            };
+
+            fetch('http://localhost:8181/users/createUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Display a success message
+                        console.log('Registration successful');
+                        alert('Registration successful');
+                        window.location.href = 'http://localhost:8181/users/loginUser'; // redirect after login user 
+                        registrationForm.reset();
+                        return response.json();
+                    } else {
+                        // Display an error message
+                        console.error('Error registering user:', response.statusText);
+                        alert('Error registering user. Please try again.');
+                        throw new Error('Registration failed');
+                    }
+                })
+                .catch(error => {
+                    // Handle errors here
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
+</body>
+
+</html>

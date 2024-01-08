@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Demo License List</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(to right, rgb(128, 128, 255), #2c3e50);
+			color: #fff;
+		}
+
+		h2 {
+			color: rgb(255, 255, 255);
+			text-align: center;
+			margin-top: 40px;
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+			background-color: rgba(255, 255, 255, 0.9);
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+		}
+
+		th,
+		td {
+			padding: 12px;
+			text-align: left;
+			border: 1px solid #ddd;
+		}
+
+		th {
+			background-color: rgb(128, 128, 255);
+			color: white;
+		}
+
+		td {
+			color: rgb(0, 0, 0);
+			font-weight: bold;
+		}
+
+		tr:nth-child(even) {
+			background-color: #f9f9f9;
+		}
+
+
+		header {
+			background-color: rgb(128, 128, 255);
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			/* Full width */
+			top: 0;
+			/* Top position */
+			z-index: 1000;
+			/* Ensure it's above other elements */
+			position: fixed;
+		}
+
+		.logo {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		nav ul li {
+			display: inline;
+			margin-right: 30px;
+		}
+
+		nav ul li a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: bold;
+			font-size: 16px;
+			transition: color 0.3s ease-in-out;
+		}
+
+		nav ul li a:hover {
+			color: #ffcc00;
+		}
+
+		main {
+			padding: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<div class="logo">License Module</div>
+		<nav>
+			<ul>
+				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+				<li><a href="http://localhost:8181/licenses/getAllLicenses">LicensesList</a></li>
+				<li><a href="http://localhost:8181/users/getAllUsers">UsersList</a></li>
+				<li><a href="http://localhost:8181/users/logout">Logout</a></li>
+			</ul>
+		</nav>
+	</header>
+
+
+	<main>
+
+		<h2>License Demo List</h2>
+		<p style="font-size: 25px;">Total Demo Licenses: <span th:text="${#lists.size(licenses)}"></span></p>
+
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Email Address</th>
+					<th>MacId</th>
+					<th>License Key</th>
+					<th>Duration(Day)</th>
+					<th>Expiration Date</th>
+					<th>TimeStamp</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="license : ${licenses}">
+					<td th:text="${license.id}"></td>
+					<td th:text="${license.name}"></td>
+					<td th:text="${license.email}"></td>
+					<td th:text="${license.macId}"></td>
+					<td th:text="${license.licenseKey}"></td>
+
+					<td th:text="${license.duration}"></td>
+					<td th:text="${license.expirationDate}"></td>
+					<td th:text="${license.timeStamp}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</body>
+
+</html>

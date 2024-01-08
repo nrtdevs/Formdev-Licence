@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Buy License</title>
+	<style>
+		body {
+			background-image: url('https://www.shutterstock.com/image-vector/driver-license-card-photo-icon-600nw-2349539997.jpg');
+			background-size: cover;
+			background-position: center;
+			background-repeat: no-repeat;
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+		}
+
+		h2 {
+			text-align: center;
+			color: white;
+			padding-top: 20px;
+		}
+
+		#licenseForm {
+			max-width: 400px;
+			margin: 0 auto;
+			background-color: rgba(255, 255, 255, 0.8);
+			padding: 20px;
+			border-radius: 10px;
+			margin-top: 50px;
+			/* Adjust as needed */
+		}
+
+		label {
+			display: block;
+			margin-bottom: 8px;
+		}
+
+		input,
+		select {
+			width: 100%;
+			padding: 8px;
+			margin-bottom: 16px;
+			box-sizing: border-box;
+		}
+
+		button {
+			background-color: rgb(128, 128, 255);
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			width: 100%;
+		}
+
+		button:hover {
+			background-color: #4CAF50;
+			color: white;
+
+		}
+
+		header {
+			background-color: rgb(128, 128, 255);
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.logo {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		nav a {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		nav a {
+			display: inline;
+			margin-right: 20px;
+		}
+
+		nav a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: bold;
+			font-size: 16px;
+			transition: color 0.3s ease-in-out;
+		}
+
+		nav a:hover {
+			color: #ffcc00;
+		}
+
+		main {
+			padding: 20px;
+		}
+
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			background-color: rgba(255, 255, 255, 0.9);
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+		}
+
+		h1 {
+			color: rgb(128, 128, 255);
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+		<div class="logo">License Module</div>
+		<nav>
+
+			<a href="http://localhost:8181/users/home" class="logout-button">Home</a>
+			<a href="http://localhost:8181/logout" class="logout-button">Logout</a>
+
+		</nav>
+	</header>
+
+	<h2>Buy License</h2>
+
+	<form id="licenseForm" method="post">
+
+
+		<label for="Name">Name:</label>
+		<input type="text" id="Name" name="name" required><br>
+		<label for="email">Email:</label>
+		<input type="email" id="email" name="email" required><br>
+
+		<label for="macId">Mac ID:</label>
+		<input type="text" id="macId" name="macId" required><br><br>
+		<br>
+
+		<label for="duration" style="margin-top: -30px;">Duration (months):</label>
+		<select id="duration" name="duration" required>
+			<option value="" disabled selected>Select duration</option>
+			<option value="6"> 1 Week</option>
+			<option value="13">2 Weeks</option>
+			<option value="29">1 Month</option>
+			<option value="59">2 Months</option>
+			<option value="89">3 Months</option>
+		</select><br>
+
+		<!-- Add other form fields as needed -->
+
+		<!-- <button type="submit" onclick="createLicense()">Create License</button>  -->
+		<button type="submit">Submit</button>
+	</form>
+
+	<div id="successMessage" style="display: none; text-align: center; color: green; margin-top: 20px;">
+		License created successfully!
+	</div>
+
+	<script>
+
+		document.getElementById('licenseForm').addEventListener('submit', function (event) {
+			event.preventDefault(); // Prevent the default form submission
+
+			createLicense(); // Call your custom function
+		});
+
+
+		function createLicense() {
+			const licenseForm = document.getElementById('licenseForm');
+
+			// Extract form values
+			const name = licenseForm.querySelector('[name="name"]').value;
+			const email = licenseForm.querySelector('[name="email"]').value;
+			const macId = licenseForm.querySelector('[name="macId"]').value;
+			const duration = licenseForm.querySelector('[name="duration"]').value;
+			const type = "actual";
+
+			// Validate fields
+			if (!name || !email || !macId || !duration) {
+				alert('Please fill in all fields');
+				return;
+			}
+
+			const requestBody = {
+				name: name,
+				email: email,
+				macId: macId,
+				duration: duration,
+				type: type
+			};
+
+			fetch('http://localhost:8181/licenses/createLicense', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(requestBody),
+			})
+				.then(response => {
+					if (response.ok) {
+						// Display a success message
+						console.log('License Bought Successfully');
+						alert('License Bought Successfully');
+						window.location.href = 'http://localhost:8181/users/home'; // redirect after buy a license 
+						licenseForm.reset();
+						return response.json();
+					} else {
+						// Display an error message
+						console.error('Error creating license:', response.statusText);
+						alert('Error creating license. Please try again.');
+						throw new Error('License creation failed');
+					}
+				})
+				.catch(error => {
+					// Handle errors here
+					console.error('Error:', error);
+				});
+		}
+	</script>
+
+
+</body>
+
+</html>

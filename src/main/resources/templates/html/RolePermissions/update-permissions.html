@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Panel - License Module</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(to right, rgb(128, 128, 255), #2c3e50);
+			color: rgb(0, 0, 0);
+		}
+
+		header {
+			background-color: rgb(128, 128, 255);
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.logo {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		nav ul li {
+			display: inline;
+			margin-right: 20px;
+		}
+
+		nav ul li a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: bold;
+			font-size: 16px;
+			transition: color 0.3s ease-in-out;
+		}
+
+		nav ul li a:hover {
+			color: #ffcc00;
+		}
+
+		main {
+			padding: 20px;
+		}
+			.container {
+			max-width: 800px;
+			margin: 20px auto;
+			background-color: #fff;
+			padding: 20px;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.permission-group {
+			margin-bottom: 20px;
+		}
+
+		.permission-group h2 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		#savePermissions {
+			background-color: #007bff;
+			color: #fff;
+			border: none;
+			padding: 10px 20px;
+			cursor: pointer;
+		}
+
+		#savePermissions:hover {
+			background-color: #0056b3;
+		}
+
+		.styled-button {
+			background-color: rgb(128, 128, 255);
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+	
+		.styled-button:hover {
+			background-color: #4CAF50;
+			color: white;
+		}
+
+		input[type="text"] {
+			padding: 8px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			padding: 10px 20px;
+		}
+
+		/* Optional: Styling for the required indicator */
+		input[type="text"]:required {
+			border-color: rgb(0, 0, 255);
+			/* Change border color for required inputs */
+		}
+	</style>
+</head>
+
+<body>
+
+	<header>
+		<div class="logo">License Module</div>
+		<nav>
+			<ul>
+				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+				<li><a href="http://localhost:8181/roles-list/page">View Roles</a></li>
+				<li><a href="http://localhost:8181/create-role/page">Create Role</a></li>
+			</ul>
+		</nav>
+	</header>
+	
+	
+	<div class="container">
+		<h1>Manage Role Permissions </h1>
+
+
+		<form action="http://localhost:8181/update-role" method="post">
+			<label for="userId"> Role Name:</label>
+			<label th:text=${name}></label>
+			<input type="hidden" name="id" th:value="${id}">
+			<div class="permission-group">
+				<h2>Product Permissions</h2>
+
+
+				<div class="checkbox">
+				 
+					<label><input type="checkbox" name="permissions" value="ROLE_BUY_DEMO_LICENSE"
+							th:checked="${userPermissions.contains('ROLE_BUY_DEMO_LICENSE')}">Buy Demo License</label>
+
+					<label><input type="checkbox" name="permissions" value="ROLE_BUY_ACTUAL_LICENSE"
+							th:checked="${userPermissions.contains('ROLE_BUY_ACTUAL_LICENSE')}"> Buy Actual
+						license</label>
+
+
+				</div>
+
+
+
+
+				<button type="submit" class="styled-button">Update Permissions</button>
+		</form>
+	</div>
+
+</body>
+
+</html>
