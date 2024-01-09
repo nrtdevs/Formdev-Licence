@@ -174,7 +174,7 @@
 
 
 		function createLicense() {
-			const licenseForm = document.getElementById('licenseForm');
+	     const licenseForm = document.getElementById('licenseForm');
 
 			// Extract form values
 			const name = licenseForm.querySelector('[name="name"]').value;
@@ -206,25 +206,30 @@
 				body: JSON.stringify(requestBody),
 			})
 				.then(response => {
-					if (response.ok) {
-						// Display a success message
-						console.log('License Bought Successfully');
-						alert('License Bought Successfully');
-						window.location.href = 'http://localhost:8181/users/home'; // redirect after buy a license 
-						licenseForm.reset();
-						return response.json();
-					} else {
-						// Display an error message
-						console.error('Error creating license:', response.statusText);
-						alert('Error creating license. Please try again.');
-						throw new Error('License creation failed');
-					}
-				})
-				.catch(error => {
-					// Handle errors here
-					console.error('Error:', error);
-				});
-		}
+        if (response.ok) {
+            // Display a success message
+            return response.json();
+        } else {
+            // Log the error details to the console
+            return response.json().then(errorResponse => {
+                console.error('Error buy license:', errorResponse);
+                throw new Error(errorResponse.error || 'Unknown error');
+            });
+        }
+    })
+    .then(data => {
+        // Handle success
+        console.log('License Bought Successfully');
+        alert('License Bought Successfully');
+        window.location.href = 'http://localhost:8181/users/home'; // redirect after buying a license 
+        licenseForm.reset();
+    })
+    .catch(error => {
+        // Log other errors to the console
+        console.error('Error:', error);
+        alert('Error creating license please check your MacId');
+    });
+}
 	</script>
 
 
