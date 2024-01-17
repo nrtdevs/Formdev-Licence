@@ -177,9 +177,7 @@ public class LicenseServiceImpl implements LicenseService {
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 			// Construct the file name with the timestamp
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + timestamp + ".txt";
-			
-		                     
+			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + timestamp + ".txt";                 
 
 			//String fileName = "C:\\Users\\Mr.Akshay_005\\OneDrive\\Desktop\\New folder (2)\\licenseKey_" + timestamp + ".txt";
 			
@@ -208,8 +206,7 @@ public class LicenseServiceImpl implements LicenseService {
 	// check licenseKey is valid or not
 	@Override
 	public boolean isValidLicenseKey(String licenseKey) {
-		// Check if the entered license key matches any existing license key in the
-		// database
+		// Check if the entered license key matches any existing license key in the  database
 		return licenseRepository.findByLicenseKey(licenseKey).isPresent();
 	}
 
