@@ -113,7 +113,7 @@ public class LicenseServiceImpl implements LicenseService {
 			// Construct the file name with the timestamp
 			//String fileName = "C:\\Users\\lenovo\\Desktop\\generatedFiles\\encrypted_License_Data_" + timestamp + ".txt";
 			                  
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\encrypted_License_Data_" + timestamp + ".txt";
+			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\License_" + timestamp + ".txt";
 			
 			
 			File file = new File(fileName);
@@ -177,7 +177,7 @@ public class LicenseServiceImpl implements LicenseService {
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 			// Construct the file name with the timestamp
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseKey_" + timestamp + ".txt";
+			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + timestamp + ".txt";
 			
 		                     
 
