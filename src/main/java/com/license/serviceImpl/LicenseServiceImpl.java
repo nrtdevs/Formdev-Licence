@@ -185,8 +185,9 @@ public class LicenseServiceImpl implements LicenseService {
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
+				
 				// Write each field in plain text format to the file
-				fileWriter.write(license.getLicenseKey());
+				fileWriter.write("License Key = "+license.getLicenseKey());
 
 				System.out.println("Plain text file generated successfully: " + fileName);
 
