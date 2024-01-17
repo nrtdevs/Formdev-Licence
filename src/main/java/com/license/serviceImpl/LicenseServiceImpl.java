@@ -187,7 +187,12 @@ public class LicenseServiceImpl implements LicenseService {
 			try (FileWriter fileWriter = new FileWriter(file)) {
 				
 				// Write each field in plain text format to the file
-				fileWriter.write("License Key = "+license.getLicenseKey());
+				fileWriter.write("Person Name = "+license.getName()+"\n");
+				fileWriter.write("Date Issued = "+license.getTimeStamp()+"\n"); 
+				fileWriter.write("License Duration = "+license.getDuration()+"days\n");
+				fileWriter.write("License Key = "+license.getLicenseKey()+"\n");
+				fileWriter.write("MacId Address = "+license.getMacId()+"\n");
+				
 
 				System.out.println("Plain text file generated successfully: " + fileName);
 
