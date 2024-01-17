@@ -42,6 +42,8 @@ public class License {
 	private Date expirationDate;
 
 	private String type;
+	
+	private String companyName;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timeStamp;

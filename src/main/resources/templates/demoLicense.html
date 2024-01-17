@@ -134,9 +134,12 @@
 
 	<form id="licenseForm" method="post">
 
+		<label for="CompanyName">Company Name:</label>
+		<input type="text" id="CompanyName" name="companyName" required><br>
 
 		<label for="Name">Name:</label>
 		<input type="text" id="Name" name="name" required><br>
+
 		<label for="email">Email:</label>
 		<input type="email" id="email" name="email" required><br>
 
@@ -175,9 +178,10 @@
 
 
 		function createLicense() {
-	     const licenseForm = document.getElementById('licenseForm');
+			const licenseForm = document.getElementById('licenseForm');
 
 			// Extract form values
+			const companyName = licenseForm.querySelector('[name="companyName"]').value;
 			const name = licenseForm.querySelector('[name="name"]').value;
 			const email = licenseForm.querySelector('[name="email"]').value;
 			const macId = licenseForm.querySelector('[name="macId"]').value;
@@ -186,12 +190,14 @@
 
 
 			// Validate fields
-			if (!name || !email || !macId || !duration) {
+			if (!companyName || !name || !email || !macId || !duration) {
 				alert('Please fill in all fields');
 				return;
 			}
 
 			const requestBody = {
+				
+				companyName: companyName,
 				name: name,
 				email: email,
 				macId: macId,
@@ -207,30 +213,30 @@
 				body: JSON.stringify(requestBody),
 			})
 				.then(response => {
-        if (response.ok) {
-            // Display a success message
-            return response.json();
-        } else {
-            // Log the error details to the console
-            return response.json().then(errorResponse => {
-                console.error('Error buy license:', errorResponse);
-                throw new Error(errorResponse.error || 'Unknown error');
-            });
-        }
-    })
-    .then(data => {
-        // Handle success
-        console.log('License Bought Successfully');
-        alert('License Bought Successfully');
-        window.location.href = 'http://localhost:8181/users/home'; // redirect after buying a license 
-        licenseForm.reset();
-    })
-    .catch(error => {
-        // Log other errors to the console
-        console.error('Error:', error);
-        alert('Error creating license please check your MacId');
-    });
-}
+					if (response.ok) {
+						// Display a success message
+						return response.json();
+					} else {
+						// Log the error details to the console
+						return response.json().then(errorResponse => {
+							console.error('Error buy license:', errorResponse);
+							throw new Error(errorResponse.error || 'Unknown error');
+						});
+					}
+				})
+				.then(data => {
+					// Handle success
+					console.log('License Bought Successfully');
+					alert('License Bought Successfully');
+					window.location.href = 'http://localhost:8181/users/home'; // redirect after buying a license 
+					licenseForm.reset();
+				})
+				.catch(error => {
+					// Log other errors to the console
+					console.error('Error:', error);
+					alert('Error creating license please check your MacId');
+				});
+		}
 	</script>
 
 
