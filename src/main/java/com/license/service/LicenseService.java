@@ -31,4 +31,6 @@ public interface LicenseService {
 
 	boolean isLicenseValid(String licenseKey);
 
+	License findLicenseBySearchInput(String searchInput);
+
 }

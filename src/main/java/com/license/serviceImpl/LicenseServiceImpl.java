@@ -282,4 +282,12 @@ public class LicenseServiceImpl implements LicenseService {
 
 		return licenseRepository.findByType("actual");
 	}
+	
+	@Override
+    public License findLicenseBySearchInput(String searchInput) {
+        // Use the custom query method in the repository to find the license
+        Optional<License> license = licenseRepository.findByNameOrEmailOrMacIdOrLicenseKey(searchInput, searchInput, searchInput, searchInput);
+
+        return license.orElse(null); // Return null if the license is not found
+    }
 }

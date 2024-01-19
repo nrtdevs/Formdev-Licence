@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Search Result</title>
+</head>
+<body>
+
+    <h2>License Search Result</h2>
+
+    <!-- Display the found license details -->
+    <div th:if="${license != null}">
+        <p>License Details:</p>
+        <p>Name: <span th:text="${license.name}"></span></p>
+        <p>Email: <span th:text="${license.email}"></span></p>
+        <p>MacId: <span th:text="${license.macId}"></span></p>
+        <p>License Key: <span th:text="${license.licenseKey}"></span></p>
+        <!-- Add more details as needed -->
+    </div>
+    
+    <!-- Display a message if no license is found -->
+    <div th:if="${license == null}">
+        <p>No license found for the entered search value.</p>
+    </div>
+
+</body>
+</html>
