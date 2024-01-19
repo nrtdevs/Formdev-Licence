@@ -124,6 +124,22 @@
 			color: #333;
 			margin: 10px 0;
 		}
+		
+	.trackButton {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        text-align: center;
+        text-decoration: none;
+        background-color: rgb(255, 255, 255); /* Adjust the background color */
+        color: rgb(128, 128, 255);  /* Adjust the text color */
+        border: 1px solid rgb(192, 192, 192); /* Adjust the border color */
+        border-radius: 5px; /* Adjust the border radius */
+        cursor: pointer;
+        font-weight: bolder;;
+        margin-left: 45%;
+        margin-top: 20px;
+    }
 	</style>
 </head>
 
@@ -172,6 +188,8 @@
 					<p th:text="${totalDemoUsers}"></p>
 				</div>
 			</div>
+			
+			<a class="trackButton" href="http://localhost:8181/licenses/licenseSearch">Track</a>
 		</div>
 	</main>
 
