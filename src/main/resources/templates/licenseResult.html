@@ -12,11 +12,18 @@
 
     <!-- Display the found license details -->
     <div th:if="${license != null}">
+		
         <p>License Details:</p>
+        <p>Id: <span th:text="${license.id}"></span></p>
         <p>Name: <span th:text="${license.name}"></span></p>
         <p>Email: <span th:text="${license.email}"></span></p>
         <p>MacId: <span th:text="${license.macId}"></span></p>
-        <p>License Key: <span th:text="${license.licenseKey}"></span></p>
+        <p>Key: <span th:text="${license.licenseKey}"></span></p>
+        <p>Type: <span th:text="${license.type}"></span></p>
+        <p>Duration: <span th:text="${license.duration}"></span></p>
+        <p>Created at: <span th:text="${license.timeStamp}"></span></p>
+        <p>Expiration Date: <span th:text="${license.expirationDate}"></span></p>
+       
         <!-- Add more details as needed -->
     </div>
     
