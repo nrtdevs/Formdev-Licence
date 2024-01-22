@@ -1,22 +1,89 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>License Search</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>License Search</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(to right, rgb(128, 128, 195), #2c3e50);
+			color: #fff;
+		}
+
+		header {
+			background-color: rgb(128, 128, 255);
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.logo {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		nav ul li {
+			display: inline;
+			margin-right: 20px;
+		}
+
+		nav ul li a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: bold;
+			font-size: 16px;
+			transition: color 0.3s ease-in-out;
+		}
+
+		nav ul li a:hover {
+			color: #ffcc00;
+		}
+
+		form {
+			text-align: center;
+			padding-top: 20px;
+			font-size: 25px;
+		}
+	</style>
 </head>
+
 <body>
+	<header>
 
-    <h2>License Search</h2>
+		<div class="logo">License Module</div>
+		<nav>
+			<ul>
+				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+			</ul>
+		</nav>
 
-    <form action="http://localhost:8181/licenses/findLicense" method="get">
-        <label for="searchInput">Enter Name, Email, MacId, or License Key:</label>
-        <input type="text" id="searchInput" name="searchInput" required>
-        <button type="submit">Search</button>
-    </form>
+	</header>
 
-    <!-- Display search results here if needed -->
+	<h1 style="text-align: center;"> Track License</h1>
+
+	<form action="http://localhost:8181/licenses/findLicense" method="get">
+		<label for="searchInput">Enter Name, Email, MacId, or License Key:</label><br>
+		<input type="text" id="searchInput" name="searchInput" required
+			style="font-size: 18px; padding:10px;margin-top: 10px;">
+		<button type="submit" style="font-size: 18px; padding: 10px;">Search</button>
+	</form>
+
 
 </body>
+
 </html>
