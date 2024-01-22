@@ -1,36 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>License Search Result</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>License Search Result</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: linear-gradient(to right, rgb(128, 128, 195), #2c3e50);
+			color: #fff;
+		}
+
+		header {
+			background-color: rgb(128, 128, 255);
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.logo {
+			font-size: 24px;
+			font-weight: bold;
+		}
+
+		nav ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			text-align: center;
+		}
+
+		nav ul li {
+			display: inline;
+			margin-right: 20px;
+		}
+
+		nav ul li a {
+			text-decoration: none;
+			color: #fff;
+			font-weight: bold;
+			font-size: 16px;
+			transition: color 0.3s ease-in-out;
+		}
+
+		nav ul li a:hover {
+			color: #ffcc00;
+		}
+
+		p {
+			text-align: left;
+			margin-left: 41%;
+			font-size: 20px;
+		  
+		}
+	</style>
 </head>
+
 <body>
 
-    <h2>License Search Result</h2>
+	<header>
+		<div class="logo">License Module</div>
+		<nav>
+			<ul>
+				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+			</ul>
+		</nav>
+	</header>
 
-    <!-- Display the found license details -->
-    <div th:if="${license != null}">
-		
-        <p>License Details:</p>
-        <p>Id: <span th:text="${license.id}"></span></p>
-        <p>Name: <span th:text="${license.name}"></span></p>
-        <p>Email: <span th:text="${license.email}"></span></p>
-        <p>MacId: <span th:text="${license.macId}"></span></p>
-        <p>Key: <span th:text="${license.licenseKey}"></span></p>
-        <p>Type: <span th:text="${license.type}"></span></p>
-        <p>Duration: <span th:text="${license.duration}"></span></p>
-        <p>Created at: <span th:text="${license.timeStamp}"></span></p>
-        <p>Expiration Date: <span th:text="${license.expirationDate}"></span></p>
-       
-        <!-- Add more details as needed -->
-    </div>
-    
-    <!-- Display a message if no license is found -->
-    <div th:if="${license == null}">
-        <p>No license found for the entered search value.</p>
-    </div>
+	<h1 style="margin-left: 41%";>Track License Result</h1>
+	<!-- Display the found license details -->
+	<div th:if="${license != null}">
+
+		<p style="font-size:30px;">License Details:</p>
+		<p>Id: <span th:text="${license.id}"></span></p>
+		<p>Name: <span th:text="${license.name}"></span></p>
+		<p>Email: <span th:text="${license.email}"></span></p>
+		<p>MacId: <span th:text="${license.macId}"></span></p>
+		<p>Key: <span th:text="${license.licenseKey}"></span></p>
+		<p>Type: <span th:text="${license.type}"></span></p>
+		<p>Duration: <span th:text="${license.duration}"></span></p>
+		<p>Created at: <span th:text="${license.timeStamp}"></span></p>
+		<p>Expiration Date: <span th:text="${license.expirationDate}"></span></p>
+
+		<!-- Add more details as needed -->
+	</div>
+
+	<!-- Display a message if no license is found -->
+	<div th:if="${license == null}">
+		<p>No license found for the entered search value.</p>
+	</div>
+
 
 </body>
+
 </html>
