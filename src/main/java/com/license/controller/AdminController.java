@@ -19,6 +19,7 @@ public class AdminController {
 
 	@Autowired
 	private LicenseService licenseService;
+	
 	@Autowired
 	private UserService userService;
 
