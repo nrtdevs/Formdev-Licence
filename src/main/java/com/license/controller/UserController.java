@@ -36,10 +36,6 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-//	@GetMapping("/getAllUsers")
-//	public List<User> getAllUsers() {
-//		return userService.getAllUsers();
-//	}
 
 	@GetMapping("/getAllUsers")
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_USER_LIST')")
@@ -74,34 +70,6 @@ public class UserController {
 	public User updateUser(@PathVariable int id, @RequestBody User updatedUser) {
 		return userService.updateUser(id, updatedUser);
 	}
-
-//	@PostMapping("/loginUser")
-//	public ResponseEntity<User> loginUser(@RequestParam String email, @RequestParam String password) {
-//	    User loggedInUser = userService.loginUser(email, password);
-//
-//	    if (loggedInUser != null) {
-//	        return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
-//	    } else {
-//	        // You can customize the response based on your requirements
-//	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // or HttpStatus.NOT_FOUND, etc.
-//	    }
-//	}
-//	
-
-//	@PostMapping("/loginUser")
-//	public ResponseEntity<User> loginUser(@RequestBody User loginCredentials) {
-//	    String email = loginCredentials.getEmail();
-//	    String password = loginCredentials.getPassword();
-//
-//	    User loggedInUser = userService.loginUser(email, password);
-//
-//	    if (loggedInUser != null) {
-//	        return new ResponseEntity<>(loggedInUser, HttpStatus.OK);
-//	    } else {
-//	        // You can customize the response based on your requirements
-//	        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // or HttpStatus.NOT_FOUND, etc.
-//	    }
-//	}
 
 	@PostMapping("/loginUser")
 	public ResponseEntity<User> loginUser(@RequestBody LoginRequest loginCredentials, HttpServletRequest request) {
