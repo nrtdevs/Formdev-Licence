@@ -56,7 +56,8 @@
 		main {
 			padding: 20px;
 		}
-			.container {
+
+		.container {
 			max-width: 800px;
 			margin: 20px auto;
 			background-color: #fff;
@@ -98,7 +99,7 @@
 			border-radius: 4px;
 			cursor: pointer;
 		}
-	
+
 		.styled-button:hover {
 			background-color: #4CAF50;
 			color: white;
@@ -131,8 +132,8 @@
 			</ul>
 		</nav>
 	</header>
-	
-	
+
+
 	<div class="container">
 		<h1>Manage Role Permissions </h1>
 
@@ -144,9 +145,8 @@
 			<div class="permission-group">
 				<h2>Product Permissions</h2>
 
-
 				<div class="checkbox">
-				 
+
 					<label><input type="checkbox" name="permissions" value="ROLE_BUY_DEMO_LICENSE"
 							th:checked="${userPermissions.contains('ROLE_BUY_DEMO_LICENSE')}">Buy Demo License</label>
 
@@ -154,11 +154,7 @@
 							th:checked="${userPermissions.contains('ROLE_BUY_ACTUAL_LICENSE')}"> Buy Actual
 						license</label>
 
-
 				</div>
-
-
-
 
 				<button type="submit" class="styled-button">Update Permissions</button>
 		</form>
