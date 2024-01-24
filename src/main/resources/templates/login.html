@@ -120,9 +120,16 @@
 			})
 				.then(response => response.json())
 				.then(response => {
-					console.log("res : ", response.payload);
+						console.log("res : ", response);
+					if(response.statusCode == 333)
+					{
+						alert('User password is Expired..!, Please update your password');
+					}
+					else{
+			
 					if (response.payload.userToken != null) {
 						console.log("code is 200 :", response.status);
+						
 						if (response.payload.userToken != null) {
 							// Follow the redirect
 							console.log("userToken  :", response.payload.userToken);
@@ -133,7 +140,7 @@
 						console.log(response.payload.userToken);
 						alert('Invalid email or password. Please try again.');
 					}
-				})
+				}})
 				.catch(error => {
 					console.error('Error during login:', error);
 					// Show an alert for any other errors

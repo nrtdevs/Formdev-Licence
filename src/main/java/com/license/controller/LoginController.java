@@ -1,6 +1,11 @@
 package com.license.controller;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.license.entity.User;
+import com.license.repository.UserRepository;
 import com.license.security.ApiResponse;
 import com.license.security.LoginRequest;
 import com.license.security.LoginResponse;
@@ -26,30 +33,41 @@ public class LoginController {
 	private UserService userService;
 	@Autowired
 	UserServiceImpl userServiceIml;
+   @Autowired
+	UserRepository userRepository;
 
 	private static final String JWT_COOKIE_NAME = "jwtToken";
 
 	@PostMapping(value = "/login/jwt")
 	public ResponseEntity<ApiResponse<LoginResponse>> userLogin(@RequestBody LoginRequest loginRequest,
 			HttpServletResponse response) {
+
+		Boolean isPasswordExpired = isPasswordOlderThan3Months(loginRequest.getEmail());
+
+		if (isPasswordExpired) {
+			
 		
-		log.info(loginRequest.toString());
-		ResponseEntity<ApiResponse<LoginResponse>> userloginResponse = userService.generateToken(loginRequest);
+			return  (ResponseEntity<ApiResponse<LoginResponse>>) ResponseEntity.status(333).body(new ApiResponse<LoginResponse>("Failed","user password is expired..!",null,333));
+			
+		} else {
 
-		LoginResponse loginResponse = userloginResponse.getBody().getPayload();
-		if (loginResponse != null) {
-			Cookie tokenCookie = new Cookie(JWT_COOKIE_NAME, loginResponse.getUserToken());
-			tokenCookie.setMaxAge(24 * 60 * 60);
-			tokenCookie.setPath("/");
-			response.addCookie(tokenCookie);
-			System.out.println(loginResponse.getLoginDate());
+			log.info(loginRequest.toString());
+			ResponseEntity<ApiResponse<LoginResponse>> userloginResponse = userService.generateToken(loginRequest);
 
+			LoginResponse loginResponse = userloginResponse.getBody().getPayload();
+			if (loginResponse != null) {
+				Cookie tokenCookie = new Cookie(JWT_COOKIE_NAME, loginResponse.getUserToken());
+				tokenCookie.setMaxAge(24 * 60 * 60);
+				tokenCookie.setPath("/");
+				response.addCookie(tokenCookie);
+				System.out.println(loginResponse.getLoginDate());
+
+			}
+			log.info("code is :" + userloginResponse.getStatusCode());
+			return userloginResponse;
 		}
-		log.info("code is :" + userloginResponse.getStatusCode());
-		return userloginResponse;
 
 	}
-
 
 	@GetMapping("/access-denied")
 	public ModelAndView accessDeniedPage(ModelAndView modelAndView) {
@@ -57,6 +75,20 @@ public class LoginController {
 		return modelAndView;
 
 	}
- 
-	 
+
+	private Boolean isPasswordOlderThan3Months(String userEmail) {
+		User user = userRepository.findByEmail(userEmail);
+
+		Date passwordUpdatedAt = user.getPasswordUpdatedAt();
+		LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
+
+		System.out.println("user data checked ");
+
+		if (passwordUpdatedAt != null && passwordUpdatedAt.toLocalDate().isBefore(threeMonthsAgo)) {
+			// Password needs to be reset, send email
+			return true;
+		}
+		return false;
+	}
+
 }
