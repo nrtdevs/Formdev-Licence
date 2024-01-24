@@ -42,4 +42,6 @@ public interface UserService {
 	String getCurrentUser();
 
 	Boolean resetPassword(long currentPassword, String currentUser, long newPassword);
+
+	Boolean isPasswordOlderThan3Months(String userEmail);
 }

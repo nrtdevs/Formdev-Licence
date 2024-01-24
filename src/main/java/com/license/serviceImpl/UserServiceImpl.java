@@ -2,6 +2,7 @@ package com.license.serviceImpl;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -311,4 +312,19 @@ public class UserServiceImpl implements UserService {
 		return userEmail;
 	}
 
+	@Override
+	public Boolean isPasswordOlderThan3Months(String userEmail) {
+		User user = userRepository.findByEmail(userEmail);
+
+		Date passwordUpdatedAt = user.getPasswordUpdatedAt();
+		LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
+
+		System.out.println("user data checked ");
+
+		if (passwordUpdatedAt != null && passwordUpdatedAt.toLocalDate().isBefore(threeMonthsAgo)) {
+			// Password needs to be reset, send email
+			return true;
+		}
+		return false;
+	}
 }

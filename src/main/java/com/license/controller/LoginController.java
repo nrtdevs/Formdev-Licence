@@ -31,9 +31,11 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
+	
 	@Autowired
 	UserServiceImpl userServiceIml;
-   @Autowired
+	
+    @Autowired
 	UserRepository userRepository;
 
 	private static final String JWT_COOKIE_NAME = "jwtToken";
@@ -42,7 +44,7 @@ public class LoginController {
 	public ResponseEntity<ApiResponse<LoginResponse>> userLogin(@RequestBody LoginRequest loginRequest,
 			HttpServletResponse response) {
 
-		Boolean isPasswordExpired = isPasswordOlderThan3Months(loginRequest.getEmail());
+		Boolean isPasswordExpired =userService.isPasswordOlderThan3Months(loginRequest.getEmail());
 
 		if (isPasswordExpired) {
 			
@@ -74,21 +76,6 @@ public class LoginController {
 		modelAndView.setViewName("error-permission");
 		return modelAndView;
 
-	}
-
-	private Boolean isPasswordOlderThan3Months(String userEmail) {
-		User user = userRepository.findByEmail(userEmail);
-
-		Date passwordUpdatedAt = user.getPasswordUpdatedAt();
-		LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
-
-		System.out.println("user data checked ");
-
-		if (passwordUpdatedAt != null && passwordUpdatedAt.toLocalDate().isBefore(threeMonthsAgo)) {
-			// Password needs to be reset, send email
-			return true;
-		}
-		return false;
 	}
 
 }
