@@ -43,6 +43,8 @@ public class License {
 
 	private String type;
 	
+	private String licenseFor;
+	
 	private String companyName;
 
 	@Temporal(TemporalType.TIMESTAMP)

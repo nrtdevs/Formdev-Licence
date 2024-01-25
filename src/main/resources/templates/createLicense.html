@@ -8,10 +8,10 @@
 	<style>
 		body {
 			background-image: url('https://www.shutterstock.com/image-vector/driver-license-card-photo-icon-600nw-2349539997.jpg');
-			background-size: cover;
+			background-size:cover;
 			background-position: center;
-			background-repeat: no-repeat;
-			margin: 0;
+			background-repeat: no-repeat ;
+			margin:0 ;
 			padding: 0;
 			font-family: Arial, sans-serif;
 		}
@@ -146,8 +146,7 @@
 		<label for="macId">Mac ID:</label>
 		<input type="text" id="macId" name="macId" required><br><br>
 		<br>
-
-		<label for="duration" style="margin-top: -30px;">Duration (months):</label>
+		<label for="duration" style="margin-top: -34px;">Duration (months):</label>
 		<select id="duration" name="duration" required>
 			<option value="" disabled selected>Select duration</option>
 			<option value="6"> 1 Week</option>
@@ -156,7 +155,13 @@
 			<option value="59">2 Months</option>
 			<option value="89">3 Months</option>
 			<option value="364">1 Year</option>
-
+		</select><br>
+		<br>
+		<label for="licenseFor" style="margin-top: -18px;">License for :</label>
+		<select id="licenseFor" name="licenseFor" required>
+			<option value="" disabled selected>Select License for</option>
+			<option value="FORMDEM">FORMDEM</option> </option>
+			<option value="SOLUDEM">SOLUDEM</option>
 		</select><br>
 
 		<!-- Add other form fields as needed -->
@@ -187,10 +192,11 @@
 			const email = licenseForm.querySelector('[name="email"]').value;
 			const macId = licenseForm.querySelector('[name="macId"]').value;
 			const duration = licenseForm.querySelector('[name="duration"]').value;
+			const licenseFor =licenseForm.querySelector('[name="licenseFor"]').value;
 			const type = "actual";
 
 			// Validate fields
-			if (!companyName || !name || !email || !macId || !duration) {
+			if (!companyName || !name || !email || !macId || !duration || !licenseFor) {
 				alert('Please fill in all fields');
 				return;
 			}
@@ -202,6 +208,7 @@
 				email: email,
 				macId: macId,
 				duration: duration,
+				licenseFor:licenseFor,
 				type: type
 			};
 

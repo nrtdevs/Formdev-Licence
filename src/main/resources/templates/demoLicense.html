@@ -158,8 +158,14 @@
 			<option value="89">3 Months</option>
 			<option value="364">1 Year</option>
 		</select><br>
-
-
+		<br>
+		<label for="licenseFor" style="margin-top: -30px;">License for :</label>
+		<select id="licenseFor" name="licenseFor" required>
+			<option value="" disabled selected>Select License for</option>
+			<option value="FORMDEM">FORMDEM</option>
+			</option>
+			<option value="SOLUDEM">SOLUDEM</option>
+		</select><br>
 
 		<button type="submit">Submit</button>
 	</form>
@@ -186,22 +192,24 @@
 			const email = licenseForm.querySelector('[name="email"]').value;
 			const macId = licenseForm.querySelector('[name="macId"]').value;
 			const duration = licenseForm.querySelector('[name="duration"]').value;
+			const licenseFor = licenseForm.querySelector('[name="licenseFor"]').value;
 			const type = "demo";
 
 
 			// Validate fields
-			if (!companyName || !name || !email || !macId || !duration) {
+			if (!companyName || !name || !email || !macId || !duration || !licenseFor) {
 				alert('Please fill in all fields');
 				return;
 			}
 
 			const requestBody = {
-				
+
 				companyName: companyName,
 				name: name,
 				email: email,
 				macId: macId,
 				duration: duration,
+				licenseFor:licenseFor,
 				type: type
 			};
 
