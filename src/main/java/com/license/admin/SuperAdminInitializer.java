@@ -1,6 +1,5 @@
 package com.license.admin;
 
-
 import java.sql.Date;
 
 import org.springframework.boot.CommandLineRunner;
@@ -14,7 +13,6 @@ import com.license.entity.User;
 import com.license.repository.PermissionRepository;
 import com.license.repository.RoleRepository;
 import com.license.repository.UserRepository;
-
 
 @Component
 public class SuperAdminInitializer implements CommandLineRunner {
@@ -47,29 +45,28 @@ public class SuperAdminInitializer implements CommandLineRunner {
 				superAdminRole = roleRepository.save(superAdminRole);
 
 			}
-				//create super admin 
-				User superAdmin = new User();
-				superAdmin.setEmail("superAdmin@gmail.com");
-				superAdmin.setFirstName("Super");
-				superAdmin.setLastName("Admin");
-				String encodedPssword = passwordEncoder.encode("admin@1234");
-				superAdmin.setPassword(encodedPssword);
-				superAdmin.setRole(superAdminRole);
-				superAdmin.setStatus(1);
-				java.util.Date utilDate = new java.util.Date();
-				Date date = new Date(utilDate.getTime());
-				superAdmin.setCreationDate(null);
-				superAdmin.setPasswordUpdatedAt(date);
-				userRepository.save(superAdmin);
+			// create super admin
+			User superAdmin = new User();
+			superAdmin.setEmail("superAdmin@gmail.com");
+			superAdmin.setFirstName("Super");
+			superAdmin.setLastName("Admin");
+			String encodedPssword = passwordEncoder.encode("admin@1234");
+			superAdmin.setPassword(encodedPssword);
+			superAdmin.setRole(superAdminRole);
+			superAdmin.setStatus(1);
+			java.util.Date utilDate = new java.util.Date();
+			Date date = new Date(utilDate.getTime());
+			superAdmin.setCreationDate(null);
+			superAdmin.setPasswordUpdatedAt(date);
+			userRepository.save(superAdmin);
 
-				// create permission with Role_admin
-				if (!permissionRepo.existsByRoleName("ROLE_ADMIN")) {
-					Permission permission = new Permission();
-					permission.setName("ROLE_ADMIN");
-					permission.setRole(superAdminRole);
-					permissionRepo.save(permission);
-				}
-			
+			// create permission with Role_admin
+			if (!permissionRepo.existsByRoleName("ROLE_ADMIN")) {
+				Permission permission = new Permission();
+				permission.setName("ROLE_ADMIN");
+				permission.setRole(superAdminRole);
+				permissionRepo.save(permission);
+			}
 		}
 	}
 }
