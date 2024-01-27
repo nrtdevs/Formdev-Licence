@@ -29,7 +29,7 @@ public class LicenseServiceImpl implements LicenseService {
 
 	private static final String SECRET_KEY = "MySecretKey#95457556941234567890";
 	private static final String ALGORITHM = "AES"; // Advanced Encryption Standard
-	
+
 	@Autowired
 	private UserServiceImpl userServiceImpl;
 
@@ -54,8 +54,8 @@ public class LicenseServiceImpl implements LicenseService {
 		// Your @PrePersist method will automatically generate the license key,
 		// timestamp, and MAC address before saving]
 
-		String currentUser =  userServiceImpl.getCurrentUser();
-		
+		String currentUser = userServiceImpl.getCurrentUser();
+
 		User user = userRepository.findByEmail(currentUser);
 
 		int duration = license.getDuration();
@@ -111,11 +111,12 @@ public class LicenseServiceImpl implements LicenseService {
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 			// Construct the file name with the timestamp
-			//String fileName = "C:\\Users\\lenovo\\Desktop\\generatedFiles\\encrypted_License_Data_" + timestamp + ".txt";
-			                  
+			// String fileName =
+			// "C:\\Users\\lenovo\\Desktop\\generatedFiles\\encrypted_License_Data_" +
+			// timestamp + ".txt";
+
 			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\License_" + timestamp + ".txt";
-			
-			
+
 			File file = new File(fileName);
 			file.createNewFile();
 
@@ -167,7 +168,7 @@ public class LicenseServiceImpl implements LicenseService {
 			// Handle the exception based on your requirements
 		}
 	}
-	
+
 	public static void generatePlainTextFile(License license) {
 
 		System.out.println("Generating plain text file");
@@ -177,23 +178,23 @@ public class LicenseServiceImpl implements LicenseService {
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 			// Construct the file name with the timestamp
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + timestamp + ".txt";                 
+			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + timestamp + ".txt";
 
-			//String fileName = "C:\\Users\\Mr.Akshay_005\\OneDrive\\Desktop\\New folder (2)\\licenseKey_" + timestamp + ".txt";
-			
+			// String fileName = "C:\\Users\\Mr.Akshay_005\\OneDrive\\Desktop\\New folder
+			// (2)\\licenseKey_" + timestamp + ".txt";
+
 			File file = new File(fileName);
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
-				
+
 				// Write each field in plain text format to the file
-				fileWriter.write("Company Name     = "+license.getCompanyName()+"\n");
-				fileWriter.write("Person Name      = "+license.getName()+"\n");
-				fileWriter.write("Date Issued      = "+license.getTimeStamp()+"\n"); 
-				fileWriter.write("License Duration = "+license.getDuration()+" days\n");
-				fileWriter.write("License Key      = "+license.getLicenseKey()+"\n");
-				fileWriter.write("MacId Address    = "+license.getMacId()+"\n");
-				
+				fileWriter.write("Company Name     = " + license.getCompanyName() + "\n");
+				fileWriter.write("Person Name      = " + license.getName() + "\n");
+				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
+				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
+				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
+				fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
 
 				System.out.println("Plain text file generated successfully: " + fileName);
 
@@ -213,11 +214,12 @@ public class LicenseServiceImpl implements LicenseService {
 	// check licenseKey is valid or not
 	@Override
 	public boolean isValidLicenseKey(String licenseKey) {
-		// Check if the entered license key matches any existing license key in the  database
+		// Check if the entered license key matches any existing license key in the
+		// database
 		return licenseRepository.findByLicenseKey(licenseKey).isPresent();
 	}
 
-	//check license valid or not
+	// check license valid or not
 	@Override
 	public boolean isLicenseValid(String licenseKey) {
 		Optional<License> optionalLicense = licenseRepository.findByLicenseKey(licenseKey);
@@ -238,8 +240,6 @@ public class LicenseServiceImpl implements LicenseService {
 
 		return false; // License is not valid
 	}
-
-  
 
 	private Date calculateExpirationDate(int days) {
 		Calendar calendar = Calendar.getInstance();
@@ -282,12 +282,27 @@ public class LicenseServiceImpl implements LicenseService {
 
 		return licenseRepository.findByType("actual");
 	}
-	
-	@Override
-    public License findLicenseBySearchInput(String searchInput) {
-        // Use the custom query method in the repository to find the license
-        Optional<License> license = licenseRepository.findByNameOrEmailOrMacIdOrLicenseKey(searchInput, searchInput, searchInput, searchInput);
 
-        return license.orElse(null); // Return null if the license is not found
-    }
+	@Override
+	public License findLicenseBySearchInput(String searchInput) {
+		// Use the custom query method in the repository to find the license
+		Optional<License> license = licenseRepository.findByNameOrEmailOrMacIdOrLicenseKey(searchInput, searchInput,
+				searchInput, searchInput);
+
+		// Case-sensitive comparison
+		// Check if the result is present and if the input matches the result
+		if (license.isPresent() && searchInput.equals(license.get().getName())) {
+			// Case-sensitive match found
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getEmail())) {
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getMacId())) {
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getLicenseKey())) {
+			return license.get();
+		} else {
+			// Case-sensitive match not found
+			return null;
+		}
+	}
 }

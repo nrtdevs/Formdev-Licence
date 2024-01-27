@@ -16,7 +16,6 @@ public interface LicenseRepository extends JpaRepository<License, Long> {
 
 	Optional<License> findByLicenseKey(String licenseKey);
 	
-	Optional<License> findByNameOrEmailOrMacIdOrLicenseKey(String name, String email, String macId, String licenseKey);
-	 
+	Optional<License> findByNameOrEmailOrMacIdOrLicenseKey(String name, String email, String macId, String licenseKey);	 
 }
 
