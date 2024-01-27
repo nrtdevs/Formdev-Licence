@@ -99,7 +99,6 @@ public class LicenseServiceImpl implements LicenseService {
 	@Override
 	public void deleteLicense(Long id) {
 		licenseRepository.deleteById(id);
-
 	}
 
 	public static void encryptSensitiveInfo(License license) {
@@ -290,19 +289,19 @@ public class LicenseServiceImpl implements LicenseService {
 				searchInput, searchInput);
 
 		// Case-sensitive comparison
-				// Check if the result is present and if the input matches the result
-				if (license.isPresent() && searchInput.equals(license.get().getName())) {
-					// Case-sensitive match found
-					return license.get();
-				} else if (license.isPresent() && searchInput.equals(license.get().getEmail())) {
-					return license.get();
-				} else if (license.isPresent() && searchInput.equals(license.get().getMacId())) {
-					return license.get();
-				} else if (license.isPresent() && searchInput.equals(license.get().getLicenseKey())) {
-					return license.get();
-				} else {
-					// Case-sensitive match not found
-					return null;
-				}
+		// Check if the result is present and if the input matches the result
+		if (license.isPresent() && searchInput.equals(license.get().getName())) {
+			// Case-sensitive match found
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getEmail())) {
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getMacId())) {
+			return license.get();
+		} else if (license.isPresent() && searchInput.equals(license.get().getLicenseKey())) {
+			return license.get();
+		} else {
+			// Case-sensitive match not found
+			return null;
+		}
 	}
 }
