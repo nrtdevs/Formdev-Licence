@@ -9,5 +9,4 @@ public class LicenseModuleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LicenseModuleApplication.class, args);
 	}
-
 }
