@@ -31,22 +31,22 @@ public class License {
 	private String name;
 
 	private String email;
+	
+	private String companyName;
 
 	@Column(unique = true) // Ensure uniqueness in the database
 	private String macId;
 
 	private String licenseKey;
+	
+	private String type;
+	
+	private String licenseFor;
 
 	private int duration;
 
 	private Date expirationDate;
-
-	private String type;
 	
-	private String licenseFor;
-	
-	private String companyName;
-
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date timeStamp;
 

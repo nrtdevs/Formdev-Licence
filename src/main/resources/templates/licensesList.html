@@ -125,12 +125,15 @@
 					<th>ID</th>
 					<th>Name</th>
 					<th>Email Address</th>
+					<th>Company Name</th> 
 					<th>MacId</th>
 					<th>License Key</th>
 					<th>License Type</th>
+					<th>License For</th>
 					<th>Duration(Day)</th>
+					<th>Created at</th>
 					<th>Expiration Date</th>
-					<th>TimeStamp</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -138,12 +141,14 @@
 					<td th:text="${license.id}"></td>
 					<td th:text="${license.name}"></td>
 					<td th:text="${license.email}"></td>
+					<td th:text="${license.companyName}"></td>
 					<td th:text="${license.macId}"></td>
 					<td th:text="${license.licenseKey}"></td>
 					<td th:text="${license.type}"></td>
-					<td th:text="${license.duration}"></td>
-					<td th:text="${license.expirationDate}"></td>
+					<td th:text="${license.licenseFor}"></td>
+					<td th:text="${license.duration}"></td>	
 					<td th:text="${license.timeStamp}"></td>
+					<td th:text="${license.expirationDate}"></td>
 				</tr>
 			</tbody>
 		</table>
