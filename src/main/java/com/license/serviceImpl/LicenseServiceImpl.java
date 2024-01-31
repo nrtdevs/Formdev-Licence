@@ -267,7 +267,7 @@ public class LicenseServiceImpl implements LicenseService {
 
 	@Override
 	public int getTotalActualUsers() {
-		return licenseRepository.findByType("actual").size();
+		return licenseRepository.findByType("purchase").size();
 	}
 
 	@Override
@@ -279,7 +279,7 @@ public class LicenseServiceImpl implements LicenseService {
 	@Override
 	public List<License> getAllActualLicenses() {
 
-		return licenseRepository.findByType("actual");
+		return licenseRepository.findByType("purchase");
 	}
 
 	@Override

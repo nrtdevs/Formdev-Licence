@@ -149,11 +149,9 @@
 		<label for="duration" style="margin-top: -34px;">Duration (months):</label>
 		<select id="duration" name="duration" required>
 			<option value="" disabled selected>Select duration</option>
-			<option value="6"> 1 Week</option>
-			<option value="13">2 Weeks</option>
 			<option value="29">1 Month</option>
-			<option value="59">2 Months</option>
 			<option value="89">3 Months</option>
+			<option value="179">6 Months</option>
 			<option value="364">1 Year</option>
 		</select><br>
 		<br>
@@ -193,7 +191,7 @@
 			const macId = licenseForm.querySelector('[name="macId"]').value;
 			const duration = licenseForm.querySelector('[name="duration"]').value;
 			const licenseFor =licenseForm.querySelector('[name="licenseFor"]').value;
-			const type = "actual";
+			const type = "purchase";
 
 			// Validate fields
 			if (!companyName || !name || !email || !macId || !duration || !licenseFor) {
