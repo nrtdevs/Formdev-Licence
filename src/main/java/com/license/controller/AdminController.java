@@ -19,7 +19,7 @@ public class AdminController {
 
 	@Autowired
 	private LicenseService licenseService;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -43,7 +43,7 @@ public class AdminController {
 		String roleName = userRepository.findByEmail(userService.getCurrentUser()).getRole().getName();
 
 		if ("Admin".equalsIgnoreCase(roleName)) {
-          System.out.println("admin dashboard ");
+			System.out.println("admin dashboard ");
 			List<License> licenses = licenseService.getAllLicenses();
 			int totalAtualUsers = licenseService.getTotalActualUsers(); // Replace with your actual service method
 
@@ -55,7 +55,7 @@ public class AdminController {
 
 			return "adminDashboard";
 		} else {
-			  System.out.println("user page  ");
+			System.out.println("user page  ");
 			return "home";
 		}
 	}

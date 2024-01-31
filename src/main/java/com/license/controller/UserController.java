@@ -36,7 +36,6 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-
 	@GetMapping("/getAllUsers")
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_USER_LIST')")
 	public String getAllUsers(Model model) {
@@ -46,7 +45,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	 
+
 	public User getUserById(@PathVariable int id) {
 		return userService.getUserById(id);
 	}
@@ -75,7 +74,7 @@ public class UserController {
 	public ResponseEntity<User> loginUser(@RequestBody LoginRequest loginCredentials, HttpServletRequest request) {
 		String email = loginCredentials.getEmail();
 		String password = loginCredentials.getPassword();
-     System.out.println("user data : "+loginCredentials);
+		System.out.println("user data : " + loginCredentials);
 		User loggedInUser = userService.loginUser(email, password);
 
 		if (loggedInUser != null) {
@@ -184,7 +183,7 @@ public class UserController {
 			@RequestParam("password") long confirmPassword) {
 
 		System.out.println("controller called");
-		
+
 		if (newPassword == confirmPassword) {
 			System.out.println("passwords are equals");
 			Boolean isUpdated = userService.resetPassword(currentPassword, currentUser, newPassword);

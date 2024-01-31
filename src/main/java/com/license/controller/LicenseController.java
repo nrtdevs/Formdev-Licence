@@ -116,8 +116,8 @@ public class LicenseController {
 		boolean isValid = licenseService.isLicenseValid(licenseKey);
 		return ResponseEntity.ok(isValid);
 	}
-	
-	//track license details or search license
+
+	// track license details or search license
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/findLicense")
 	public String findLicense(@RequestParam String searchInput, Model model) {

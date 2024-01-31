@@ -1,6 +1,5 @@
 package com.license.controller;
 
- 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.license.entity.Role;
 import com.license.serviceImpl.PermissionService;
 import com.license.serviceImpl.RoleServiceImpl;
- 
 
 @Controller
 @PreAuthorize("hasRole('ADMIN')")

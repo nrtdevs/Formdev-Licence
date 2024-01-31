@@ -31,11 +31,11 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	UserServiceImpl userServiceIml;
-	
-    @Autowired
+
+	@Autowired
 	UserRepository userRepository;
 
 	private static final String JWT_COOKIE_NAME = "jwtToken";
@@ -44,13 +44,13 @@ public class LoginController {
 	public ResponseEntity<ApiResponse<LoginResponse>> userLogin(@RequestBody LoginRequest loginRequest,
 			HttpServletResponse response) {
 
-		Boolean isPasswordExpired =userService.isPasswordOlderThan3Months(loginRequest.getEmail());
+		Boolean isPasswordExpired = userService.isPasswordOlderThan3Months(loginRequest.getEmail());
 
 		if (isPasswordExpired) {
-			
-		
-			return  (ResponseEntity<ApiResponse<LoginResponse>>) ResponseEntity.status(333).body(new ApiResponse<LoginResponse>("Failed","user password is expired..!",null,333));
-			
+
+			return (ResponseEntity<ApiResponse<LoginResponse>>) ResponseEntity.status(333)
+					.body(new ApiResponse<LoginResponse>("Failed", "user password is expired..!", null, 333));
+
 		} else {
 
 			log.info(loginRequest.toString());
