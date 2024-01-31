@@ -34,7 +34,7 @@ public class User {
 	private String password;
 
 	private Date passwordUpdatedAt;
-	
+
 	@Column(name = "account_creation_date")
 	private LocalDate CreationDate;
 
@@ -44,9 +44,9 @@ public class User {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private License license;
- 
-	public int  Status ;
-	 
+
+	public int Status;
+
 	@PrePersist
 	protected void onCreate() {
 		CreationDate = LocalDate.now();

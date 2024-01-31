@@ -16,16 +16,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name="Permissions_Details")
+@Table(name = "Permissions_Details")
 public class Permission {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long pid;
-	
-	private String name ; 
-	
+
+	private String name;
+
 	@ManyToOne
 	private Role role;
-	
+
 }

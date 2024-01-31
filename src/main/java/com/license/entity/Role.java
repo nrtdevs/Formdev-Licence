@@ -30,7 +30,7 @@ public class Role {
 
 	private String name;
 
-	@OneToMany(mappedBy = "role" , fetch = FetchType.EAGER ,cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Permission> permission;
 
 	@OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
