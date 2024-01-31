@@ -19,20 +19,20 @@ public class PermissionService {
 
 	@Autowired
 	private PermissionRepository permissionRepository;
+
 	@Autowired
-	 UserRepository userRepository;
+	UserRepository userRepository;
 
 	@Transactional
 	public void deleteRolesByUserId(long userId) throws Exception {
 		try {
 			permissionRepository.deleteRolesByUserId(userId);
 		} catch (Exception e) {
-			throw new  Exception("Permission can not be deleted..! Cause> " + e.getMessage());
+			throw new Exception("Permission can not be deleted..! Cause> " + e.getMessage());
 		}
 		permissionRepository.deleteRolesByUserId(userId);
 	}
 
-	
 	public List<String> getAllPermissionsList(long userId) {
 		List<Permission> AllpermissionsList = permissionRepository.findByRoleId(userId);
 		List<String> permissionList = new ArrayList<String>();
@@ -42,7 +42,6 @@ public class PermissionService {
 		return permissionList;
 	}
 
-	
 	public List<String> getPermissionsByUserId(long l) {
 		List<String> permissions = new ArrayList<>();
 

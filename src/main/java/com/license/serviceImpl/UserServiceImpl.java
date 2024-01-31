@@ -152,7 +152,8 @@ public class UserServiceImpl implements UserService {
 		String from = "akshaybijave505@gmail.com";
 		String to = user.getEmail();
 		String subject = "Welcome to Pharma DEM Solutions ";
-		String content = "Dear [[name]],<br>" + "- Your Account has been Created at Pharma DEM Solutions for License !<br>" + ""
+		String content = "Dear [[name]],<br>"
+				+ "- Your Account has been Created at Pharma DEM Solutions for License !<br>" + ""
 				+ "<h3><a href=\"[[URL]]\" target=\"_self\">Login Here</a></h3>" + "Thank you,<br>";
 
 		try {
@@ -245,18 +246,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Boolean resetPassword(long currentPassword, String currentUser, long newPassword) {
 		String currentpwd = String.valueOf(currentPassword);
-	
 
 		User user = userRepository.findByEmail(currentUser);
 
 		String pwd = String.valueOf(newPassword);
-		
+
 		System.out.println(passwordEncoder.encode(currentpwd));
 		System.out.println(user.getPassword());
-		
-		
-		Boolean arePasswordsEuqals = passwordEncoder.matches(currentpwd,user.getPassword());
-		
+
+		Boolean arePasswordsEuqals = passwordEncoder.matches(currentpwd, user.getPassword());
 
 		if (user != null && arePasswordsEuqals) {
 			System.out.println("user password is matched");
@@ -327,4 +325,5 @@ public class UserServiceImpl implements UserService {
 		}
 		return false;
 	}
+	
 }

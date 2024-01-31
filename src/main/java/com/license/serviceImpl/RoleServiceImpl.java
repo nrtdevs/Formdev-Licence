@@ -1,7 +1,5 @@
 package com.license.serviceImpl;
 
- 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +26,10 @@ public class RoleServiceImpl implements RoleService {
 
 	@Autowired
 	private RoleRepository roleRepository;
+	
 	@Autowired
 	private PermissionRepository permissionRepository;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -149,7 +149,6 @@ public class RoleServiceImpl implements RoleService {
 		// Find the user by their ID
 
 		User user = userRepository.findByEmail(Email);
-			
 
 		// Find the role by its ID
 		Role role = roleRepository.findByName(roleName);
@@ -164,7 +163,7 @@ public class RoleServiceImpl implements RoleService {
 			return Boolean.TRUE;
 		return Boolean.FALSE;
 	}
- 
+
 }
 
 //public Boolean addRoleToUser(String email, String roleName) {
