@@ -1,4 +1,5 @@
 package com.license.scheduler;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,13 +20,13 @@ import jakarta.mail.MessagingException;
 @Service
 public class PasswordResetScheduler {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @Autowired
-    private EmailServieces emailService;
+	@Autowired
+	private EmailServieces emailService;
 
-    public PasswordResetScheduler(UserService userService, EmailServieces emailService) {
+	public PasswordResetScheduler(UserService userService, EmailServieces emailService) {
 		super();
 		this.userService = userService;
 		this.emailService = emailService;
@@ -33,44 +34,42 @@ public class PasswordResetScheduler {
 
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    public void startScheduler() {
-        // Schedule the task to run every 5 year
-    	scheduler.scheduleAtFixedRate(this::checkAndSendPasswordResetEmail, 0, 5, TimeUnit.MINUTES);
+	public void startScheduler() {
+		// Schedule the task to run every 5 year
+		scheduler.scheduleAtFixedRate(this::checkAndSendPasswordResetEmail, 0, 5, TimeUnit.MINUTES);
 
-    }
+	}
 
-    @PostConstruct
-    public void initializeScheduler() {
-        startScheduler();
-    }
-    
-    
-    private void checkAndSendPasswordResetEmail() {
-        List<User> users = userService.getAllUsers();
+	@PostConstruct
+	public void initializeScheduler() {
+		startScheduler();
+	}
 
-        for (User user : users) {
-            Date passwordUpdatedAt = user.getPasswordUpdatedAt();
-            LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
+	private void checkAndSendPasswordResetEmail() {
+		List<User> users = userService.getAllUsers();
 
-            System.out.println("user data checked ");
-            
-            if (passwordUpdatedAt != null && passwordUpdatedAt.toLocalDate().isBefore(threeMonthsAgo)) {
-                // Password needs to be reset, send email
-                sendPasswordResetEmail(user);
-            }
-        }
-    }
-    
-    
+		for (User user : users) {
+			Date passwordUpdatedAt = user.getPasswordUpdatedAt();
+			LocalDate threeMonthsAgo = LocalDate.now().minusMonths(3);
 
-    private void sendPasswordResetEmail(User user) {
-        // Implement your logic to send a password reset email
-        // You can use the emailService.sendPasswordResetEmail(user.getEmail()) method or any other logic
-        try {
-			emailService.sendEmailwithTemplate(user.getEmail(),"resetPasswordTemplate");
+			System.out.println("user data checked ");
+
+			if (passwordUpdatedAt != null && passwordUpdatedAt.toLocalDate().isBefore(threeMonthsAgo)) {
+				// Password needs to be reset, send email
+				sendPasswordResetEmail(user);
+			}
+		}
+	}
+
+	private void sendPasswordResetEmail(User user) {
+		// Implement your logic to send a password reset email
+		// You can use the emailService.sendPasswordResetEmail(user.getEmail()) method
+		// or any other logic
+		try {
+			emailService.sendEmailwithTemplate(user.getEmail(), "resetPasswordTemplate");
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.getMessage();
 		}
-    }
+	}
 }
