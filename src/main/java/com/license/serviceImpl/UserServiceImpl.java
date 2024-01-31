@@ -151,8 +151,8 @@ public class UserServiceImpl implements UserService {
 
 		String from = "akshaybijave505@gmail.com";
 		String to = user.getEmail();
-		String subject = "Account Successfully Created";
-		String content = "Dear [[name]],<br>" + "Your Account Successfully Created:<br>" + ""
+		String subject = "Welcome to Pharma DEM Solutions ";
+		String content = "Dear [[name]],<br>" + "- Your Account has been Created at Pharma DEM Solutions for License !<br>" + ""
 				+ "<h3><a href=\"[[URL]]\" target=\"_self\">Login Here</a></h3>" + "Thank you,<br>";
 
 		try {
@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
 			MimeMessage message = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message);
 
-			helper.setFrom(from, "your compant name...");
+			helper.setFrom(from, "Pharma DEM Solutions");
 			helper.setTo(to);
 			helper.setSubject(subject);
 
