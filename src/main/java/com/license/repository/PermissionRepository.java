@@ -15,14 +15,11 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 	List<Permission> findByNameIn(List<String> permissions);
 
 	List<Permission> findByRoleName(String roleName);
-	
 
 	@Modifying
-    @Query(value = "DELETE FROM role WHERE user_id = :userId", nativeQuery = true)
-    void deleteRolesByUserId(long userId);
+	@Query(value = "DELETE FROM role WHERE user_id = :userId", nativeQuery = true)
+	void deleteRolesByUserId(long userId);
 
 	boolean existsByRoleName(String string);
 
-	
-	
 }
