@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals(JWT_COOKIE_NAME)) {
 					jwtToken = cookie.getValue();
-					log.debug("token is : "+jwtToken);
+					log.debug("token is : " + jwtToken);
 					break;
 				}
 			}
@@ -60,15 +60,15 @@ public class JwtFilter extends OncePerRequestFilter {
 				log.error("Please Inter Valid Token....");
 
 			} catch (RuntimeException e) {
-				log.error("Internal Error Please Try Again....."+e.getMessage());
+				log.error("Internal Error Please Try Again....." + e.getMessage());
 
 			}
 		}
-		
-		log.info("userName    ...."+userName);
-		
+
+		log.info("userName    ...." + userName);
+
 		if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			 
+
 			UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
 
 			if (this.jwtUtil.validateToken(jwtToken, userDetails)) {

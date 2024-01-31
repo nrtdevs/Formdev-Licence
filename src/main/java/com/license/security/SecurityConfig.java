@@ -32,35 +32,28 @@ public class SecurityConfig {
 	@Autowired
 	CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    @Bean
-    SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
+	@Bean
+	SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
 
-		final String PUBLIC_URL[] = {"/users/resetPassword/**","/users/loginUser/**","/login/jwt/**",
-				                      "/users/login/**" ,"/users/forgot/**","/users/registration/**",
-				                      "/users/verifyOtp/**","/users/updatePassword/**","/users/createUser",
-				                      "/users/forgotPage/**","/users/updatePasswordPage/**",};
+		final String PUBLIC_URL[] = { "/users/resetPassword/**", "/users/loginUser/**", "/login/jwt/**",
+				"/users/login/**", "/users/forgot/**", "/users/registration/**", "/users/verifyOtp/**",
+				"/users/updatePassword/**", "/users/createUser", "/users/forgotPage/**",
+				"/users/updatePasswordPage/**", };
 		http.csrf(csrf -> csrf.disable());
-		http
-	    .authorizeHttpRequests(
-	        (requests) -> requests
-	            .requestMatchers(PUBLIC_URL).permitAll()
-	            .anyRequest().authenticated()
-	    )
-	    .formLogin(
-	        (formLogin) -> formLogin
-	            .loginPage("/users/loginUser").permitAll()
-	    )
-	    .logout(
-	        (logout) -> logout
-	            .logoutUrl("/logout")
-	            .logoutSuccessUrl("/login")
-	            .invalidateHttpSession(true)
-	            .deleteCookies("JSESSIONID", "jwtToken")
-	    )
-	    .exceptionHandling(
-	        (exceptionHandling) -> exceptionHandling
-	            .accessDeniedHandler(customAccessDeniedHandler) // Set the custom access denied handler here
-	  );
+		http.authorizeHttpRequests(
+				(requests) -> requests.requestMatchers(PUBLIC_URL).permitAll().anyRequest().authenticated())
+				.formLogin((formLogin) -> formLogin.loginPage("/users/loginUser").permitAll())
+				.logout((logout) -> logout.logoutUrl("/logout").logoutSuccessUrl("/login").invalidateHttpSession(true)
+						.deleteCookies("JSESSIONID", "jwtToken"))
+				.exceptionHandling(
+						(exceptionHandling) -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler) // Set
+																												// the
+																												// custom
+																												// access
+																												// denied
+																												// handler
+																												// here
+				);
 		http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -68,8 +61,8 @@ public class SecurityConfig {
 
 	}
 
-    @Bean
-    DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService CustumUserDetails) {
+	@Bean
+	DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService CustumUserDetails) {
 
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setUserDetailsService(userDetailsService);
@@ -77,13 +70,13 @@ public class SecurityConfig {
 		return provider;
 	}
 
-    @Bean
-    BCryptPasswordEncoder passwordEncoder() {
+	@Bean
+	BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-    @Bean
-    AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
+	@Bean
+	AuthenticationManager authenticationManagerBean(AuthenticationConfiguration configuration) throws Exception {
 
 		return configuration.getAuthenticationManager();
 	}

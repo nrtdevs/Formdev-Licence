@@ -20,14 +20,14 @@ public class CustomUserService implements UserDetailsService {
 	private UserRepository userRepository;
 
 	@Autowired
-	private PermissionService  permissionService ;
+	private PermissionService permissionService;
 
 	@Override
-	public CustomUserDetails loadUserByUsername(String email) throws DeactivatedUserException{
-	 
+	public CustomUserDetails loadUserByUsername(String email) throws DeactivatedUserException {
+
 		User user = userRepository.findByEmail(email);
-		 
-		if (user!=null) {
+
+		if (user != null) {
 			log.debug("user is present");
 			if (user.getStatus() == 1) {
 				log.debug("status of user is :" + user.getStatus());
@@ -42,7 +42,7 @@ public class CustomUserService implements UserDetailsService {
 			log.error("BadCredentialsException is thrown");
 			throw new BadCredentialsException("Bad credentials, User not found with email: " + email);
 		}
-			
+
 	}
 
 }

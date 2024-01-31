@@ -25,14 +25,13 @@ public class CustomUserDetails implements UserDetails {
 	private static final long serialVersionUID = 8015253558311061965L;
 
 	private User user;
-	
-    @Autowired(required =true)
+
+	@Autowired(required = true)
 	private PermissionService permissionServices;
-	
-	
-	public CustomUserDetails(User user,PermissionService permissionServices) {
+
+	public CustomUserDetails(User user, PermissionService permissionServices) {
 		this.user = user;
-		this.permissionServices=permissionServices;
+		this.permissionServices = permissionServices;
 
 	}
 
@@ -42,10 +41,10 @@ public class CustomUserDetails implements UserDetails {
 		List<String> permissions = permissionServices.getPermissionsByUserId(user.getId());
 		for (String permission : permissions) {
 			authorities.add(new SimpleGrantedAuthority(permission));
-			log.debug("permissons assigned to user role "+user.getRole().getName());
+			log.debug("permissons assigned to user role " + user.getRole().getName());
 		}
 		authorities.add(new SimpleGrantedAuthority("ROLE_SUPER ADMIN"));
-		log.debug("permissons assigned to user role "+user.getRole().getName());
+		log.debug("permissons assigned to user role " + user.getRole().getName());
 		return authorities;
 
 	}

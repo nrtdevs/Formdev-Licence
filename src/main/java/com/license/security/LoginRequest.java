@@ -1,6 +1,5 @@
 package com.license.security;
 
-   
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -9,16 +8,16 @@ import lombok.ToString;
 @Getter
 @ToString
 public class LoginRequest {
-    private String email;
-    private String password;
+	private String email;
+	private String password;
 
-    // Default constructor
-    public LoginRequest() {
-    }
+	// Default constructor
+	public LoginRequest() {
+	}
 
-    // Constructor with email and password
-    public LoginRequest(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+	// Constructor with email and password
+	public LoginRequest(String email, String password) {
+		this.email = email;
+		this.password = password;
+	}
 }
