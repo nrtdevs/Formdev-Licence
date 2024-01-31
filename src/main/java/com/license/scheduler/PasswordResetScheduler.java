@@ -35,8 +35,8 @@ public class PasswordResetScheduler {
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	public void startScheduler() {
-		// Schedule the task to run every 5 year
-		scheduler.scheduleAtFixedRate(this::checkAndSendPasswordResetEmail, 0, 5, TimeUnit.MINUTES);
+		// Schedule the task to run every day
+		scheduler.scheduleAtFixedRate(this::checkAndSendPasswordResetEmail, 0, 1, TimeUnit.DAYS);
 
 	}
 
