@@ -25,10 +25,12 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.license.entity.Permission;
 import com.license.entity.Role;
 import com.license.entity.User;
 import com.license.exception.DeactivatedUserException;
 import com.license.exception.RoleAssignException;
+import com.license.repository.PermissionRepository;
 import com.license.repository.RoleRepository;
 import com.license.repository.UserRepository;
 import com.license.security.ApiResponse;
@@ -51,7 +53,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
+	@Autowired
+	private PermissionRepository permissionRepo;
 	@Autowired
 	private JavaMailSender javaMailSender;
 
@@ -105,6 +109,8 @@ public class UserServiceImpl implements UserService {
 		this.assignDefaultRoleToUser(savedUser.getEmail());
 		return savedUser;
 	}
+	
+
 
 	@Override
 	public User updateUser(int id, User updatedUser) {
@@ -125,7 +131,7 @@ public class UserServiceImpl implements UserService {
 		Role role;
 		try {
 			User user = userRepository.findByEmail(email);
-			role = roleRepository.findByName("guest");
+			role = roleRepository.findByName("Guest");
 			user.setRole(role);
 			roleRepository.save(role);
 			userRepository.save(user);
@@ -149,7 +155,7 @@ public class UserServiceImpl implements UserService {
 
 	public void sendVerificationMail(User user, String url) {
 
-		String from = "akshaybijave505@gmail.com";
+		String from = "bd.pharmadem@gmail.com";
 		String to = user.getEmail();
 		String subject = "Welcome to Pharma DEM Solutions ";
 		String content = "Dear [[name]],<br>"
@@ -225,9 +231,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Boolean updatePassword(long password, String currentUser) {
+	public Boolean updatePassword(String password, String currentUser) {
 		User user = userRepository.findByEmail(currentUser);
-		String pwd = String.valueOf(password);
+		String pwd = password;
 		if (user != null) {
 
 			user.setPassword(pwd);
@@ -244,12 +250,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Boolean resetPassword(long currentPassword, String currentUser, long newPassword) {
+	public Boolean resetPassword(String currentPassword, String currentUser, String newPassword) {
 		String currentpwd = String.valueOf(currentPassword);
 
 		User user = userRepository.findByEmail(currentUser);
 
-		String pwd = String.valueOf(newPassword);
+		String pwd = newPassword;
 
 		System.out.println(passwordEncoder.encode(currentpwd));
 		System.out.println(user.getPassword());

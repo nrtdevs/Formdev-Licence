@@ -54,7 +54,8 @@
 		nav ul li a:hover {
 			color: #ffcc00;
 		}
-		.dropdown  ul li a:hover{
+
+		.dropdown ul li a:hover {
 			color: rgb(255, 255, 255);
 			background-color: rgb(128, 128, 255);
 		}
@@ -124,22 +125,28 @@
 			color: #333;
 			margin: 10px 0;
 		}
-		
-	.trackButton {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 16px;
-        text-align: center;
-        text-decoration: none;
-        background-color: rgb(255, 255, 255); /* Adjust the background color */
-        color: rgb(128, 128, 255);  /* Adjust the text color */
-        border: 1px solid rgb(192, 192, 192); /* Adjust the border color */
-        border-radius: 5px; /* Adjust the border radius */
-        cursor: pointer;
-        font-weight: bolder;;
-        margin-left: 41%;
-        margin-top: 20px;
-    }
+
+		.trackButton {
+			display: inline-block;
+			padding: 10px 20px;
+			font-size: 16px;
+			text-align: center;
+			text-decoration: none;
+			background-color: rgb(255, 255, 255);
+			/* Adjust the background color */
+			color: rgb(128, 128, 255);
+			/* Adjust the text color */
+			border: 1px solid rgb(192, 192, 192);
+			/* Adjust the border color */
+			border-radius: 5px;
+			/* Adjust the border radius */
+			cursor: pointer;
+			font-weight: bolder;
+			;
+			margin-left: 41%;
+			margin-top: 20px;
+		}
+		 
 	</style>
 </head>
 
@@ -150,9 +157,10 @@
 		<nav>
 			<ul>
 				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+				<li><a href="http://localhost:8181/admin/createLicense">Create License</a></li>
 				<li class=" dropdown">
 					<a class=" dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-						data-bs-toggle="dropdown" aria-expanded="false">Permission Management</a>
+						data-bs-toggle="dropdown" aria-expanded="false">Roles</a>
 					<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 						<li><a class="dropdown-item" href="http://localhost:8181/create-role/page">Create Role</a></li>
 						<li><a class="dropdown-item" href="http://localhost:8181/assign-roles/page">Assign Role</a></li>
@@ -187,8 +195,10 @@
 					<p th:text="${totalDemoUsers}"></p>
 				</div>
 			</div>
-			
-			<a class="trackButton" href="http://localhost:8181/licenses/licenseSearch">Track License</a>
+			 
+				<a class="trackButton" href="http://localhost:8181/licenses/licenseSearch">Track License</a>
+			 
+			</div>
 		</div>
 	</main>
 

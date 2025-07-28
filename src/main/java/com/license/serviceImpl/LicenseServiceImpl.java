@@ -53,29 +53,63 @@ public class LicenseServiceImpl implements LicenseService {
 	public License createLicense(License license, HttpSession session) {
 		// Your @PrePersist method will automatically generate the license key,
 		// timestamp, and MAC address before saving]
+		
+		String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+         
+		String LicenseFileName = "LicenseFile_" + license.getName() + "_"+ license.getLicenseFor()+"_"+timestamp+".txt";
+		String LicenseKeyName = "LicenseKey_" + license.getName() + "_"+ license.getLicenseFor()+"_"+timestamp+".txt";
+		
+		
+		//String LicenseFilePath = "C:\\Users\\lenovo\\Desktop\\licenseFiles\\"+LicenseFileName;
+	    //String LicenseKeyPath = "C:\\Users\\lenovo\\Desktop\\licenseFiles\\"+LicenseKeyName;
+		
+		
+   //for PharmaDEM	 
+		String LicenseFilePath = "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseFileName; 
+		String LicenseKeyPath = "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
+
+		
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
 		User user = userRepository.findByEmail(currentUser);
 
 		int duration = license.getDuration();
+	  
+  		String selectedOptions= license.getSelectedOptions();
+
+		   String macModuleName=license.getMacModuleName();       // For Module Based option
+     Integer macTenureDays=license.getMacTenureDays();     // For Tenure Based option
+     Integer macUsageCount=license.getMacUsageCount();
+	      // For Count Based option
+
+    // Email Based License specific fields
+     String specificEmail=license.getSpecificEmail();      // For Email Specific option
+    //  String emailModuleNamelicense.getemail();    // For Module Specific option
+    //  Integer emailTenureDays=license.get()
+	 ;  // For Tenure Bound option
+     Integer emailWeeklyLimit=license.getEmailWeeklyLimit();  // For Count Based Weekly Limit option
+
 
 		Date expiryDate = calculateExpirationDate(duration);
 		license.setExpirationDate(convertToSqlDate(expiryDate));
 
 		// Set the license for the user
 		user.setLicense(license);
-
+		
+			
+		license.setFilePath(LicenseFilePath);
 		// Save the license (this will also save the associated user due to cascade
 		// settings)
 		License savedLicense = licenseRepository.save(license);
-
+		
+		createLicenseFile(license,LicenseFilePath);
+		createLicenseKey(license,LicenseKeyPath);
+	
 		// Save the user (not necessary if cascade is properly set, but won't hurt)
 		userRepository.save(user);
 
-		encryptSensitiveInfo(savedLicense);
-		generatePlainTextFile(savedLicense);
-
+		
 		return savedLicense;
 	}
 
@@ -101,23 +135,16 @@ public class LicenseServiceImpl implements LicenseService {
 		licenseRepository.deleteById(id);
 	}
 
-	public static void encryptSensitiveInfo(License license) {
+	public static void createLicenseKey(License license,String filePath) {
 
-		System.out.println("Encrypt method called");
+		System.out.println("createLicenseKey method called");
 
 		try {
 			// Generate a timestamp for the file name
-			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
-			// Construct the file name with the timestamp
-			// String fileName =
-			// "C:\\Users\\lenovo\\Desktop\\generatedFiles\\encrypted_License_Data_" +
-			// timestamp + ".txt";
-
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\License_" + license.getName() + "_"
-					+ license.getLicenseFor() + ".txt";
-
-			File file = new File(fileName);
+			
+          
+//		
+			File file = new File(filePath);
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -154,7 +181,7 @@ public class LicenseServiceImpl implements LicenseService {
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
 						+ encryptedTimeStamp + "\n");
 
-				System.out.println("File generated successfully: " + fileName);
+				System.out.println("File generated successfully: " + filePath);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -169,22 +196,15 @@ public class LicenseServiceImpl implements LicenseService {
 		}
 	}
 
-	public static void generatePlainTextFile(License license) {
+	public static void createLicenseFile(License license,String filePath) {
 
 		System.out.println("Generating plain text file");
 
 		try {
 			// Generate a timestamp for the file name
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
-			// Construct the file name with the timestamp
-			String fileName = "C:\\Users\\Asus\\OneDrive\\Desktop\\file\\licenseDetails_" + license.getName() + "_"
-					+ license.getLicenseFor() + ".txt";
-
-			// String fileName = "C:\\Users\\Mr.Akshay_005\\OneDrive\\Desktop\\New folder
-			// (2)\\licenseKey_" + timestamp + ".txt";
-
-			File file = new File(fileName);
+ 
+			File file = new File(filePath);
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -197,7 +217,7 @@ public class LicenseServiceImpl implements LicenseService {
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
 				fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
 
-				System.out.println("Plain text file generated successfully: " + fileName);
+				System.out.println("Plain text file generated successfully: " + filePath);
 
 			} catch (Exception e) {
 				e.printStackTrace();

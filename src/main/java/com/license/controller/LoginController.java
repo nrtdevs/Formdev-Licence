@@ -45,6 +45,7 @@ public class LoginController {
 			HttpServletResponse response) {
 
 		Boolean isPasswordExpired = userService.isPasswordOlderThan3Months(loginRequest.getEmail());
+		System.out.println(loginRequest.getEmail());
 
 		if (isPasswordExpired) {
 

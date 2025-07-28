@@ -59,5 +59,14 @@ public class AdminController {
 			return "home";
 		}
 	}
+	
+	
+	
+	@GetMapping("/createLicense")
+	public String createLincese(Model model) {
+			return "home";
+
+	}
+	
 
 }

@@ -32,7 +32,7 @@ public interface UserService {
 
 	boolean verifyOtp(HttpSession session, String enteredOtp);
 
-	Boolean updatePassword(long password, String currentUser);
+	Boolean updatePassword(String password, String currentUser);
 
 
 	ResponseEntity<ApiResponse<LoginResponse>> generateToken(LoginRequest loginRequest);
@@ -41,7 +41,7 @@ public interface UserService {
 
 	String getCurrentUser();
 
-	Boolean resetPassword(long currentPassword, String currentUser, long newPassword);
+	Boolean resetPassword(String currentPassword, String currentUser, String newPassword);
 
 	Boolean isPasswordOlderThan3Months(String userEmail);
 }

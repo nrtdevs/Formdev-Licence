@@ -35,7 +35,7 @@ public class SuperAdminInitializer implements CommandLineRunner {
 	@Transactional
 	public void run(String... args) {
 
-		if (!userRepository.existsByEmail("superAdmin@gmail.com")) {
+		if (!userRepository.existsByEmail("nikitav@pharmadem.in")) {
 
 			// create new role ADMIN
 			Role superAdminRole = roleRepository.findByName("ADMIN");
@@ -47,10 +47,10 @@ public class SuperAdminInitializer implements CommandLineRunner {
 			}
 			// create super admin
 			User superAdmin = new User();
-			superAdmin.setEmail("superAdmin@gmail.com");
+			superAdmin.setEmail("nikitav@pharmadem.in");
 			superAdmin.setFirstName("Super");
 			superAdmin.setLastName("Admin");
-			String encodedPssword = passwordEncoder.encode("admin@1234");
+			String encodedPssword = passwordEncoder.encode("Ravi@1234");
 			superAdmin.setPassword(encodedPssword);
 			superAdmin.setRole(superAdminRole);
 			superAdmin.setStatus(1);
@@ -68,5 +68,31 @@ public class SuperAdminInitializer implements CommandLineRunner {
 				permissionRepo.save(permission);
 			}
 		}
-	}
+	 
+	
+	   	     // create new role ADMIN
+			  		Role guest = roleRepository.findByName("Guest");
+					if (guest == null) {
+						guest = new Role();
+						guest.setName("Guest");
+						guest = roleRepository.save(guest);
+					}
+					
+				 	
+				 	// create permission with Role_admin
+					if (!permissionRepo.existsByRoleName("ROLE_BUY_ACTUAL_LICENSE'")) {
+						Permission permission = new Permission();
+						permission.setName("ROLE_BUY_ACTUAL_LICENSE'");
+						permission.setRole(guest);
+						permissionRepo.save(permission);
+					}
+		
+					if (!permissionRepo.existsByRoleName("ROLE_BUY_DEMO_LICENSE'")) {
+						Permission permission = new Permission();
+						permission.setName("ROLE_BUY_DEMO_LICENSE'");
+						permission.setRole(guest);
+						permissionRepo.save(permission);
+					}
+			}
+	
 }

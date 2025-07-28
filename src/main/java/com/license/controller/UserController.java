@@ -164,10 +164,10 @@ public class UserController {
 	}
 
 	@PostMapping("/updatePassword")
-	public String resetPassword(HttpServletRequest request, @RequestParam("newpassword") long newPassword,
-			@RequestParam("password") long password) {
+	public String resetPassword(HttpServletRequest request, @RequestParam("newpassword") String newPassword,
+			@RequestParam("password") String password) {
 		String currentUser = (String) request.getSession().getAttribute("email");
-		if (newPassword == password) {
+		if (newPassword.equals(password)) {
 			Boolean isUpdated = userService.updatePassword(password, currentUser);
 			if (isUpdated)
 				return "login";
@@ -179,8 +179,8 @@ public class UserController {
 
 	@PostMapping("/resetPassword")
 	public String updatePassword(@RequestParam("email") String currentUser,
-			@RequestParam("newpassword") long newPassword, @RequestParam("currentpassword") long currentPassword,
-			@RequestParam("password") long confirmPassword) {
+			@RequestParam("newpassword") String newPassword, @RequestParam("currentpassword") String currentPassword,
+			@RequestParam("password") String confirmPassword) {
 
 		System.out.println("controller called");
 
