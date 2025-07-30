@@ -1,23 +1,13 @@
 package com.license.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.Arrays;
 
 @Entity
 @Data
@@ -37,20 +27,53 @@ public class License {
     private String type;
     private String licenseFor;
     private String licenseType;
-    private String selectedOptions;
+    
     private int duration;
     private Date expirationDate;
 
+    private String phoneNumber;
+    private String primaryContactName;
+    private String primaryContactNumber;
+    private String scmContactName;
+    private String scmContactNumber;
+
     // MAC ID Based License specific fields
     private String macModuleName;       // For Module Based option
-    private Integer macTenureDays;     // For Tenure Based option
-    private Integer macUsageCount;     // For Count Based option
+    private Integer macTenureDays;      // For Tenure Based option
+    private Integer macUsageCount;      // For Count Based option
 
     // Email Based License specific fields
-    private String specificEmail;      // For Email Specific option
-    private String emailModuleName;    // For Module Specific option
-    private Integer emailTenureDays;  // For Tenure Bound option
-    private Integer emailWeeklyLimit;  // For Count Based Weekly Limit option
+    private String specificEmail;       // For Email Specific option
+    private String emailModuleName;     // For Module Specific option
+    private Integer emailTenureDays;    // For Tenure Bound option
+    private Integer weeklyLimit;   // For Count Based Weekly Limit option
+
+  
+    // ✅ Store modules as comma-separated string in DB, handle as List<String> in Java
+    @Lob
+    @Column(name = "modules")
+    private String modulesString;
+
+    @Transient
+    private List<String> modules;
+
+    public List<String> getModules() {
+        if (this.modulesString != null && !this.modulesString.isEmpty()) {
+            return Arrays.asList(this.modulesString.split(","));
+        }
+        return null;
+    }
+
+    public void setModules(List<String> modules) {
+        this.modules = modules;
+        if (modules != null) {
+            this.modulesString = String.join(",", modules);
+        } else {
+            this.modulesString = null;
+        }
+    }
+
+    private String userEmail;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
@@ -70,29 +93,4 @@ public class License {
         }
     }
 
-    // Helper method to get the appropriate option value based on license type
-    public String getOptionValue() {
-        if ("MAC_ID".equals(this.licenseType)) {
-            switch (this.selectedOptions) {
-                case "Module Based":
-                    return this.macModuleName;
-                case "Tenure Based":
-                    return this.macTenureDays != null ? this.macTenureDays.toString() : "";
-                case "Count Based":
-                    return this.macUsageCount != null ? this.macUsageCount.toString() : "";
-            }
-        } else if ("EMAIL".equals(this.licenseType)) {
-            switch (this.selectedOptions) {
-                case "Email Specific":
-                    return this.specificEmail;
-                case "Module Specific":
-                    return this.emailModuleName;
-                case "Tenure Bound":
-                    return this.emailTenureDays != null ? this.emailTenureDays.toString() : "";
-                case "Count Based Weekly Limit":
-                    return this.emailWeeklyLimit != null ? this.emailWeeklyLimit.toString() : "";
-            }
-        }
-        return "";
-    }
 }

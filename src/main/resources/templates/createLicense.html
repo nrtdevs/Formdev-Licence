@@ -144,17 +144,9 @@
         <nav>
             <ul>
                 <li><a href="http://localhost:8181/admin/homePage">Home</a></li>
-                <li><a href="http://localhost:8181/admin/createLicense">Create License</a></li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">Roles</a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="http://localhost:8181/create-role/page">Create Role</a></li>
-                        <li><a class="dropdown-item" href="http://localhost:8181/assign-roles/page">Assign Role</a></li>
-                        <li><a class="dropdown-item" href="http://localhost:8181/roles-list/page">View Roles</a></li>
-                    </ul>
-                </li>
-                <li><a href="http://localhost:8181/users/getAllUsers">UsersList</a></li>
+          
+       
+            
                 <li><a href="http://localhost:8181/logout">Logout</a></li>
             </ul>
         </nav>
@@ -300,151 +292,150 @@
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM elements
-            const form = document.getElementById('licenseForm');
-            const licenseType = document.getElementById('licenseType');
-            const macBasedFields = document.getElementById('macBasedFields');
-            const emailBasedFields = document.getElementById('emailBasedFields');
-            const licenseFor = document.getElementById('licenseFor');
-            const modulesSelect = document.getElementById('modules');
-            const emailModulesSelect = document.getElementById('emailModules');
-            
-            // Initialize form state
-            initForm();
+ <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('licenseForm');
+        const licenseType = document.getElementById('licenseType');
+        const macBasedFields = document.getElementById('macBasedFields');
+        const emailBasedFields = document.getElementById('emailBasedFields');
+        const licenseFor = document.getElementById('licenseFor');
+        const modulesSelect = document.getElementById('modules');
+        const emailModulesSelect = document.getElementById('emailModules');
 
-            // Event listeners
-            licenseType.addEventListener('change', toggleLicenseTypeFields);
-            licenseFor.addEventListener('change', populateModules);
-            form.addEventListener('submit', handleFormSubmit);
+        initForm();
 
-            // Functions
-            function initForm() {
-                toggleLicenseTypeFields();
-                populateModules();
+        licenseType.addEventListener('change', toggleLicenseTypeFields);
+        licenseFor.addEventListener('change', populateModules);
+        form.addEventListener('submit', handleFormSubmit);
+
+        function initForm() {
+            toggleLicenseTypeFields();
+            populateModules();
+        }
+
+        function toggleLicenseTypeFields() {
+            const selectedType = licenseType.value;
+            macBasedFields.style.display = 'none';
+            emailBasedFields.style.display = 'none';
+
+            if (selectedType === 'MAC_ID') {
+                macBasedFields.style.display = 'block';
+            } else if (selectedType === 'EMAIL_ID') {
+                emailBasedFields.style.display = 'block';
             }
+        }
 
-            function toggleLicenseTypeFields() {
-                const selectedType = licenseType.value;
-                
-                macBasedFields.style.display = 'none';
-                emailBasedFields.style.display = 'none';
-                
-                if (selectedType === 'MAC_ID') {
-                    macBasedFields.style.display = 'block';
-                } else if (selectedType === 'EMAIL_ID') {
-                    emailBasedFields.style.display = 'block';
+        function populateModules() {
+            const selectedProduct = licenseFor.value;
+            modulesSelect.innerHTML = '';
+            emailModulesSelect.innerHTML = '';
+
+            const moduleList = {
+                FORMSCI: [
+                    'DEM file creation',
+                    'Drug - excipient compatibility',
+                    'Stability prediction',
+                    'Impurity control'
+                ],
+                SOLUDEM: [
+                    'Solubility',
+                    'pH module',
+                    'Salt screening',
+                    'ASD screening',
+                    'Polymorph Screening',
+                    'XRD Analysis'
+                ]
+            };
+
+            const selectedModules = moduleList[selectedProduct] || [];
+
+            selectedModules.forEach(moduleName => {
+                const option1 = new Option(moduleName, moduleName);
+                const option2 = new Option(moduleName, moduleName);
+                modulesSelect.add(option1);
+                emailModulesSelect.add(option2);
+            });
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            if (licenseType.value === 'MAC_ID') {
+                const macId = document.getElementById('macId').value;
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                if (!macRegex.test(macId)) {
+                    alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
+                    return;
                 }
             }
 
-            function populateModules() {
-                const selectedProduct = licenseFor.value;
-                modulesSelect.innerHTML = '';
-                emailModulesSelect.innerHTML = '';
-                
-                if (selectedProduct === 'FORMSCI') {
-                    addModuleOption('DEM file creation');
-                    addModuleOption('Drug - excipient compatibility');
-                    addModuleOption('Stability prediction');
-                    addModuleOption('Impurity control');
-                } else if (selectedProduct === 'SOLUDEM') {
-                    addModuleOption('Solubility');
-                    addModuleOption('pH module');
-                    addModuleOption('Salt screening');
-                    addModuleOption('ASD screening');
-                    addModuleOption('Polymorph Screening');
-                    addModuleOption('XRD Analysis');
-                }
-                // ELABNOTE has no modules
-            }
-
-            function addModuleOption(moduleName) {
-                const option1 = document.createElement('option');
-                option1.value = moduleName;
-                option1.textContent = moduleName;
-                modulesSelect.appendChild(option1);
-                
-                const option2 = document.createElement('option');
-                option2.value = moduleName;
-                option2.textContent = moduleName;
-                emailModulesSelect.appendChild(option2);
-            }
-
-            async function handleFormSubmit(e) {
-                e.preventDefault();
-                
-                // Validate MAC ID format if MAC based
-                if (licenseType.value === 'MAC_ID') {
-                    const macId = document.getElementById('macId').value;
-                    if (!/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(macId)) {
-                        alert('Please enter a valid MAC ID in format 00:1A:2B:3C:4D:5E');
-                        return;
-                    }
-                }
-                
-                // Validate email if email based
-                if (licenseType.value === 'EMAIL_ID') {
-                    const userEmail = document.getElementById('userEmail').value;
-                    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)) {
-                        alert('Please enter a valid email address');
-                        return;
-                    }
-                }
-                
-                const formData = {
-                    companyName: document.getElementById('companyName').value,
-                    name: document.getElementById('contactPerson').value,
-                    email: document.getElementById('email').value,
-                    phoneNumber: document.getElementById('phone').value,
-                    primaryContactName: document.getElementById('primaryContactName').value,
-                    primaryContactNumber: document.getElementById('primaryContactNumber').value,
-                    scmContactName: document.getElementById('scmContactName').value,
-                    scmContactNumber: document.getElementById('scmContactNumber').value,
-                    licenseFor: licenseFor.value,
-                    licenseType: licenseType.value,
-                    type: document.getElementById('licensePurpose').value,
-                    macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
-                    duration: licenseType.value === 'EMAIL_ID' ? document.getElementById('emailTenureDays').value : null,
-                    macTenureDays: licenseType.value === 'MAC_ID' ? document.getElementById('macTenureDays').value : null,
-                    usageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
-                    weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
-                    modules: licenseType.value === 'MAC_ID' ? 
-                            Array.from(modulesSelect.selectedOptions).map(o => o.value) :
-                            (licenseType.value === 'EMAIL_ID' ? 
-                            Array.from(emailModulesSelect.selectedOptions).map(o => o.value) : null),
-                    userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
-                };
-
-                try {
-                    const response = await fetch('http://localhost:8181/licenses/createLicense', {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    const data = await response.json();
-                    console.log('Response:', data);
-                    
-                    if (response.ok) {
-                        alert('License created successfully!');
-                        form.reset();
-                        // Reset form state
-                        licenseType.value = '';
-                        toggleLicenseTypeFields();
-                    } else {
-                        alert('Error creating license: ' + (data.message || 'Unknown error'));
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Failed to create license. Please try again.');
+            if (licenseType.value === 'EMAIL_ID') {
+                const userEmail = document.getElementById('userEmail').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(userEmail)) {
+                    alert('Please enter a valid email address');
+                    return;
                 }
             }
-        });
-    </script>
+
+            const formData = {
+                companyName: document.getElementById('companyName').value,
+                name: document.getElementById('contactPerson').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phone').value,
+                primaryContactName: document.getElementById('primaryContactName').value,
+                primaryContactNumber: document.getElementById('primaryContactNumber').value,
+                scmContactName: document.getElementById('scmContactName').value,
+                scmContactNumber: document.getElementById('scmContactNumber').value,
+                licenseFor: licenseFor.value,
+                licenseType: licenseType.value,
+                type: document.getElementById('licensePurpose').value,
+                macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
+                duration: licenseType.value === 'EMAIL_ID'
+                    ? document.getElementById('emailTenureDays').value
+                    : licenseType.value === 'MAC_ID'
+                        ? document.getElementById('macTenureDays').value
+                        : null,
+                macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
+                weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
+                modules: licenseType.value === 'MAC_ID'
+                    ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
+                    : licenseType.value === 'EMAIL_ID'
+                        ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
+                        : [],
+                userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
+            };
+
+           try {
+         
+
+   
+
+          const response = await fetch('http://localhost:8181/licenses/createLicense', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+
+          const data = await response.json();
+          console.log('Response:', data);
+          
+          if (data) {
+            alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
+            window.location.href = 'http://localhost:8181/users/home';
+          } else {
+            throw new Error('Error creating license');
+          }
+        } catch (error) {
+          console.error('Submission error:', error);
+          alert('Error: ' + error.message);
+        }
+        }
+    });
+</script>
+
 </body>
 </html>

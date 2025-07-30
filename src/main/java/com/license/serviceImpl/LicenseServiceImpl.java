@@ -53,63 +53,60 @@ public class LicenseServiceImpl implements LicenseService {
 	public License createLicense(License license, HttpSession session) {
 		// Your @PrePersist method will automatically generate the license key,
 		// timestamp, and MAC address before saving]
-		
-		String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-         
-		String LicenseFileName = "LicenseFile_" + license.getName() + "_"+ license.getLicenseFor()+"_"+timestamp+".txt";
-		String LicenseKeyName = "LicenseKey_" + license.getName() + "_"+ license.getLicenseFor()+"_"+timestamp+".txt";
-		
-		
-		//String LicenseFilePath = "C:\\Users\\lenovo\\Desktop\\licenseFiles\\"+LicenseFileName;
-	    //String LicenseKeyPath = "C:\\Users\\lenovo\\Desktop\\licenseFiles\\"+LicenseKeyName;
-		
-		
-   //for PharmaDEM	 
-		String LicenseFilePath = "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseFileName; 
-		String LicenseKeyPath = "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
 
-		
+		String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+
+		String LicenseFileName = "LicenseFile_" + license.getName() + "_" + license.getLicenseFor() + "_" + timestamp
+				+ ".txt";
+		String LicenseKeyName = "LicenseKey_" + license.getName() + "_" + license.getLicenseFor() + "_" + timestamp
+				+ ".txt";
+
+		// for PharmaDEM
+		// String LicenseFilePath =
+		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseFileName;
+		// String LicenseKeyPath =
+		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
+
+		String LicenseFilePath = "C://Users//Lenovo//Desktop//Java//" + LicenseFileName;
+		String LicenseKeyPath = "C://Users//Lenovo//Desktop//Java//" + LicenseKeyName;
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
 		User user = userRepository.findByEmail(currentUser);
 
 		int duration = license.getDuration();
-	  
-  		String selectedOptions= license.getSelectedOptions();
 
-		   String macModuleName=license.getMacModuleName();       // For Module Based option
-     Integer macTenureDays=license.getMacTenureDays();     // For Tenure Based option
-     Integer macUsageCount=license.getMacUsageCount();
-	      // For Count Based option
+		// String selectedOptions= license.getSelectedOptions();
 
-    // Email Based License specific fields
-     String specificEmail=license.getSpecificEmail();      // For Email Specific option
-    //  String emailModuleNamelicense.getemail();    // For Module Specific option
-    //  Integer emailTenureDays=license.get()
-	 ;  // For Tenure Bound option
-     Integer emailWeeklyLimit=license.getEmailWeeklyLimit();  // For Count Based Weekly Limit option
+		String macModuleName = license.getMacModuleName(); // For Module Based option
+		Integer macTenureDays = license.getMacTenureDays(); // For Tenure Based option
+		Integer macUsageCount = license.getMacUsageCount();
+		// For Count Based option
 
+		// Email Based License specific fields
+		String specificEmail = license.getSpecificEmail(); // For Email Specific option
+		// String emailModuleNamelicense.getemail(); // For Module Specific option
+		// Integer emailTenureDays=license.get()
+		; // For Tenure Bound option
+		Integer emailWeeklyLimit = license.getWeeklyLimit(); // For Count Based Weekly Limit option
 
 		Date expiryDate = calculateExpirationDate(duration);
 		license.setExpirationDate(convertToSqlDate(expiryDate));
 
 		// Set the license for the user
 		user.setLicense(license);
-		
-			
+
 		license.setFilePath(LicenseFilePath);
 		// Save the license (this will also save the associated user due to cascade
 		// settings)
 		License savedLicense = licenseRepository.save(license);
-		
-		createLicenseFile(license,LicenseFilePath);
-		createLicenseKey(license,LicenseKeyPath);
-	
+
+		createLicenseFile(license, LicenseFilePath);
+		createLicenseKey(license, LicenseKeyPath);
+
 		// Save the user (not necessary if cascade is properly set, but won't hurt)
 		userRepository.save(user);
 
-		
 		return savedLicense;
 	}
 
@@ -135,15 +132,14 @@ public class LicenseServiceImpl implements LicenseService {
 		licenseRepository.deleteById(id);
 	}
 
-	public static void createLicenseKey(License license,String filePath) {
+	public static void createLicenseKey(License license, String filePath) {
 
 		System.out.println("createLicenseKey method called");
 
 		try {
 			// Generate a timestamp for the file name
-			
-          
-//		
+
+			//
 			File file = new File(filePath);
 			file.createNewFile();
 
@@ -196,28 +192,44 @@ public class LicenseServiceImpl implements LicenseService {
 		}
 	}
 
-	public static void createLicenseFile(License license,String filePath) {
+	public static void createLicenseFile(License license, String filePath) {
 
 		System.out.println("Generating plain text file");
 
 		try {
 			// Generate a timestamp for the file name
 			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
- 
+
 			File file = new File(filePath);
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
 
-				// Write each field in plain text format to the file
 				fileWriter.write("Company Name     = " + license.getCompanyName() + "\n");
 				fileWriter.write("Person Name      = " + license.getName() + "\n");
 				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
 				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
-				fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
+
+				fileWriter.write("License For      = " + license.getLicenseFor() + "\n");
+				fileWriter.write("License Type     = " + license.getLicenseType() + "\n");
+
+
+
+// Conditional fields based on License Type
+if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
+    fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
+    fileWriter.write("Modules          = " + license.getModules() + "\n");
+    fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
+} else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
+    fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
+    fileWriter.write("Modules          = " + license.getModules() + "\n");
+    fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
+}
+
 
 				System.out.println("Plain text file generated successfully: " + filePath);
+			
 
 			} catch (Exception e) {
 				e.printStackTrace();
