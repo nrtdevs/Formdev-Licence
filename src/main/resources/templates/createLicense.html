@@ -331,20 +331,37 @@
             emailModulesSelect.innerHTML = '';
 
             const moduleList = {
-                FORMSCI: [
-                    'DEM file creation',
-                    'Drug - excipient compatibility',
-                    'Stability prediction',
-                    'Impurity control'
-                ],
-                SOLUDEM: [
-                    'Solubility',
-                    'pH module',
-                    'Salt screening',
-                    'ASD screening',
-                    'Polymorph Screening',
-                    'XRD Analysis'
-                ]
+              FORMSCI: [
+    'DEM file creation',
+    'Drug - Excipient comparability',
+    'Single Stability estimation',
+    'Multi formula stability',
+    'Impurity control',
+    'ASD screening',
+    'Permeation enhancers screening',
+    'Package screening',
+    'Dissolution screening',
+    'Formulation Solvent selection'
+],
+
+SOLUDEM: [
+    'Pure solvents screening',
+    'Binary solvents screening',
+    'Ternary solvents screening',
+    'ASD screening',
+    'pH solubility screening',
+    'Salt screening',
+    'XRD analysis',
+    'Formulation Solubility screening',
+    'NCE BCS classification',
+    'NCE stability',
+    'Reaction Solvent screening',
+    'Reaction base screening',
+    'Impurity control analysis',
+    'Bio & Dissolution media solubility',
+    'Polymorph screening'
+]
+
             };
 
             const selectedModules = moduleList[selectedProduct] || [];
