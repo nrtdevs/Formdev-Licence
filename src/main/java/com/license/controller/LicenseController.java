@@ -137,4 +137,33 @@ public class LicenseController {
 		return "licenseSearch";
 	}
 
+
+	//     @Autowired
+//     private LicenseService licenseService;
+
+//  @GetMapping("/public/check-validity/{licenseKey}")
+// public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
+//     Map<String, Object> response = new HashMap<>();
+//     try {
+//         boolean isValid = licenseService.isLicenseValid(licenseKey);
+
+//         if (isValid) {
+//             response.put("status", true);
+//             response.put("licenseKey", licenseKey);
+//             response.put("message", "License is valid");
+//             return ResponseEntity.ok(response);
+//         } else {
+//             response.put("status", false);
+//             response.put("licenseKey", licenseKey);
+//             response.put("message", "License not found or expired");
+//             return ResponseEntity.ok(response); // हमेशा 200 ही देना है जैसा तूने बोला
+//         }
+//     } catch (Exception e) {
+//         response.put("status", false);
+//         response.put("licenseKey", licenseKey);
+//         response.put("message", "Error while checking license: " + e.getMessage());
+//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//     }
+// }
+
 }

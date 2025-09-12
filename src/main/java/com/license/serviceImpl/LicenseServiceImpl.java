@@ -338,4 +338,10 @@ if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
 			return null;
 		}
 	}
+
+	@Override
+public Optional<License> getLicenseByKey(String licenseKey) {
+    return licenseRepository.findByLicenseKey(licenseKey);
+}
+
 }

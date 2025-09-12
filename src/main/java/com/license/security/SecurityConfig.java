@@ -38,7 +38,7 @@ public class SecurityConfig {
 		final String PUBLIC_URL[] = { "/users/resetPassword/**", "/users/loginUser/**", "/login/jwt/**",
 				"/users/login/**", "/users/forgot/**", "/users/registration/**", "/users/verifyOtp/**",
 				"/users/updatePassword/**", "/users/createUser", "/users/forgotPage/**",
-				"/users/updatePasswordPage/**", };
+				"/users/updatePasswordPage/**", "/public/**" };
 		http.csrf(csrf -> csrf.disable());
 		http.authorizeHttpRequests(
 				(requests) -> requests.requestMatchers(PUBLIC_URL).permitAll().anyRequest().authenticated())
