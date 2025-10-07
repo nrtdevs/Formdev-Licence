@@ -21,46 +21,66 @@ public class PublicLicenseController {
     @Autowired
     private LicenseService licenseService;
 
-// @GetMapping("/check-validity/{licenseKey}")
-// public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
-//     Map<String, Object> response = new HashMap<>();
-
-//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-//     if (optionalLicense.isPresent()) {
-//         License license = optionalLicense.get();
-//         boolean isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
-
-//         response.put("licenseKey", licenseKey);
-//         response.put("status", isValid);
-//         response.put("expirationDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(license.getExpirationDate()));
-
-//         if (isValid) {
-//             response.put("message", "License is valid");
-//         } else {
-//             response.put("message", "License expired");
-//         }
-//     } else {
-//         response.put("licenseKey", licenseKey);
-//         response.put("status", false);
-//         response.put("message", "License not found");
-//     }
-
-//     return ResponseEntity.ok(response);
-// }
 @GetMapping("/check-validity/{licenseKey}")
-public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
+    Map<String, Object> response = new HashMap<>();
 
     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-
     boolean isValid = false;
 
     if (optionalLicense.isPresent()) {
         License license = optionalLicense.get();
         isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+
+        // Always include these
+        response.put("companyName", license.getCompanyName());
+        response.put("licenseFor", license.getLicenseFor());
+        response.put("licenseType", license.getLicenseType());
+        response.put("duration", license.getDuration());
+        response.put("expirationDate", license.getExpirationDate() != null ? license.getExpirationDate().getTime() : null);
+        response.put("message", isValid ? "License is valid" : "License expired");
+        response.put("status", isValid);
+
+        // Conditional fields
+        if ("EMAIL_ID".equals(license.getLicenseType())) {
+            response.put("Email", license.getUserEmail());
+            response.put("weeklyLimit", license.getWeeklyLimit());
+            response.put("modules", license.getModules());
+            response.put("moduleExpiry", license.getModuleExpiry());
+        } else if ("MAC_ID".equals(license.getLicenseType())) {
+            response.put("MAC_ID", license.getMacId());
+            response.put("modules", license.getModules());
+            response.put("macUsageCount", license.getMacUsageCount());
+        }
+
+    } else {
+        response.put("companyName", null);
+        response.put("licenseFor", null);
+        response.put("licenseType", null);
+        response.put("duration", null);
+        response.put("expirationDate", null);
+        response.put("message", "License not found");
+        response.put("status", false);
     }
 
-    return ResponseEntity.ok(isValid); // sirf true ya false
+    return ResponseEntity.ok(response);
 }
+
+
+// @GetMapping("/check-validity/{licenseKey}")
+// public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+
+//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
+
+//     boolean isValid = false;
+
+//     if (optionalLicense.isPresent()) {
+//         License license = optionalLicense.get();
+//         isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+//     }
+
+//     return ResponseEntity.ok(isValid); // sirf true ya false
+// }
 
 
 //  @GetMapping("/all-licenses")
