@@ -144,9 +144,6 @@
         <nav>
             <ul>
                 <li><a href="http://localhost:8181/admin/homePage">Home</a></li>
-          
-       
-            
                 <li><a href="http://localhost:8181/logout">Logout</a></li>
             </ul>
         </nav>
@@ -237,9 +234,12 @@
                         <div class="form-group">
                             <label for="modules" class="form-label">Select Modules</label>
                             <select id="modules" name="modules" class="form-control" multiple>
-                                <!-- Options will be populated based on licenseFor selection -->
+                                <!-- Options will be populated dynamically -->
                             </select>
                         </div>
+
+                        <!-- Module Expiry Inputs -->
+                        <div id="macModuleExpiryContainer"></div>
                         
                         <div class="form-group">
                             <label for="macTenureDays" class="form-label">Tenure (in days)</label>
@@ -267,9 +267,12 @@
                         <div class="form-group">
                             <label for="emailModules" class="form-label">Select Modules</label>
                             <select id="emailModules" name="modules" class="form-control" multiple>
-                                <!-- Options will be populated based on licenseFor selection -->
+                                <!-- Options will be populated dynamically -->
                             </select>
                         </div>
+
+                        <!-- Module Expiry Inputs -->
+                        <div id="emailModuleExpiryContainer"></div>
                         
                         <div class="form-group">
                             <label for="weeklyLimit" class="form-label">Weekly Usage Limit</label>
@@ -292,168 +295,186 @@
         </div>
     </main>
 
- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('licenseForm');
-        const licenseType = document.getElementById('licenseType');
-        const macBasedFields = document.getElementById('macBasedFields');
-        const emailBasedFields = document.getElementById('emailBasedFields');
-        const licenseFor = document.getElementById('licenseFor');
-        const modulesSelect = document.getElementById('modules');
-        const emailModulesSelect = document.getElementById('emailModules');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('licenseForm');
+            const licenseType = document.getElementById('licenseType');
+            const macBasedFields = document.getElementById('macBasedFields');
+            const emailBasedFields = document.getElementById('emailBasedFields');
+            const licenseFor = document.getElementById('licenseFor');
+            const modulesSelect = document.getElementById('modules');
+            const emailModulesSelect = document.getElementById('emailModules');
 
-        initForm();
+            const macModuleExpiryContainer = document.getElementById('macModuleExpiryContainer');
+            const emailModuleExpiryContainer = document.getElementById('emailModuleExpiryContainer');
 
-        licenseType.addEventListener('change', toggleLicenseTypeFields);
-        licenseFor.addEventListener('change', populateModules);
-        form.addEventListener('submit', handleFormSubmit);
+            initForm();
 
-        function initForm() {
-            toggleLicenseTypeFields();
-            populateModules();
-        }
+            licenseType.addEventListener('change', toggleLicenseTypeFields);
+            licenseFor.addEventListener('change', populateModules);
+            modulesSelect.addEventListener('change', updateModuleExpiryInputs);
+            emailModulesSelect.addEventListener('change', updateModuleExpiryInputsEmail);
+            form.addEventListener('submit', handleFormSubmit);
 
-        function toggleLicenseTypeFields() {
-            const selectedType = licenseType.value;
-            macBasedFields.style.display = 'none';
-            emailBasedFields.style.display = 'none';
-
-            if (selectedType === 'MAC_ID') {
-                macBasedFields.style.display = 'block';
-            } else if (selectedType === 'EMAIL_ID') {
-                emailBasedFields.style.display = 'block';
+            function initForm() {
+                toggleLicenseTypeFields();
+                populateModules();
             }
-        }
 
-        function populateModules() {
-            const selectedProduct = licenseFor.value;
-            modulesSelect.innerHTML = '';
-            emailModulesSelect.innerHTML = '';
+            function toggleLicenseTypeFields() {
+                const selectedType = licenseType.value;
+                macBasedFields.style.display = 'none';
+                emailBasedFields.style.display = 'none';
 
-            const moduleList = {
-FORMSCI: [
-  'DEM file creation',
-  'Drug - Excipient comparability',
-  'Single Stability estimation',
-  'Multi formula stability',
-  'Impurity control',
-  'ASD screening',
-  'Permeation enhancers screening',
-  'Package screening',
-  'Dissolution screening',
-  'AI formulator',
-  'Virtual Formulation'
-]
-,
-SOLUDEM: [
-    'Pure solvents screening',
-    'Binary solvents screening',
-    'Ternary solvents screening',
-    'ASD screening',
-    'pH solubility screening',
-    'Salt screening',
-    'XRD analysis',
-    'Formulation Solubility screening',
-    'NCE BCS classification',
-    'NCE stability',
-    'Reaction Solvent screening',
-    'Reaction base screening',
-    'Impurity control analysis',
-    'Bio & Dissolution media solubility',
-    'Polymorph screening'
-]
-
-            };
-
-            const selectedModules = moduleList[selectedProduct] || [];
-
-            selectedModules.forEach(moduleName => {
-                const option1 = new Option(moduleName, moduleName);
-                const option2 = new Option(moduleName, moduleName);
-                modulesSelect.add(option1);
-                emailModulesSelect.add(option2);
-            });
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-
-            if (licenseType.value === 'MAC_ID') {
-                const macId = document.getElementById('macId').value;
-                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-                if (!macRegex.test(macId)) {
-                    alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
-                    return;
+                if (selectedType === 'MAC_ID') {
+                    macBasedFields.style.display = 'block';
+                } else if (selectedType === 'EMAIL_ID') {
+                    emailBasedFields.style.display = 'block';
                 }
             }
 
-            if (licenseType.value === 'EMAIL_ID') {
-                const userEmail = document.getElementById('userEmail').value;
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(userEmail)) {
-                    alert('Please enter a valid email address');
-                    return;
-                }
+            function populateModules() {
+                const selectedProduct = licenseFor.value;
+                modulesSelect.innerHTML = '';
+                emailModulesSelect.innerHTML = '';
+                macModuleExpiryContainer.innerHTML = '';
+                emailModuleExpiryContainer.innerHTML = '';
+
+                const moduleList = {
+                    FORMSCI: [
+                        'DEM file creation','Drug - Excipient comparability','Single Stability estimation','Multi formula stability','Impurity control','ASD screening','Permeation enhancers screening','Package screening','Dissolution screening','AI formulator','Virtual Formulation'
+                    ],
+                    SOLUDEM: [
+                        'Pure solvents screening','Binary solvents screening','Ternary solvents screening','ASD screening','pH solubility screening','Salt screening','XRD analysis','Formulation Solubility screening','NCE BCS classification','NCE stability','Reaction Solvent screening','Reaction base screening','Impurity control analysis','Bio & Dissolution media solubility','Polymorph screening'
+                    ]
+                };
+
+                const selectedModules = moduleList[selectedProduct] || [];
+
+                selectedModules.forEach(moduleName => {
+                    const option1 = new Option(moduleName, moduleName);
+                    const option2 = new Option(moduleName, moduleName);
+                    modulesSelect.add(option1);
+                    emailModulesSelect.add(option2);
+                });
+
+                updateModuleExpiryInputs();
+                updateModuleExpiryInputsEmail();
             }
 
-            const formData = {
-                companyName: document.getElementById('companyName').value,
-                name: document.getElementById('contactPerson').value,
-                email: document.getElementById('email').value,
-                phoneNumber: document.getElementById('phone').value,
-                primaryContactName: document.getElementById('primaryContactName').value,
-                primaryContactNumber: document.getElementById('primaryContactNumber').value,
-                scmContactName: document.getElementById('scmContactName').value,
-                scmContactNumber: document.getElementById('scmContactNumber').value,
-                licenseFor: licenseFor.value,
-                licenseType: licenseType.value,
-                type: document.getElementById('licensePurpose').value,
-                macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
-                duration: licenseType.value === 'EMAIL_ID'
-                    ? document.getElementById('emailTenureDays').value
-                    : licenseType.value === 'MAC_ID'
-                        ? document.getElementById('macTenureDays').value
-                        : null,
-                macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
-                weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
-                modules: licenseType.value === 'MAC_ID'
-                    ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
-                    : licenseType.value === 'EMAIL_ID'
-                        ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
-                        : [],
-                userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
-            };
+            function updateModuleExpiryInputs() {
+                macModuleExpiryContainer.innerHTML = '';
+                Array.from(modulesSelect.selectedOptions).forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    div.innerHTML = `
+                        <label class="form-label">${module.value} Expiry (days)</label>
+                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1">
+                    `;
+                    macModuleExpiryContainer.appendChild(div);
+                });
+            }
 
-           try {
-         
+            function updateModuleExpiryInputsEmail() {
+                emailModuleExpiryContainer.innerHTML = '';
+                Array.from(emailModulesSelect.selectedOptions).forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    div.innerHTML = `
+                        <label class="form-label">${module.value} Expiry (days)</label>
+                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1">
+                    `;
+                    emailModuleExpiryContainer.appendChild(div);
+                });
+            }
 
-   
+            async function handleFormSubmit(e) {
+                e.preventDefault();
 
-          const response = await fetch('http://localhost:8181/licenses/createLicense', {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify(formData)
-          });
+                if (licenseType.value === 'MAC_ID') {
+                    const macId = document.getElementById('macId').value;
+                    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                    if (!macRegex.test(macId)) {
+                        alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
+                        return;
+                    }
+                }
 
-          const data = await response.json();
-          console.log('Response:', data);
-          
-          if (data) {
-            alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
-            window.location.href = 'http://localhost:8181/users/home';
-          } else {
-            throw new Error('Error creating license');
-          }
-        } catch (error) {
-          console.error('Submission error:', error);
-          alert('Error: ' + error.message);
-        }
-        }
-    });
-</script>
+                if (licenseType.value === 'EMAIL_ID') {
+                    const userEmail = document.getElementById('userEmail').value;
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(userEmail)) {
+                        alert('Please enter a valid email address');
+                        return;
+                    }
+                }
 
+                const modulesExpiry = {};
+                if (licenseType.value === 'MAC_ID') {
+                    Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+                        modulesExpiry[input.name.match(/\[(.*)\]/)[1]] = input.value;
+                    });
+                } else if (licenseType.value === 'EMAIL_ID') {
+                    Array.from(emailModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+                        modulesExpiry[input.name.match(/\[(.*)\]/)[1]] = input.value;
+                    });
+                }
+
+                const formData = {
+                    companyName: document.getElementById('companyName').value,
+                    name: document.getElementById('contactPerson').value,
+                    email: document.getElementById('email').value,
+                    phoneNumber: document.getElementById('phone').value,
+                    primaryContactName: document.getElementById('primaryContactName').value,
+                    primaryContactNumber: document.getElementById('primaryContactNumber').value,
+                    scmContactName: document.getElementById('scmContactName').value,
+                    scmContactNumber: document.getElementById('scmContactNumber').value,
+                    licenseFor: licenseFor.value,
+                    licenseType: licenseType.value,
+                    type: document.getElementById('licensePurpose').value,
+                    macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
+                    duration: licenseType.value === 'EMAIL_ID'
+                        ? document.getElementById('emailTenureDays').value
+                        : licenseType.value === 'MAC_ID'
+                            ? document.getElementById('macTenureDays').value
+                            : null,
+                    macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
+                    weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
+                    modules: licenseType.value === 'MAC_ID'
+                        ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
+                        : licenseType.value === 'EMAIL_ID'
+                            ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
+                            : [],
+                    moduleExpiry: modulesExpiry,
+                    userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8181/licenses/createLicense', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+                    console.log('Response:', data);
+                    
+                    if (data) {
+                        alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
+                        window.location.href = 'http://localhost:8181/users/home';
+                    } else {
+                        throw new Error('Error creating license');
+                    }
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    alert('Error: ' + error.message);
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>

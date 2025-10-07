@@ -6,8 +6,12 @@ import lombok.ToString;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Arrays;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Entity
 @Data
@@ -27,7 +31,7 @@ public class License {
     private String type;
     private String licenseFor;
     private String licenseType;
-    
+
     private int duration;
     private Date expirationDate;
 
@@ -46,9 +50,16 @@ public class License {
     private String specificEmail;       // For Email Specific option
     private String emailModuleName;     // For Module Specific option
     private Integer emailTenureDays;    // For Tenure Bound option
-    private Integer weeklyLimit;   // For Count Based Weekly Limit option
+    private Integer weeklyLimit;        // For Count Based Weekly Limit option
 
-  
+    // Module expiry JSON stored in DB
+    @Lob
+    @Column(name = "module_expiry")
+    private String moduleExpiryString;
+
+    @Transient
+    private Map<String, Integer> moduleExpiry;
+
     // ✅ Store modules as comma-separated string in DB, handle as List<String> in Java
     @Lob
     @Column(name = "modules")
@@ -93,4 +104,30 @@ public class License {
         }
     }
 
+    // ModuleExpiry getter and setter with JSON handling
+    public Map<String, Integer> getModuleExpiry() {
+        if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(this.moduleExpiryString, Map.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public void setModuleExpiry(Map<String, Integer> moduleExpiry) {
+        this.moduleExpiry = moduleExpiry;
+        if (moduleExpiry != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        } else {
+            this.moduleExpiryString = null;
+        }
+    }
 }
