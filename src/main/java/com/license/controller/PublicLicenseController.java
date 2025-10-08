@@ -47,36 +47,64 @@ public class PublicLicenseController {
 
 //     return ResponseEntity.ok(response);
 // }
+
+
 @GetMapping("/check-validity/{licenseKey}")
-public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
+    Map<String, Object> response = new HashMap<>();
 
     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-
-    boolean isValid = false;
-
     if (optionalLicense.isPresent()) {
         License license = optionalLicense.get();
-        isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+        boolean isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+
+        if (isValid) {
+            response.put("status", true);
+            response.put("license", license); // ✅ saari license details
+            response.put("message", "License is valid");
+        } else {
+            response.put("status", false);
+            response.put("message", "License expired or invalid");
+        }
+    } else {
+        response.put("status", false);
+        response.put("message", "License not found");
     }
 
-    return ResponseEntity.ok(isValid); // sirf true ya false
+    return ResponseEntity.ok(response);
 }
 
 
-//  @GetMapping("/all-licenses")
-//     public ResponseEntity<Map<String, Object>> getAllLicenses() {
-//         Map<String, Object> response = new HashMap<>();
-//         try {
-//             List<License> licenses = licenseService.getAllLicenses();
-//             response.put("status", true);
-//             response.put("total", licenses.size());
-//             response.put("licenses", licenses);
-//         } catch (Exception e) {
-//             response.put("status", false);
-//             response.put("message", "Error fetching licenses: " + e.getMessage());
-//         }
-//         return ResponseEntity.ok(response); // हमेशा 200
+// @GetMapping("/check-validity/{licenseKey}")
+// public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+
+//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
+
+//     boolean isValid = false;
+
+//     if (optionalLicense.isPresent()) {
+//         License license = optionalLicense.get();
+//         isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
 //     }
+
+//     return ResponseEntity.ok(isValid); // sirf true ya false
+// }
+
+
+ @GetMapping("/all-licenses")
+    public ResponseEntity<Map<String, Object>> getAllLicenses() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<License> licenses = licenseService.getAllLicenses();
+            response.put("status", true);
+            response.put("total", licenses.size());
+            response.put("licenses", licenses);
+        } catch (Exception e) {
+            response.put("status", false);
+            response.put("message", "Error fetching licenses: " + e.getMessage());
+        }
+        return ResponseEntity.ok(response); // हमेशा 200
+    }
 
 
 }
