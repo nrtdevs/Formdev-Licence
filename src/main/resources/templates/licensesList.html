@@ -134,8 +134,7 @@
 					<th>Created at</th>
 					<th>Expiration Date</th>
 					<th>Licence Type</th>
-						
-					
+					<th>Actions</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -148,11 +147,14 @@
 					<td th:text="${license.licenseKey}"></td>
 					<td th:text="${license.type}"></td>
 					<td th:text="${license.licenseFor}"></td>
-					<td th:text="${license.duration}"></td>	
+					<td th:text="${license.duration}"></td>
 					<td th:text="${license.timeStamp}"></td>
 					<td th:text="${license.expirationDate}"></td>
-					<td th:text="${license.licenseType}"></td>	
-				
+					<td th:text="${license.licenseType}"></td>
+					<td>
+						<a th:href="@{/licenses/edit/{id}(id=${license.id})}" class="btn btn-primary">Edit</a>
+					</td>
+				</tr>
 			</tbody>
 		</table>
 	</main>

@@ -112,15 +112,25 @@ public class LicenseServiceImpl implements LicenseService {
 
 	@Override
 	public License updateLicense(Long id, License updatedLicense) {
-
 		if (licenseRepository.existsById(id)) {
 			License license = licenseRepository.findById(id).get();
-			if (updatedLicense.getExpirationDate() != null)
-				license.setExpirationDate(updatedLicense.getExpirationDate());
-			if (updatedLicense.getEmail() != null)
-				license.setEmail(updatedLicense.getEmail());
-			if (updatedLicense.getName() != null)
-				license.setName(updatedLicense.getName());
+			license.setName(updatedLicense.getName());
+			license.setEmail(updatedLicense.getEmail());
+			license.setCompanyName(updatedLicense.getCompanyName());
+			license.setLicenseFor(updatedLicense.getLicenseFor());
+			license.setLicenseType(updatedLicense.getLicenseType());
+			license.setDuration(updatedLicense.getDuration());
+			license.setMacId(updatedLicense.getMacId());
+			license.setModules(updatedLicense.getModules());
+			license.setMacUsageCount(updatedLicense.getMacUsageCount());
+			license.setUserEmail(updatedLicense.getUserEmail());
+			license.setWeeklyLimit(updatedLicense.getWeeklyLimit());
+
+			// Recalculate expiration date if duration is updated
+			if (updatedLicense.getDuration() > 0) {
+				Date expiryDate = calculateExpirationDate(updatedLicense.getDuration());
+				license.setExpirationDate(convertToSqlDate(expiryDate));
+			}
 
 			return licenseRepository.save(license);
 		}

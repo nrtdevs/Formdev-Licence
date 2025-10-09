@@ -137,6 +137,25 @@ public class LicenseController {
 		return "licenseSearch";
 	}
 
+	@GetMapping("/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	public String showEditLicenseForm(@PathVariable Long id, Model model) {
+		Optional<License> license = licenseService.getLicenseById(id);
+		if (license.isPresent()) {
+			model.addAttribute("license", license.get());
+			return "editLicense";
+		} else {
+			return "redirect:/licenses/getAllLicenses";
+		}
+	}
+
+	@PostMapping("/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	public String editLicense(@PathVariable Long id, @ModelAttribute License updatedLicense) {
+		licenseService.updateLicense(id, updatedLicense);
+		return "redirect:/licenses/getAllLicenses";
+	}
+
 
 	//     @Autowired
 //     private LicenseService licenseService;
