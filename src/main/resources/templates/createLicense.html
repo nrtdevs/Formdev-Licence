@@ -387,93 +387,99 @@
                     emailModuleExpiryContainer.appendChild(div);
                 });
             }
+async function handleFormSubmit(e) {
+    e.preventDefault();
 
-            async function handleFormSubmit(e) {
-                e.preventDefault();
+    if (licenseType.value === 'MAC_ID') {
+        const macId = document.getElementById('macId').value;
+        const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+        if (!macRegex.test(macId)) {
+            alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
+            return;
+        }
+    }
 
-                if (licenseType.value === 'MAC_ID') {
-                    const macId = document.getElementById('macId').value;
-                    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-                    if (!macRegex.test(macId)) {
-                        alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
-                        return;
-                    }
-                }
+    if (licenseType.value === 'EMAIL_ID') {
+        const userEmail = document.getElementById('userEmail').value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(userEmail)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+    }
 
-                if (licenseType.value === 'EMAIL_ID') {
-                    const userEmail = document.getElementById('userEmail').value;
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(userEmail)) {
-                        alert('Please enter a valid email address');
-                        return;
-                    }
-                }
+    const modulesExpiry = {};
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
 
-                const modulesExpiry = {};
-                if (licenseType.value === 'MAC_ID') {
-                    Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
-                        modulesExpiry[input.name.match(/\[(.*)\]/)[1]] = input.value;
-                    });
-                } else if (licenseType.value === 'EMAIL_ID') {
-                    Array.from(emailModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
-                        modulesExpiry[input.name.match(/\[(.*)\]/)[1]] = input.value;
-                    });
-                }
-
-                const formData = {
-                    companyName: document.getElementById('companyName').value,
-                    name: document.getElementById('contactPerson').value,
-                    email: document.getElementById('email').value,
-                    phoneNumber: document.getElementById('phone').value,
-                    primaryContactName: document.getElementById('primaryContactName').value,
-                    primaryContactNumber: document.getElementById('primaryContactNumber').value,
-                    scmContactName: document.getElementById('scmContactName').value,
-                    scmContactNumber: document.getElementById('scmContactNumber').value,
-                    licenseFor: licenseFor.value,
-                    licenseType: licenseType.value,
-                    type: document.getElementById('licensePurpose').value,
-                    macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
-                    duration: licenseType.value === 'EMAIL_ID'
-                        ? document.getElementById('emailTenureDays').value
-                        : licenseType.value === 'MAC_ID'
-                            ? document.getElementById('macTenureDays').value
-                            : null,
-                    macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
-                    weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
-                    modules: licenseType.value === 'MAC_ID'
-                        ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
-                        : licenseType.value === 'EMAIL_ID'
-                            ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
-                            : [],
-                    moduleExpiry: modulesExpiry,
-                    userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
-                };
-
-                try {
-                    const response = await fetch('http://localhost:8181/licenses/createLicense', {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(formData)
-                    });
-
-                    const data = await response.json();
-                    console.log('Response:', data);
-                    
-                    if (data) {
-                        alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
-                        window.location.href = 'http://localhost:8181/users/home';
-                    } else {
-                        throw new Error('Error creating license');
-                    }
-                } catch (error) {
-                    console.error('Submission error:', error);
-                    alert('Error: ' + error.message);
-                }
-            }
+    if (licenseType.value === 'MAC_ID') {
+        Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+            const moduleName = input.name.match(/\[(.*)\]/)[1];
+            const expiryValue = input.value;
+            modulesExpiry[moduleName] = [expiryValue, today]; // 👈 Added current date
         });
+    } else if (licenseType.value === 'EMAIL_ID') {
+        Array.from(emailModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+            const moduleName = input.name.match(/\[(.*)\]/)[1];
+            const expiryValue = input.value;
+            modulesExpiry[moduleName] = [expiryValue, today]; // 👈 Added current date
+        });
+    }
+
+    const formData = {
+        companyName: document.getElementById('companyName').value,
+        name: document.getElementById('contactPerson').value,
+        email: document.getElementById('email').value,
+        phoneNumber: document.getElementById('phone').value,
+        primaryContactName: document.getElementById('primaryContactName').value,
+        primaryContactNumber: document.getElementById('primaryContactNumber').value,
+        scmContactName: document.getElementById('scmContactName').value,
+        scmContactNumber: document.getElementById('scmContactNumber').value,
+        licenseFor: licenseFor.value,
+        licenseType: licenseType.value,
+        type: document.getElementById('licensePurpose').value,
+        macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
+        duration: licenseType.value === 'EMAIL_ID'
+            ? document.getElementById('emailTenureDays').value
+            : licenseType.value === 'MAC_ID'
+                ? document.getElementById('macTenureDays').value
+                : null,
+        macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
+        weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
+        modules: licenseType.value === 'MAC_ID'
+            ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
+            : licenseType.value === 'EMAIL_ID'
+                ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
+                : [],
+        moduleExpiry: modulesExpiry,
+        userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
+    };
+
+    try {
+        const response = await fetch('http://localhost:8181/licenses/createLicense', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        console.log('Response:', data);
+        
+        if (data) {
+            alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
+            window.location.href = 'http://localhost:8181/users/home';
+        } else {
+            throw new Error('Error creating license');
+        }
+    } catch (error) {
+        console.error('Submission error:', error);
+        alert('Error: ' + error.message);
+    }
+    }
+});
+
     </script>
 </body>
 

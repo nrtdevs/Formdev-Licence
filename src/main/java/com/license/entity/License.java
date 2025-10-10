@@ -57,8 +57,9 @@ public class License {
     @Column(name = "module_expiry")
     private String moduleExpiryString;
 
-    @Transient
-    private Map<String, Integer> moduleExpiry;
+   @Transient
+private Map<String, List<Object>> moduleExpiry;
+
 
     // ✅ Store modules as comma-separated string in DB, handle as List<String> in Java
     @Lob
@@ -105,29 +106,58 @@ public class License {
     }
 
     // ModuleExpiry getter and setter with JSON handling
-    public Map<String, Integer> getModuleExpiry() {
-        if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                return mapper.readValue(this.moduleExpiryString, Map.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
+    // public Map<String, Integer> getModuleExpiry() {
+    //     if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
+    //         try {
+    //             ObjectMapper mapper = new ObjectMapper();
+    //             return mapper.readValue(this.moduleExpiryString, Map.class);
+    //         } catch (JsonProcessingException e) {
+    //             e.printStackTrace();
+    //         }
+    //     }
+    //     return null;
+    // }
 
-    public void setModuleExpiry(Map<String, Integer> moduleExpiry) {
-        this.moduleExpiry = moduleExpiry;
-        if (moduleExpiry != null) {
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        } else {
-            this.moduleExpiryString = null;
+    // public void setModuleExpiry(Map<String, Integer> moduleExpiry) {
+    //     this.moduleExpiry = moduleExpiry;
+    //     if (moduleExpiry != null) {
+    //         try {
+    //             ObjectMapper mapper = new ObjectMapper();
+    //             this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
+    //         } catch (JsonProcessingException e) {
+    //             e.printStackTrace();
+    //         }
+    //     } else {
+    //         this.moduleExpiryString = null;
+    //     }
+    // }
+
+    // Updated getter
+public Map<String, List<Object>> getModuleExpiry() {
+    if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(this.moduleExpiryString, Map.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
+    return null;
+}
+
+// Updated setter
+public void setModuleExpiry(Map<String, List<Object>> moduleExpiry) {
+    this.moduleExpiry = moduleExpiry;
+    if (moduleExpiry != null) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    } else {
+        this.moduleExpiryString = null;
+    }
+}
+
 }

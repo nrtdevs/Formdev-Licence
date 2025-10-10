@@ -51,6 +51,7 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
             response.put("MAC_ID", license.getMacId());
             response.put("modules", license.getModules());
             response.put("macUsageCount", license.getMacUsageCount());
+            response.put("moduleExpiry", license.getModuleExpiry());
         }
 
     } else {

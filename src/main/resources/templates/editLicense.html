@@ -253,108 +253,184 @@
     </main>
 
     <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            const licenseType = document.getElementById('licenseType');
-            const macBasedFields = document.getElementById('macBasedFields');
-            const emailBasedFields = document.getElementById('emailBasedFields');
-            const licenseFor = document.getElementById('licenseFor');
-            const modulesSelect = document.getElementById('modules');
-            const emailModulesSelect = document.getElementById('emailModules');
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('licenseForm');
+    const licenseType = document.getElementById('licenseType');
+    const macBasedFields = document.getElementById('macBasedFields');
+    const emailBasedFields = document.getElementById('emailBasedFields');
+    const licenseFor = document.getElementById('licenseFor');
+    const modulesSelect = document.getElementById('modules');
+    const emailModulesSelect = document.getElementById('emailModules');
 
-            const macModuleExpiryContainer = document.getElementById('macModuleExpiryContainer');
-            const emailModuleExpiryContainer = document.getElementById('emailModuleExpiryContainer');
+    const macModuleExpiryContainer = document.getElementById('macModuleExpiryContainer');
+    const emailModuleExpiryContainer = document.getElementById('emailModuleExpiryContainer');
 
-            initForm();
+    // Injected Thymeleaf variables
+    const currentModules = /*[[${license.modules}]]*/ [];
+    const currentModuleExpiry = /*[[${license.moduleExpiry}]]*/ {};
 
-            licenseType.addEventListener('change', toggleLicenseTypeFields);
-            licenseFor.addEventListener('change', populateModules);
-            modulesSelect.addEventListener('change', updateModuleExpiryInputs);
-            emailModulesSelect.addEventListener('change', updateModuleExpiryInputsEmail);
+    initForm();
 
-            function initForm() {
-                toggleLicenseTypeFields();
-                populateModules();
+    licenseType.addEventListener('change', toggleLicenseTypeFields);
+    licenseFor.addEventListener('change', populateModules);
+    modulesSelect.addEventListener('change', updateModuleExpiryInputs);
+    emailModulesSelect.addEventListener('change', updateModuleExpiryInputsEmail);
+    form.addEventListener('submit', handleFormSubmit);
+
+    function initForm() {
+        toggleLicenseTypeFields();
+        populateModules();
+    }
+
+    function toggleLicenseTypeFields() {
+        const selectedType = licenseType.value;
+        macBasedFields.style.display = 'none';
+        emailBasedFields.style.display = 'none';
+
+        if (selectedType === 'MAC_ID') {
+            macBasedFields.style.display = 'block';
+        } else if (selectedType === 'EMAIL_ID') {
+            emailBasedFields.style.display = 'block';
+        }
+    }
+
+    function populateModules() {
+        const selectedProduct = licenseFor.value;
+
+        modulesSelect.innerHTML = '';
+        emailModulesSelect.innerHTML = '';
+        macModuleExpiryContainer.innerHTML = '';
+        emailModuleExpiryContainer.innerHTML = '';
+
+        const moduleList = {
+            FORMSCI: [
+                'DEM file creation','Drug - Excipient comparability','Single Stability estimation',
+                'Multi formula stability','Impurity control','ASD screening','Permeation enhancers screening',
+                'Package screening','Dissolution screening','AI formulator','Virtual Formulation'
+            ],
+            SOLUDEM: [
+                'Pure solvents screening','Binary solvents screening','Ternary solvents screening',
+                'ASD screening','pH solubility screening','Salt screening','XRD analysis',
+                'Formulation Solubility screening','NCE BCS classification','NCE stability',
+                'Reaction Solvent screening','Reaction base screening','Impurity control analysis',
+                'Bio & Dissolution media solubility','Polymorph screening'
+            ]
+        };
+
+        const selectedModules = moduleList[selectedProduct] || [];
+
+        selectedModules.forEach(moduleName => {
+            const option1 = new Option(moduleName, moduleName);
+            const option2 = new Option(moduleName, moduleName);
+
+            if (currentModules && currentModules.includes(moduleName)) {
+                option1.selected = true;
+                option2.selected = true;
             }
 
-            function toggleLicenseTypeFields() {
-                const selectedType = licenseType.value;
-                macBasedFields.style.display = 'none';
-                emailBasedFields.style.display = 'none';
-
-                if (selectedType === 'MAC_ID') {
-                    macBasedFields.style.display = 'block';
-                } else if (selectedType === 'EMAIL_ID') {
-                    emailBasedFields.style.display = 'block';
-                }
-            }
-
-            function populateModules() {
-                const selectedProduct = licenseFor.value;
-                const currentModules = /*[[${license.modules}]]*/ [];
-                
-                modulesSelect.innerHTML = '';
-                emailModulesSelect.innerHTML = '';
-                macModuleExpiryContainer.innerHTML = '';
-                emailModuleExpiryContainer.innerHTML = '';
-
-                const moduleList = {
-                    FORMSCI: [
-                        'DEM file creation','Drug - Excipient comparability','Single Stability estimation','Multi formula stability','Impurity control','ASD screening','Permeation enhancers screening','Package screening','Dissolution screening','AI formulator','Virtual Formulation'
-                    ],
-                    SOLUDEM: [
-                        'Pure solvents screening','Binary solvents screening','Ternary solvents screening','ASD screening','pH solubility screening','Salt screening','XRD analysis','Formulation Solubility screening','NCE BCS classification','NCE stability','Reaction Solvent screening','Reaction base screening','Impurity control analysis','Bio & Dissolution media solubility','Polymorph screening'
-                    ]
-                };
-
-                const selectedModules = moduleList[selectedProduct] || [];
-
-                selectedModules.forEach(moduleName => {
-                    const option1 = new Option(moduleName, moduleName);
-                    const option2 = new Option(moduleName, moduleName);
-                    
-                    if(currentModules && currentModules.includes(moduleName)){
-                        option1.selected = true;
-                        option2.selected = true;
-                    }
-
-                    modulesSelect.add(option1);
-                    emailModulesSelect.add(option2);
-                });
-
-                updateModuleExpiryInputs();
-                updateModuleExpiryInputsEmail();
-            }
-
-            function updateModuleExpiryInputs() {
-                macModuleExpiryContainer.innerHTML = '';
-                const currentModuleExpiry = /*[[${license.moduleExpiry}]]*/ {};
-                Array.from(modulesSelect.selectedOptions).forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    const expiryValue = currentModuleExpiry[module.value] || '';
-                    div.innerHTML = `
-                        <label class="form-label">${module.value} Expiry (days)</label>
-                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryValue}">
-                    `;
-                    macModuleExpiryContainer.appendChild(div);
-                });
-            }
-
-            function updateModuleExpiryInputsEmail() {
-                emailModuleExpiryContainer.innerHTML = '';
-                const currentModuleExpiry = /*[[${license.moduleExpiry}]]*/ {};
-                Array.from(emailModulesSelect.selectedOptions).forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    const expiryValue = currentModuleExpiry[module.value] || '';
-                    div.innerHTML = `
-                        <label class="form-label">${module.value} Expiry (days)</label>
-                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryValue}">
-                    `;
-                    emailModuleExpiryContainer.appendChild(div);
-                });
-            }
+            modulesSelect.add(option1);
+            emailModulesSelect.add(option2);
         });
-    </script>
+
+        updateModuleExpiryInputs();
+        updateModuleExpiryInputsEmail();
+    }
+
+    function updateModuleExpiryInputs() {
+        macModuleExpiryContainer.innerHTML = '';
+        Array.from(modulesSelect.selectedOptions).forEach(module => {
+            const div = document.createElement('div');
+            div.classList.add('form-group');
+            const expiryData = currentModuleExpiry[module.value] || ['', ''];
+            const expiryValue = expiryData[0] || '';
+            div.innerHTML = `
+                <label class="form-label">${module.value} Expiry (days)</label>
+                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryValue}">
+            `;
+            macModuleExpiryContainer.appendChild(div);
+        });
+    }
+
+    function updateModuleExpiryInputsEmail() {
+        emailModuleExpiryContainer.innerHTML = '';
+        Array.from(emailModulesSelect.selectedOptions).forEach(module => {
+            const div = document.createElement('div');
+            div.classList.add('form-group');
+            const expiryData = currentModuleExpiry[module.value] || ['', ''];
+            const expiryValue = expiryData[0] || '';
+            div.innerHTML = `
+                <label class="form-label">${module.value} Expiry (days)</label>
+                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryValue}">
+            `;
+            emailModuleExpiryContainer.appendChild(div);
+        });
+    }
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+
+        if (licenseType.value === 'MAC_ID') {
+            const macId = document.getElementById('macId').value;
+            const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+            if (!macRegex.test(macId)) {
+                alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
+                return;
+            }
+        }
+
+        if (licenseType.value === 'EMAIL_ID') {
+            const userEmail = document.getElementById('userEmail').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(userEmail)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+        }
+
+        const modulesExpiry = {};
+        const today = new Date().toISOString().split('T')[0]; // current date
+
+        if (licenseType.value === 'MAC_ID') {
+            Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+                const moduleName = input.name.match(/\[(.*)\]/)[1];
+                const expiryValue = input.value || '';
+                const existing = currentModuleExpiry[moduleName];
+                const existingDate = existing ? existing[1] : today; // keep old date if exists
+                modulesExpiry[moduleName] = [expiryValue, existingDate];
+            });
+        } else if (licenseType.value === 'EMAIL_ID') {
+            Array.from(emailModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
+                const moduleName = input.name.match(/\[(.*)\]/)[1];
+                const expiryValue = input.value || '';
+                const existing = currentModuleExpiry[moduleName];
+                const existingDate = existing ? existing[1] : today; // keep old date if exists
+                modulesExpiry[moduleName] = [expiryValue, existingDate];
+            });
+        }
+
+        // Convert to standard form submit (POST)
+        const formData = new FormData(form);
+        formData.append('moduleExpiry', JSON.stringify(modulesExpiry));
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('License updated successfully!');
+                window.location.href = 'http://localhost:8181/admin/homePage';
+            } else {
+                alert('Error updating license.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error: ' + error.message);
+        }
+    }
+});
+</script>
+
 </body>
 </html>
