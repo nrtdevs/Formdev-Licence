@@ -151,9 +151,14 @@ public class LicenseController {
 
 	@PostMapping("/edit/{id}")
 	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
-	public String editLicense(@PathVariable Long id, @ModelAttribute License updatedLicense) {
-		licenseService.updateLicense(id, updatedLicense);
-		return "redirect:/licenses/getAllLicenses";
+	public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+		try {
+			License resultLicense = licenseService.updateLicense(id, updatedLicense);
+			return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+		} catch (Exception e) {
+			// You can customize the error response based on your requirements
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 

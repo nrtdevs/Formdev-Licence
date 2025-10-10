@@ -78,17 +78,13 @@ public class LicenseServiceImpl implements LicenseService {
 
 		// String selectedOptions= license.getSelectedOptions();
 
-		String macModuleName = license.getMacModuleName(); // For Module Based option
-		Integer macTenureDays = license.getMacTenureDays(); // For Tenure Based option
-		Integer macUsageCount = license.getMacUsageCount();
-		// For Count Based option
-
-		// Email Based License specific fields
-		String specificEmail = license.getSpecificEmail(); // For Email Specific option
-		// String emailModuleNamelicense.getemail(); // For Module Specific option
-		// Integer emailTenureDays=license.get()
-		; // For Tenure Bound option
-		Integer emailWeeklyLimit = license.getWeeklyLimit(); // For Count Based Weekly Limit option
+		// These fields are not directly updated via the edit form,
+		// so they are not relevant for the updateLicense method.
+		// String macModuleName = license.getMacModuleName();
+		// Integer macTenureDays = license.getMacTenureDays();
+		// String specificEmail = license.getSpecificEmail();
+		// String emailModuleName = license.getemail();
+		// Integer emailTenureDays = license.get();
 
 		Date expiryDate = calculateExpirationDate(duration);
 		license.setExpirationDate(convertToSqlDate(expiryDate));
@@ -125,6 +121,7 @@ public class LicenseServiceImpl implements LicenseService {
 			license.setMacUsageCount(updatedLicense.getMacUsageCount());
 			license.setUserEmail(updatedLicense.getUserEmail());
 			license.setWeeklyLimit(updatedLicense.getWeeklyLimit());
+			license.setModuleExpiry(updatedLicense.getModuleExpiry()); // Add this line to update moduleExpiry
 
 			// Recalculate expiration date if duration is updated
 			if (updatedLicense.getDuration() > 0) {
