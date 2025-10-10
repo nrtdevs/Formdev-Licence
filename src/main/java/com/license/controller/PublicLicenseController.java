@@ -37,13 +37,17 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
         response.put("licenseFor", license.getLicenseFor());
         response.put("licenseType", license.getLicenseType());
         response.put("duration", license.getDuration());
-        response.put("expirationDate", license.getExpirationDate() != null ? license.getExpirationDate().getTime() : null);
+        // response.put("expirationDate", license.getExpirationDate() != null ? license.getExpirationDate().getTime() : null);
         response.put("message", isValid ? "License is valid" : "License expired");
         response.put("status", isValid);
+        
+
+        response.put("createdAt", license.getTimeStamp());
+        response.put("modifiedAt", license.getModifiedAt());
 
         // Conditional fields
         if ("EMAIL_ID".equals(license.getLicenseType())) {
-            response.put("Email", license.getUserEmail());
+            response.put("specific_email", license.getUserEmail());
             response.put("weeklyLimit", license.getWeeklyLimit());
             response.put("modules", license.getModules());
             response.put("moduleExpiry", license.getModuleExpiry());

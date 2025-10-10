@@ -90,6 +90,15 @@ private Map<String, List<Object>> moduleExpiry;
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedAt;
+
+    @PreUpdate
+    public void preUpdate() {
+        this.modifiedAt = new Date(); // update timestamp whenever record changes
+    }
+
     @PrePersist
     public void prePersist() {
         // Generate a unique license key using UUID

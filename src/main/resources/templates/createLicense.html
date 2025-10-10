@@ -451,7 +451,8 @@ async function handleFormSubmit(e) {
                 ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
                 : [],
         moduleExpiry: modulesExpiry,
-        userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null
+        userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null,
+        modifiedAt: new Date().toISOString()
     };
 
     try {
