@@ -149,17 +149,28 @@ public class LicenseController {
 		}
 	}
 
-	@PostMapping("/edit/{id}")
-	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
-	public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
-		try {
-			License resultLicense = licenseService.updateLicense(id, updatedLicense);
-			return new ResponseEntity<>(resultLicense, HttpStatus.OK);
-		} catch (Exception e) {
-			// You can customize the error response based on your requirements
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+	// @PostMapping("/edit/{id}")
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	// public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+	// 	try {
+	// 		License resultLicense = licenseService.updateLicense(id, updatedLicense);
+	// 		return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+	// 	} catch (Exception e) {
+	// 		// You can customize the error response based on your requirements
+	// 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// 	}
+	// }
+	@PutMapping("/edit/{id}")
+@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+    try {
+        License resultLicense = licenseService.updateLicense(id, updatedLicense);
+        return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 
 	//     @Autowired

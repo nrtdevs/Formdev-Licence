@@ -257,7 +257,7 @@ form.addEventListener('submit', async function(e){
   data.modifiedAt = new Date().toISOString();
     try {
         const response = await fetch(form.action, {
-            method: 'POST',
+            method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
