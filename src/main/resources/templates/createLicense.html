@@ -241,10 +241,10 @@
                         <!-- Module Expiry Inputs -->
                         <div id="macModuleExpiryContainer"></div>
                         
-                        <div class="form-group">
+                      <!--   <div class="form-group">
                             <label for="macTenureDays" class="form-label">Tenure (in days)</label>
                             <input type="number" id="macTenureDays" name="macTenureDays" class="form-control" min="1">
-                        </div>
+                        </div>-->
                         
                         <div class="form-group">
                             <label for="usageCount" class="form-label">Number of Usages</label>
@@ -258,11 +258,11 @@
                             <label for="userEmail" class="form-label">Email</label>
                             <input type="email" id="userEmail" name="userEmail" class="form-control">
                         </div>
-                        
+                     <!--      
                         <div class="form-group">
                             <label for="emailTenureDays" class="form-label">Tenure (in days)</label>
                             <input type="number" id="emailTenureDays" name="duration" class="form-control" min="1">
-                        </div>
+                        </div> -->
                         
                         <div class="form-group">
                             <label for="emailModules" class="form-label">Select Modules</label>
@@ -409,7 +409,8 @@ async function handleFormSubmit(e) {
     }
 
     const modulesExpiry = {};
-    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    const now = new Date();
+const today = now.toLocaleDateString('en-CA');  // "YYYY-MM-DD"
 
     if (licenseType.value === 'MAC_ID') {
         Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
@@ -438,11 +439,11 @@ async function handleFormSubmit(e) {
         licenseType: licenseType.value,
         type: document.getElementById('licensePurpose').value,
         macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
-        duration: licenseType.value === 'EMAIL_ID'
-            ? document.getElementById('emailTenureDays').value
-            : licenseType.value === 'MAC_ID'
-                ? document.getElementById('macTenureDays').value
-                : null,
+        //duration: licenseType.value === 'EMAIL_ID'
+          //  ? document.getElementById('emailTenureDays').value
+          //  : licenseType.value === 'MAC_ID'
+           //    ? document.getElementById('macTenureDays').value
+             //   : null,
         macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
         weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
         modules: licenseType.value === 'MAC_ID'

@@ -97,6 +97,41 @@
 		main {
 			padding: 20px;
 		}
+
+		.btn {
+			display: inline-block;
+			padding: 6px 12px;
+			margin-bottom: 0;
+			font-size: 14px;
+			font-weight: 400;
+			line-height: 1.42857143;
+			text-align: center;
+			white-space: nowrap;
+			vertical-align: middle;
+			-ms-touch-action: manipulation;
+			touch-action: manipulation;
+			cursor: pointer;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			background-image: none;
+			border: 1px solid transparent;
+			border-radius: 4px;
+			text-decoration: none;
+		}
+
+		.btn-primary {
+			color: #fff;
+			background-color: #337ab7;
+			border-color: #2e6da4;
+		}
+
+		.btn-danger {
+			color: #fff;
+			background-color: #d9534f;
+			border-color: #d43f3a;
+		}
 	</style>
 </head>
 
@@ -153,11 +188,27 @@
 					<td th:text="${license.licenseType}"></td>
 					<td>
 						<a th:href="@{/licenses/edit/{id}(id=${license.id})}" class="btn btn-primary">Edit</a>
+						<a href="#" th:onclick="'deleteLicense(\'' + ${license.id} + '\');'" class="btn btn-danger">Delete</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</main>
+	<script>
+		function deleteLicense(id) {
+			if (confirm('Are you sure you want to delete this license?')) {
+				fetch('/licenses/' + id, {
+					method: 'DELETE',
+				}).then(response => {
+					if (response.ok) {
+						window.location.reload();
+					} else {
+						alert('Error deleting license');
+					}
+				});
+			}
+		}
+	</script>
 </body>
 
 </html>
