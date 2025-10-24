@@ -178,11 +178,13 @@ public class LicenseServiceImpl implements LicenseService {
 						cipher.doFinal(license.getExpirationDate().toString().getBytes(StandardCharsets.UTF_8)));
 				String encryptedTimeStamp = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getTimeStamp().toString().getBytes(StandardCharsets.UTF_8)));
+				String encryptedModuleExpiry = Base64.getEncoder().encodeToString(
+						cipher.doFinal(license.getModuleExpiryString().getBytes(StandardCharsets.UTF_8)));
 
 				// Append encrypted data to the file
 				fileWriter.write(encryptedId + "$" + encryptedName + "$" + encryptedEmail + "$" + encryptedMacId + "$"
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
-						+ encryptedTimeStamp + "\n");
+						+ encryptedTimeStamp + "$" + encryptedModuleExpiry + "\n");
 
 				System.out.println("File generated successfully: " + filePath);
 
@@ -228,10 +230,12 @@ if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
     fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 } else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
     fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 }
 
 

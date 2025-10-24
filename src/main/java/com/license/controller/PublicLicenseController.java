@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.license.entity.License;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.license.service.LicenseService;
 
 import java.text.SimpleDateFormat;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @RequestMapping("/public") // सभी public APIs
 public class PublicLicenseController {
 
@@ -69,6 +71,11 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
     }
 
     return ResponseEntity.ok(response);
+}
+
+@GetMapping("/check-license/{licenseKey}")
+public ResponseEntity<Map<String, Object>> checkLicense(@PathVariable String licenseKey) {
+    return checkLicenseValidity(licenseKey);
 }
 
 
