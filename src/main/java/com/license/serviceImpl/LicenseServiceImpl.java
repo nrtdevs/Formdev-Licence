@@ -178,22 +178,13 @@ public class LicenseServiceImpl implements LicenseService {
 						cipher.doFinal(license.getExpirationDate().toString().getBytes(StandardCharsets.UTF_8)));
 				String encryptedTimeStamp = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getTimeStamp().toString().getBytes(StandardCharsets.UTF_8)));
-				String encryptedCompanyName = Base64.getEncoder()
-						.encodeToString(cipher.doFinal(license.getCompanyName().getBytes(StandardCharsets.UTF_8)));
-				String encryptedLicenseFor = Base64.getEncoder()
-						.encodeToString(cipher.doFinal(license.getLicenseFor().getBytes(StandardCharsets.UTF_8)));
-				String encryptedLicenseType = Base64.getEncoder()
-						.encodeToString(cipher.doFinal(license.getLicenseType().getBytes(StandardCharsets.UTF_8)));
-				String encryptedModules = Base64.getEncoder()
-						.encodeToString(cipher.doFinal(license.getModulesString().getBytes(StandardCharsets.UTF_8)));
 				String encryptedModuleExpiry = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getModuleExpiryString().getBytes(StandardCharsets.UTF_8)));
 
 				// Append encrypted data to the file
 				fileWriter.write(encryptedId + "$" + encryptedName + "$" + encryptedEmail + "$" + encryptedMacId + "$"
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
-						+ encryptedTimeStamp + "$" + encryptedCompanyName + "$" + encryptedLicenseFor + "$"
-						+ encryptedLicenseType + "$" + encryptedModules + "$" + encryptedModuleExpiry + "\n");
+						+ encryptedTimeStamp + "$" + encryptedModuleExpiry + "\n");
 
 				System.out.println("File generated successfully: " + filePath);
 
@@ -244,9 +235,11 @@ public class LicenseServiceImpl implements LicenseService {
 if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
     fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 } else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
     fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 }
 
 
