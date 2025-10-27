@@ -32,93 +32,29 @@ public class PublicLicenseController {
 
 
 @GetMapping("/check-validity/{licenseKey}")
-    public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
-        Map<String, Object> response = new HashMap<>();
-        Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-        boolean isValid = false;
+public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
+    Map<String, Object> response = new HashMap<>();
 
-        if (optionalLicense.isPresent()) {
-            License license = optionalLicense.get();
-            Date currentDate = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
+    if (optionalLicense.isPresent()) {
+        License license = optionalLicense.get();
+        boolean isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
 
-            Date finalExpiryDate = null;
-
-            // ✅ Find latest expiry based on moduleExpiry (Map<String, List<Object>>)
-            if (license.getModuleExpiry() != null && !license.getModuleExpiry().isEmpty()) {
-                for (Map.Entry<String, List<Object>> entry : license.getModuleExpiry().entrySet()) {
-                    try {
-                        List<Object> values = entry.getValue();
-
-                        if (values != null && values.size() >= 2) {
-                            // Convert Object → String
-                            int allowedDays = Integer.parseInt(values.get(0).toString());
-                            String generatedDateStr = values.get(1).toString();
-
-                            Date generatedDate = sdf.parse(generatedDateStr);
-
-                            // generatedDate + allowedDays = moduleFinalExpiry
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTime(generatedDate);
-                            cal.add(Calendar.DAY_OF_YEAR, allowedDays);
-                            Date moduleFinalExpiry = cal.getTime();
-
-                            // Track latest (max) expiry date
-                            if (finalExpiryDate == null || moduleFinalExpiry.after(finalExpiryDate)) {
-                                finalExpiryDate = moduleFinalExpiry;
-                            }
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-
-            // ✅ License valid only if current date < finalExpiryDate
-            if (finalExpiryDate != null) {
-                isValid = currentDate.before(finalExpiryDate);
-            }
-
-            // ✅ Prepare JSON Response
-            response.put("companyName", license.getCompanyName());
-            response.put("licenseFor", license.getLicenseFor());
-            response.put("licenseType", license.getLicenseType());
-            response.put("duration", license.getDuration());
-            response.put("createdAt", license.getTimeStamp());
-            response.put("modifiedAt", license.getModifiedAt());
-            response.put("moduleExpiry", license.getModuleExpiry());
-            response.put("modules", license.getModules());
-            response.put("message", isValid ? "License is valid" : "License expired");
-            response.put("status", isValid);
-            response.put("finalExpiryDate", finalExpiryDate);
-
-            // 🔹 Optional: Add remaining days
-            if (finalExpiryDate != null) {
-                long diffMs = finalExpiryDate.getTime() - currentDate.getTime();
-                long daysRemaining = diffMs / (1000 * 60 * 60 * 24);
-                response.put("daysRemaining", Math.max(daysRemaining, 0));
-            }
-
-            // 🔹 Conditional fields
-            if ("EMAIL_ID".equals(license.getLicenseType())) {
-                response.put("specific_email", license.getUserEmail());
-                response.put("weeklyLimit", license.getWeeklyLimit());
-            } else if ("MAC_ID".equals(license.getLicenseType())) {
-                response.put("MAC_ID", license.getMacId());
-                response.put("macUsageCount", license.getMacUsageCount());
-            }
-
+        if (isValid) {
+            response.put("status", true);
+            response.put("license", license); // ✅ saari license details
+            response.put("message", "License is valid");
         } else {
-            // License not found
-            response.put("message", "License not found");
             response.put("status", false);
+            response.put("message", "License expired or invalid");
         }
-
-        return ResponseEntity.ok(response);
+    } else {
+        response.put("status", false);
+        response.put("message", "License not found");
     }
+
+    return ResponseEntity.ok(response);
+}
 
 //     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
 //     boolean isValid = false;

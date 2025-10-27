@@ -67,8 +67,8 @@ public class LicenseServiceImpl implements LicenseService {
 		// String LicenseKeyPath =
 		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
 
-		String LicenseFilePath = "C://Users//Lenovo//Desktop//Java//" + LicenseFileName;
-		String LicenseKeyPath = "C://Users//Lenovo//Desktop//Java//" + LicenseKeyName;
+		String LicenseFilePath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseFileName;
+		String LicenseKeyPath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseKeyName;
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
@@ -178,11 +178,22 @@ public class LicenseServiceImpl implements LicenseService {
 						cipher.doFinal(license.getExpirationDate().toString().getBytes(StandardCharsets.UTF_8)));
 				String encryptedTimeStamp = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getTimeStamp().toString().getBytes(StandardCharsets.UTF_8)));
+				String encryptedCompanyName = Base64.getEncoder()
+						.encodeToString(cipher.doFinal(license.getCompanyName().getBytes(StandardCharsets.UTF_8)));
+				String encryptedLicenseFor = Base64.getEncoder()
+						.encodeToString(cipher.doFinal(license.getLicenseFor().getBytes(StandardCharsets.UTF_8)));
+				String encryptedLicenseType = Base64.getEncoder()
+						.encodeToString(cipher.doFinal(license.getLicenseType().getBytes(StandardCharsets.UTF_8)));
+				String encryptedModules = Base64.getEncoder()
+						.encodeToString(cipher.doFinal(license.getModulesString().getBytes(StandardCharsets.UTF_8)));
+				String encryptedModuleExpiry = Base64.getEncoder().encodeToString(
+						cipher.doFinal(license.getModuleExpiryString().getBytes(StandardCharsets.UTF_8)));
 
 				// Append encrypted data to the file
 				fileWriter.write(encryptedId + "$" + encryptedName + "$" + encryptedEmail + "$" + encryptedMacId + "$"
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
-						+ encryptedTimeStamp + "\n");
+						+ encryptedTimeStamp + "$" + encryptedCompanyName + "$" + encryptedLicenseFor + "$"
+						+ encryptedLicenseType + "$" + encryptedModules + "$" + encryptedModuleExpiry + "\n");
 
 				System.out.println("File generated successfully: " + filePath);
 
@@ -214,23 +225,27 @@ public class LicenseServiceImpl implements LicenseService {
 
 				fileWriter.write("Company Name     = " + license.getCompanyName() + "\n");
 				fileWriter.write("Person Name      = " + license.getName() + "\n");
+				fileWriter.write("Email            = " + license.getEmail() + "\n");
+				fileWriter.write("Phone Number     = " + license.getPhoneNumber() + "\n");
+				fileWriter.write("Primary Contact  = " + license.getPrimaryContactName() + " ("
+						+ license.getPrimaryContactNumber() + ")\n");
+				fileWriter.write("SCM Contact      = " + license.getScmContactName() + " ("
+						+ license.getScmContactNumber() + ")\n");
 				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
 				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
+				fileWriter.write("Expiration Date  = " + license.getExpirationDate() + "\n");
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
-
 				fileWriter.write("License For      = " + license.getLicenseFor() + "\n");
 				fileWriter.write("License Type     = " + license.getLicenseType() + "\n");
-
-
+				fileWriter.write("Modules          = " + license.getModulesString() + "\n");
+				fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 
 // Conditional fields based on License Type
 if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
 } else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
 }
 
