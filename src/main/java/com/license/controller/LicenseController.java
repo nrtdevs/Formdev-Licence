@@ -3,6 +3,14 @@ package com.license.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -77,6 +85,40 @@ public class LicenseController {
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_ACTUAL_LICENSE')")
 	public String createLicense() {
 		return "createLicense";
+	}
+
+	// Serve the generated license file as a download attachment
+	@GetMapping("/download/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Resource> downloadLicense(@PathVariable Long id) {
+		Optional<License> optional = licenseService.getLicenseById(id);
+		if (optional.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		License license = optional.get();
+		String filePath = license.getFilePath();
+		if (filePath == null || filePath.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		try {
+			Path path = Paths.get(filePath);
+			if (!Files.exists(path)) {
+				return ResponseEntity.notFound().build();
+			}
+			Resource resource = new UrlResource(path.toUri());
+			String contentType = Files.probeContentType(path);
+			if (contentType == null) {
+				contentType = "application/octet-stream";
+			}
+
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping("/demoLicense")

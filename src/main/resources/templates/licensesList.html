@@ -140,10 +140,10 @@
 		<div class="logo">License Module</div>
 		<nav>
 			<ul>
-				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
-				<li><a href="http://localhost:8181/licenses/getAllLicenses">LicensesList</a></li>
-				<li><a href="http://localhost:8181/users/getAllUsers">UsersList</a></li>
-				<li><a href="http://localhost:8181/logout">Logout</a></li>
+				<li><a href="http://139.59.80.148:8181/admin/homePage">Home</a></li>
+				<li><a href="http://139.59.80.148:8181/licenses/getAllLicenses">LicensesList</a></li>
+				<li><a href="http://139.59.80.148:8181/users/getAllUsers">UsersList</a></li>
+				<li><a href="http://139.59.80.148:8181/logout">Logout</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -170,6 +170,7 @@
 					<th>Expiration Date</th>
 					<th>Licence Type</th>
 					<th>Actions</th>
+					<th>Download</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -189,6 +190,9 @@
 					<td>
 						<a th:href="@{/licenses/edit/{id}(id=${license.id})}" class="btn btn-primary">Edit</a>
 						<a href="#" th:onclick="'deleteLicense(\'' + ${license.id} + '\');'" class="btn btn-danger">Delete</a>
+					</td>
+					<td>
+						<a th:href="@{/licenses/download/{id}(id=${license.id})}" class="btn btn-primary">Download</a>
 					</td>
 				</tr>
 			</tbody>

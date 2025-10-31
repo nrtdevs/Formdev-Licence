@@ -127,7 +127,7 @@
 				duration: duration
 			};
 
-			fetch('http://localhost:8181/licenses/createLicense', {
+			fetch('http://139.59.80.148:8181/licenses/createLicense', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -139,7 +139,7 @@
 						// Display a success message
 						console.log('License Bought Successfully');
 						alert('License Bought Successfully');
-						window.location.href = 'http://localhost:8181/users/home'; // redirect after buy a license 
+						window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after buy a license 
 						licenseForm.reset();
 						return response.json();
 					} else {

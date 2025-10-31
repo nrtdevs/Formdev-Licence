@@ -61,14 +61,16 @@ public class LicenseServiceImpl implements LicenseService {
 		String LicenseKeyName = "LicenseKey_" + license.getName() + "_" + license.getLicenseFor() + "_" + timestamp
 				+ ".txt";
 
-		// for PharmaDEM
-		// String LicenseFilePath =
-		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseFileName;
-		// String LicenseKeyPath =
-		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
+		// Use a project-relative folder so generated files are stored predictably
+		String baseDir = System.getProperty("user.dir") + File.separator + "generated_licenses" + File.separator;
+		// ensure directory exists
+		File base = new File(baseDir);
+		if (!base.exists()) {
+			base.mkdirs();
+		}
 
-		String LicenseFilePath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseFileName;
-		String LicenseKeyPath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseKeyName;
+		String LicenseFilePath = baseDir + LicenseFileName;
+		String LicenseKeyPath = baseDir + LicenseKeyName;
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
@@ -148,6 +150,10 @@ public class LicenseServiceImpl implements LicenseService {
 
 			//
 			File file = new File(filePath);
+			// ensure parent dirs exist (in case filePath points to nested dirs)
+			if (file.getParentFile() != null && !file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -206,10 +212,11 @@ public class LicenseServiceImpl implements LicenseService {
 		System.out.println("Generating plain text file");
 
 		try {
-			// Generate a timestamp for the file name
-			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
 			File file = new File(filePath);
+			// ensure parent dirs exist
+			if (file.getParentFile() != null && !file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
