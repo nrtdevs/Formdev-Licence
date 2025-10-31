@@ -67,8 +67,8 @@ public class LicenseServiceImpl implements LicenseService {
 		// String LicenseKeyPath =
 		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
 
-		String LicenseFilePath = "C://Users//Lenovo//Desktop//Java//" + LicenseFileName;
-		String LicenseKeyPath = "C://Users//Lenovo//Desktop//Java//" + LicenseKeyName;
+		String LicenseFilePath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseFileName;
+		String LicenseKeyPath = "C://Users//shiva//OneDrive//Desktop//java" + LicenseKeyName;
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
@@ -78,17 +78,13 @@ public class LicenseServiceImpl implements LicenseService {
 
 		// String selectedOptions= license.getSelectedOptions();
 
-		String macModuleName = license.getMacModuleName(); // For Module Based option
-		Integer macTenureDays = license.getMacTenureDays(); // For Tenure Based option
-		Integer macUsageCount = license.getMacUsageCount();
-		// For Count Based option
-
-		// Email Based License specific fields
-		String specificEmail = license.getSpecificEmail(); // For Email Specific option
-		// String emailModuleNamelicense.getemail(); // For Module Specific option
-		// Integer emailTenureDays=license.get()
-		; // For Tenure Bound option
-		Integer emailWeeklyLimit = license.getWeeklyLimit(); // For Count Based Weekly Limit option
+		// These fields are not directly updated via the edit form,
+		// so they are not relevant for the updateLicense method.
+		// String macModuleName = license.getMacModuleName();
+		// Integer macTenureDays = license.getMacTenureDays();
+		// String specificEmail = license.getSpecificEmail();
+		// String emailModuleName = license.getemail();
+		// Integer emailTenureDays = license.get();
 
 		Date expiryDate = calculateExpirationDate(duration);
 		license.setExpirationDate(convertToSqlDate(expiryDate));
@@ -112,15 +108,26 @@ public class LicenseServiceImpl implements LicenseService {
 
 	@Override
 	public License updateLicense(Long id, License updatedLicense) {
-
 		if (licenseRepository.existsById(id)) {
 			License license = licenseRepository.findById(id).get();
-			if (updatedLicense.getExpirationDate() != null)
-				license.setExpirationDate(updatedLicense.getExpirationDate());
-			if (updatedLicense.getEmail() != null)
-				license.setEmail(updatedLicense.getEmail());
-			if (updatedLicense.getName() != null)
-				license.setName(updatedLicense.getName());
+			license.setName(updatedLicense.getName());
+			license.setEmail(updatedLicense.getEmail());
+			license.setCompanyName(updatedLicense.getCompanyName());
+			license.setLicenseFor(updatedLicense.getLicenseFor());
+			license.setLicenseType(updatedLicense.getLicenseType());
+			license.setDuration(updatedLicense.getDuration());
+			license.setMacId(updatedLicense.getMacId());
+			license.setModules(updatedLicense.getModules());
+			license.setMacUsageCount(updatedLicense.getMacUsageCount());
+			license.setUserEmail(updatedLicense.getUserEmail());
+			license.setWeeklyLimit(updatedLicense.getWeeklyLimit());
+			license.setModuleExpiry(updatedLicense.getModuleExpiry()); // Add this line to update moduleExpiry
+
+			// Recalculate expiration date if duration is updated
+			if (updatedLicense.getDuration() > 0) {
+				Date expiryDate = calculateExpirationDate(updatedLicense.getDuration());
+				license.setExpirationDate(convertToSqlDate(expiryDate));
+			}
 
 			return licenseRepository.save(license);
 		}
@@ -171,11 +178,13 @@ public class LicenseServiceImpl implements LicenseService {
 						cipher.doFinal(license.getExpirationDate().toString().getBytes(StandardCharsets.UTF_8)));
 				String encryptedTimeStamp = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getTimeStamp().toString().getBytes(StandardCharsets.UTF_8)));
+				String encryptedModuleExpiry = Base64.getEncoder().encodeToString(
+						cipher.doFinal(license.getModuleExpiryString().getBytes(StandardCharsets.UTF_8)));
 
 				// Append encrypted data to the file
 				fileWriter.write(encryptedId + "$" + encryptedName + "$" + encryptedEmail + "$" + encryptedMacId + "$"
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
-						+ encryptedTimeStamp + "\n");
+						+ encryptedTimeStamp + "$" + encryptedModuleExpiry + "\n");
 
 				System.out.println("File generated successfully: " + filePath);
 
@@ -207,24 +216,30 @@ public class LicenseServiceImpl implements LicenseService {
 
 				fileWriter.write("Company Name     = " + license.getCompanyName() + "\n");
 				fileWriter.write("Person Name      = " + license.getName() + "\n");
+				fileWriter.write("Email            = " + license.getEmail() + "\n");
+				fileWriter.write("Phone Number     = " + license.getPhoneNumber() + "\n");
+				fileWriter.write("Primary Contact  = " + license.getPrimaryContactName() + " ("
+						+ license.getPrimaryContactNumber() + ")\n");
+				fileWriter.write("SCM Contact      = " + license.getScmContactName() + " ("
+						+ license.getScmContactNumber() + ")\n");
 				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
 				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
+				fileWriter.write("Expiration Date  = " + license.getExpirationDate() + "\n");
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
-
 				fileWriter.write("License For      = " + license.getLicenseFor() + "\n");
 				fileWriter.write("License Type     = " + license.getLicenseType() + "\n");
-
-
+				fileWriter.write("Modules          = " + license.getModulesString() + "\n");
+				fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 
 // Conditional fields based on License Type
 if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 } else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
     fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
     fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
+    fileWriter.write("Module Expiry    = " + license.getModuleExpiryString() + "\n");
 }
 
 

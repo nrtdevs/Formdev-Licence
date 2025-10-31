@@ -137,6 +137,41 @@ public class LicenseController {
 		return "licenseSearch";
 	}
 
+	@GetMapping("/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	public String showEditLicenseForm(@PathVariable Long id, Model model) {
+		Optional<License> license = licenseService.getLicenseById(id);
+		if (license.isPresent()) {
+			model.addAttribute("license", license.get());
+			return "editLicense";
+		} else {
+			return "redirect:/licenses/getAllLicenses";
+		}
+	}
+
+	// @PostMapping("/edit/{id}")
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	// public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+	// 	try {
+	// 		License resultLicense = licenseService.updateLicense(id, updatedLicense);
+	// 		return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+	// 	} catch (Exception e) {
+	// 		// You can customize the error response based on your requirements
+	// 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// 	}
+	// }
+	@PutMapping("/edit/{id}")
+@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+    try {
+        License resultLicense = licenseService.updateLicense(id, updatedLicense);
+        return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+    } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
 
 	//     @Autowired
 //     private LicenseService licenseService;
