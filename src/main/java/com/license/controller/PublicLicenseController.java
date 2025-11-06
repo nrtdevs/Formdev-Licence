@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.entity.License;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import com.license.service.LicenseService;
 
 import java.text.ParseException;
@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @RestController
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
@@ -38,71 +41,67 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
     Map<String, Object> response = new HashMap<>();
 
     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-    if (optionalLicense.isPresent()) {
-        License license = optionalLicense.get();
-        boolean isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+    if (!optionalLicense.isPresent()) {
+        response.put("status", false);
+        response.put("message", "License not found");
+        return ResponseEntity.ok(response);
+    }
 
-        if (isValid) {
+    License license = optionalLicense.get();
+
+    try {
+        // ✅ Parse moduleExpiryString JSON
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, List<String>> moduleMap =
+                mapper.readValue(license.getModuleExpiryString(), new TypeReference<Map<String, List<String>>>() {});
+
+        boolean atLeastOneModuleValid = false;
+        Date today = new Date();
+
+        for (Map.Entry<String, List<String>> entry : moduleMap.entrySet()) {
+
+            String moduleName = entry.getKey();
+            int validityDays = Integer.parseInt(entry.getValue().get(0));  // e.g. "50"
+            String creationDateStr = entry.getValue().get(1);              // e.g. "2025-11-06"
+
+            // ✅ Convert creation date string to Date
+            Date creationDate = new SimpleDateFormat("yyyy-MM-dd").parse(creationDateStr);
+
+            // ✅ expiryDate = creationDate + validityDays
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(creationDate);
+            cal.add(Calendar.DAY_OF_MONTH, validityDays);
+            Date moduleExpiry = cal.getTime();
+
+            // ✅ Check module validity
+            if (today.before(moduleExpiry)) {
+                atLeastOneModuleValid = true;
+                break; // ✅ license valid if ANY module valid
+            }
+        }
+
+        // ✅ Final license status
+        if (atLeastOneModuleValid) {
             response.put("status", true);
-            response.put("license", license); // ✅ saari license details
             response.put("message", "License is valid");
+            response.put("license", license);  // SAME RESPONSE
         } else {
             response.put("status", false);
             response.put("message", "License expired or invalid");
         }
-    } else {
+
+    } catch (Exception e) {
         response.put("status", false);
-        response.put("message", "License not found");
+        response.put("message", "Invalid module expiry data");
     }
 
     return ResponseEntity.ok(response);
 }
 
-//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-//     boolean isValid = false;
 
-//     if (optionalLicense.isPresent()) {
-//         License license = optionalLicense.get();
-//         isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
 
-//         // Always include these
-//         response.put("companyName", license.getCompanyName());
-//         response.put("licenseFor", license.getLicenseFor());
-//         response.put("licenseType", license.getLicenseType());
-//         response.put("duration", license.getDuration());
-//         // response.put("expirationDate", license.getExpirationDate() != null ? license.getExpirationDate().getTime() : null);
-//         response.put("message", isValid ? "License is valid" : "License expired");
-//         response.put("status", isValid);
-        
 
-//         response.put("createdAt", license.getTimeStamp());
-//         response.put("modifiedAt", license.getModifiedAt());
-
-//         // Conditional fields
-//         if ("EMAIL_ID".equals(license.getLicenseType())) {
-//             response.put("specific_email", license.getUserEmail());
-//             response.put("weeklyLimit", license.getWeeklyLimit());
-//             response.put("modules", license.getModules());
-//             response.put("moduleExpiry", license.getModuleExpiry());
-//         } else if ("MAC_ID".equals(license.getLicenseType())) {
-//             response.put("MAC_ID", license.getMacId());
-//             response.put("modules", license.getModules());
-//             response.put("macUsageCount", license.getMacUsageCount());
-//             response.put("moduleExpiry", license.getModuleExpiry());
-//         }
-
-//     } else {
-//         response.put("companyName", null);
-//         response.put("licenseFor", null);
-//         response.put("licenseType", null);
-//         response.put("duration", null);
-//         response.put("expirationDate", null);
-//         response.put("message", "License not found");
-//         response.put("status", false);
-//     }
-
-//     return ResponseEntity.ok(response);
-// }
 
 @GetMapping("/check-license/{licenseKey}")
 public ResponseEntity<Map<String, Object>> checkLicense(@PathVariable String licenseKey) {
