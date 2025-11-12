@@ -10,6 +10,8 @@ import com.license.service.LicenseService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,42 +52,35 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
     License license = optionalLicense.get();
 
     try {
-        // ✅ Parse moduleExpiryString JSON
         ObjectMapper mapper = new ObjectMapper();
 
         Map<String, List<String>> moduleMap =
-                mapper.readValue(license.getModuleExpiryString(), new TypeReference<Map<String, List<String>>>() {});
+            mapper.readValue(license.getModuleExpiryString(), new TypeReference<Map<String, List<String>>>() {});
+
+        // ✅ FIX: FORCE INDIA TIME
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
 
         boolean atLeastOneModuleValid = false;
-        Date today = new Date();
 
         for (Map.Entry<String, List<String>> entry : moduleMap.entrySet()) {
 
-            String moduleName = entry.getKey();
-            int validityDays = Integer.parseInt(entry.getValue().get(0));  // e.g. "50"
-            String creationDateStr = entry.getValue().get(1);              // e.g. "2025-11-06"
+            int validityDays = Integer.parseInt(entry.getValue().get(0));
+            String creationDateStr = entry.getValue().get(1);
 
-            // ✅ Convert creation date string to Date
-            Date creationDate = new SimpleDateFormat("yyyy-MM-dd").parse(creationDateStr);
+            LocalDate creationDate = LocalDate.parse(creationDateStr);
 
-            // ✅ expiryDate = creationDate + validityDays
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(creationDate);
-            cal.add(Calendar.DAY_OF_MONTH, validityDays);
-            Date moduleExpiry = cal.getTime();
+            LocalDate moduleExpiry = creationDate.plusDays(validityDays);
 
-            // ✅ Check module validity
-            if (today.before(moduleExpiry)) {
+            if (today.isBefore(moduleExpiry)) {
                 atLeastOneModuleValid = true;
-                break; // ✅ license valid if ANY module valid
+                break;
             }
         }
 
-        // ✅ Final license status
         if (atLeastOneModuleValid) {
             response.put("status", true);
             response.put("message", "License is valid");
-            response.put("license", license);  // SAME RESPONSE
+            response.put("license", license);
         } else {
             response.put("status", false);
             response.put("message", "License expired or invalid");
@@ -98,7 +93,6 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
 
     return ResponseEntity.ok(response);
 }
-
 
 
 
