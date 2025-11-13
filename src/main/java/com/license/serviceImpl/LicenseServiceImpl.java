@@ -131,7 +131,17 @@ public class LicenseServiceImpl implements LicenseService {
 				license.setExpirationDate(convertToSqlDate(expiryDate));
 			}
 
-			return licenseRepository.save(license);
+			License savedLicense = licenseRepository.save(license);
+
+			// Regenerate license files after update
+			createLicenseFile(savedLicense, savedLicense.getFilePath());
+			// Assuming LicenseKeyPath can be derived or is stored similarly,
+			// for now, I'll assume it's stored in the license object or can be derived from filePath
+			// For simplicity, I'll derive it based on the existing pattern.
+			String licenseKeyPath = savedLicense.getFilePath().replace("LicenseFile_", "LicenseKey_");
+			createLicenseKey(savedLicense, licenseKeyPath);
+
+			return savedLicense;
 		}
 		return null; // or throw an exception indicating that the license doesn't exist
 	}
