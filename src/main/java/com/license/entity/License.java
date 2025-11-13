@@ -92,11 +92,13 @@ private Map<String, List<Object>> moduleExpiry;
 
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
+    @Column(name = "last_modified_at")
+    @com.fasterxml.jackson.annotation.JsonProperty("last_modified_at")
+    private Date lastModifiedAt;
 
     @PreUpdate
     public void preUpdate() {
-        this.modifiedAt = new Date(); // update timestamp whenever record changes
+        this.lastModifiedAt = new Date(); // update timestamp whenever record changes
     }
 
     @PrePersist

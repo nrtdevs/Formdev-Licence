@@ -80,7 +80,9 @@ public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable St
         if (atLeastOneModuleValid) {
             response.put("status", true);
             response.put("message", "License is valid");
-            response.put("license", license);
+            Map<String, Object> licenseMap = new ObjectMapper().convertValue(license, new TypeReference<Map<String, Object>>() {});
+            licenseMap.put("last_modified_at", license.getLastModifiedAt());
+            response.put("license", licenseMap);
         } else {
             response.put("status", false);
             response.put("message", "License expired or invalid");

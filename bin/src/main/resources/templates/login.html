@@ -75,7 +75,7 @@
         <input type="password" id="password" name="password" required>
 
         <button type="submit">Login</button>
-         <p>Don't have an account? <a href="http://139.59.80.148:8181/users/registration">Register here</a></p>
+         <p>Don't have an account? <a href="http://localhost:8181/users/registration">Register here</a></p>
     </form>
   
 
@@ -109,7 +109,7 @@
                 password: password
             };
 
-            fetch('http://139.59.80.148:8181/users/loginUser', {
+            fetch('http://localhost:8181/users/loginUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +122,7 @@
                         console.log('Login successful');
                         alert('Login successful');
                          // Redirect to the desired page
-                    window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after login user 
+                    window.location.href = 'http://localhost:8181/users/home'; // redirect after login user 
 
                         loginForm.reset();
                         return response.json();

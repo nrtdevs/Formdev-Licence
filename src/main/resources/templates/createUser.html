@@ -92,7 +92,7 @@
 		<button type="submit">Register</button>
 
 		<p style="text-align: center; margin-top: 10px;">
-			Already have an account? <a href="http://139.59.80.148:8181/users/loginUser">Login here</a>.
+			Already have an account? <a href="http://localhost:8181/users/loginUser">Login here</a>.
 		</p>
 
 	</form>
@@ -130,7 +130,7 @@
 				password: password
 			};
 
-			fetch('http://139.59.80.148:8181/users/createUser', {
+			fetch('http://localhost:8181/users/createUser', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -142,7 +142,7 @@
 						// Display a success message
 						console.log('Registration successful');
 						alert('Registration successful');
-						window.location.href = 'http://139.59.80.148:8181/users/loginUser'; // redirect after login user 
+						window.location.href = 'http://localhost:8181/users/loginUser'; // redirect after login user 
 						registrationForm.reset();
 						return response.json();
 					} else {
