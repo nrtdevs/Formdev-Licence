@@ -199,26 +199,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateExpiryInputs() {
         macModuleExpiryContainer.innerHTML = '';
-        Array.from(modulesSelect.selectedOptions).forEach(module => {
-            const div = document.createElement('div');
-            div.classList.add('form-group');
-            const expiryData = currentModuleExpiry[module.value] || ['', ''];
-            div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
-                             <input type="number" name="moduleExpiry[${module.value}]" class="form-control" value="${expiryData[0]}">`;
-            macModuleExpiryContainer.appendChild(div);
-        });
+        const selectedModules = Array.from(modulesSelect.selectedOptions);
+        if (selectedModules.length > 0) {
+            if (selectedModules.length === modulesSelect.options.length) {
+                // All modules selected
+                const div = document.createElement('div');
+                div.classList.add('form-group');
+                const expiryData = currentModuleExpiry['ALL_MODULES'] || ['', ''];
+                div.innerHTML = `<label class="form-label">All Modules Expiry (days)</label>
+                                 <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" value="${expiryData[0]}" required>`;
+                macModuleExpiryContainer.appendChild(div);
+            } else {
+                // Specific modules selected
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    const expiryData = currentModuleExpiry[module.value] || ['', ''];
+                    div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
+                                     <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryData[0]}" required>`;
+                    macModuleExpiryContainer.appendChild(div);
+                });
+            }
+        }
     }
 
     function updateExpiryInputsEmail() {
         emailModuleExpiryContainer.innerHTML = '';
-        Array.from(emailModulesSelect.selectedOptions).forEach(module => {
-            const div = document.createElement('div');
-            div.classList.add('form-group');
-            const expiryData = currentModuleExpiry[module.value] || ['', ''];
-            div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
-                             <input type="number" name="moduleExpiry[${module.value}]" class="form-control" value="${expiryData[0]}">`;
-            emailModuleExpiryContainer.appendChild(div);
-        });
+        const selectedModules = Array.from(emailModulesSelect.selectedOptions);
+        if (selectedModules.length > 0) {
+            if (selectedModules.length === emailModulesSelect.options.length) {
+                // All modules selected
+                const div = document.createElement('div');
+                div.classList.add('form-group');
+                const expiryData = currentModuleExpiry['ALL_MODULES'] || ['', ''];
+                div.innerHTML = `<label class="form-label">All Modules Expiry (days)</label>
+                                 <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" value="${expiryData[0]}" required>`;
+                emailModuleExpiryContainer.appendChild(div);
+            } else {
+                // Specific modules selected
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    const expiryData = currentModuleExpiry[module.value] || ['', ''];
+                    div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
+                                     <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" value="${expiryData[0]}" required>`;
+                    emailModuleExpiryContainer.appendChild(div);
+                });
+            }
+        }
     }
 
     licenseType.addEventListener('change', toggleLicenseTypeFields);
@@ -226,51 +254,84 @@ document.addEventListener('DOMContentLoaded', function () {
     modulesSelect.addEventListener('change', updateExpiryInputs);
     emailModulesSelect.addEventListener('change', updateExpiryInputsEmail);
 
-form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const formData = new FormData(form);
-    const data = {};
-    for (let [key,value] of formData.entries()) {
-        if (key==='modules') { 
-            data[key] = data[key]||[]; 
-            data[key].push(value); 
-        } else data[key] = value;
-    }
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-    // Merge dynamic expiry and calculate actual date
-    const expiryInputs = form.querySelectorAll('input[name^="moduleExpiry"]');
-    data.moduleExpiry = {};
-    expiryInputs.forEach(input=>{
-        const moduleName = input.name.match(/\[(.*)\]/)[1];
-        const days = parseInt(input.value) || 0;
+        const formData = new FormData(form);
+        const data = {};
 
-        // Calculate expiry date: today + days
-        const today = new Date();
-        const expiryDate = new Date(today.setDate(today.getDate() + days));
-        const yyyy = expiryDate.getFullYear();
-        const mm = String(expiryDate.getMonth() + 1).padStart(2, '0');
-        const dd = String(expiryDate.getDate()).padStart(2, '0');
-        const expiryDateString = `${yyyy}-${mm}-${dd}`;
-
-        data.moduleExpiry[moduleName] = [input.value, expiryDateString];
-    });
-  data.last_modified_at = new Date().toISOString();
-    try {
-        const response = await fetch(form.action, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if(response.ok) {
-            alert('License updated successfully!');
-            window.location.href = 'http://localhost:8181/admin/homePage';
-        } else {
-            alert('Error updating license: ' + await response.text());
+        // Collect basic form fields
+        for (let [key, value] of formData.entries()) {
+            if (key === 'modules') {
+                data[key] = data[key] || [];
+                data[key].push(value);
+            } else {
+                data[key] = value;
+            }
         }
-    } catch(err) {
-        alert('Error: ' + err.message);
-    }
-});
+
+        // Handle integer fields that might be empty strings
+        data.macUsageCount = data.macUsageCount !== '' ? parseInt(data.macUsageCount) : null;
+        data.weeklyLimit = data.weeklyLimit !== '' ? parseInt(data.weeklyLimit) : null;
+        data.duration = data.duration !== '' ? parseInt(data.duration) : null;
+
+        // Process modules and moduleExpiry
+        const modulesExpiry = {};
+        const now = new Date();
+        const today = now.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
+
+        let selectedModulesForSubmission = [];
+        let currentModulesSelect = (licenseType.value === 'MAC_ID') ? modulesSelect : emailModulesSelect;
+        let currentModuleExpiryContainer = (licenseType.value === 'MAC_ID') ? macModuleExpiryContainer : emailModuleExpiryContainer;
+
+        const selectedOptions = Array.from(currentModulesSelect.selectedOptions).map(o => o.value);
+
+        if (selectedOptions.length > 0) {
+            if (selectedOptions.length === currentModulesSelect.options.length) {
+                // All modules selected
+                const expiryInput = currentModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]"]');
+                if (!expiryInput || !expiryInput.value) {
+                    alert('Please enter expiry for all modules.');
+                    return;
+                }
+                modulesExpiry['ALL_MODULES'] = [expiryInput.value, today];
+                selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
+            } else {
+                // Specific modules selected
+                for (const moduleName of selectedOptions) {
+                    const expiryInput = currentModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]"]`);
+                    if (!expiryInput || !expiryInput.value) {
+                        alert(`Please enter expiry for module: ${moduleName}`);
+                        return;
+                    }
+                    modulesExpiry[moduleName] = [expiryInput.value, today];
+                }
+                selectedModulesForSubmission = selectedOptions;
+            }
+        }
+
+        data.modules = selectedModulesForSubmission;
+        data.moduleExpiry = modulesExpiry;
+        data.last_modified_at = new Date().toISOString();
+
+        try {
+            const response = await fetch(form.action, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('License updated successfully!');
+                window.location.href = 'http://localhost:8181/admin/homePage';
+            } else {
+                const errorText = await response.text();
+                alert('Error updating license: ' + errorText);
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    });
 
 
     initForm();

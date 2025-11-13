@@ -364,123 +364,190 @@
 
             function updateModuleExpiryInputs() {
                 macModuleExpiryContainer.innerHTML = '';
-                Array.from(modulesSelect.selectedOptions).forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    div.innerHTML = `
-                        <label class="form-label">${module.value} Expiry (days)</label>
-                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1">
-                    `;
-                    macModuleExpiryContainer.appendChild(div);
-                });
+                const selectedModules = Array.from(modulesSelect.selectedOptions);
+                if (selectedModules.length > 0) {
+                    if (selectedModules.length === modulesSelect.options.length) {
+                        // All modules selected
+                        const div = document.createElement('div');
+                        div.classList.add('form-group');
+                        div.innerHTML = `
+                            <label class="form-label">All Modules Expiry (days)</label>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" required>
+                        `;
+                        macModuleExpiryContainer.appendChild(div);
+                    } else {
+                        // Specific modules selected
+                        selectedModules.forEach(module => {
+                            const div = document.createElement('div');
+                            div.classList.add('form-group');
+                            div.innerHTML = `
+                                <label class="form-label">${module.value} Expiry (days)</label>
+                                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" required>
+                            `;
+                            macModuleExpiryContainer.appendChild(div);
+                        });
+                    }
+                }
             }
 
             function updateModuleExpiryInputsEmail() {
                 emailModuleExpiryContainer.innerHTML = '';
-                Array.from(emailModulesSelect.selectedOptions).forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    div.innerHTML = `
-                        <label class="form-label">${module.value} Expiry (days)</label>
-                        <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1">
-                    `;
-                    emailModuleExpiryContainer.appendChild(div);
-                });
+                const selectedModules = Array.from(emailModulesSelect.selectedOptions);
+                if (selectedModules.length > 0) {
+                    if (selectedModules.length === emailModulesSelect.options.length) {
+                        // All modules selected
+                        const div = document.createElement('div');
+                        div.classList.add('form-group');
+                        div.innerHTML = `
+                            <label class="form-label">All Modules Expiry (days)</label>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" required>
+                        `;
+                        emailModuleExpiryContainer.appendChild(div);
+                    } else {
+                        // Specific modules selected
+                        Array.from(emailModulesSelect.selectedOptions).forEach(module => {
+                            const div = document.createElement('div');
+                            div.classList.add('form-group');
+                            div.innerHTML = `
+                                <label class="form-label">${module.value} Expiry (days)</label>
+                                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" required>
+                            `;
+                            emailModuleExpiryContainer.appendChild(div);
+                        });
+                    }
+                }
             }
-async function handleFormSubmit(e) {
-    e.preventDefault();
 
-    if (licenseType.value === 'MAC_ID') {
-        const macId = document.getElementById('macId').value;
-        const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-        if (!macRegex.test(macId)) {
-            alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
-            return;
-        }
-    }
+            async function handleFormSubmit(e) {
+                e.preventDefault();
 
-    if (licenseType.value === 'EMAIL_ID') {
-        const userEmail = document.getElementById('userEmail').value;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(userEmail)) {
-            alert('Please enter a valid email address');
-            return;
-        }
-    }
+                if (licenseType.value === 'MAC_ID') {
+                    const macId = document.getElementById('macId').value;
+                    const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                    if (!macRegex.test(macId)) {
+                        alert('Please enter a valid MAC ID (e.g. 00:1A:2B:3C:4D:5E)');
+                        return;
+                    }
+                }
 
-    const modulesExpiry = {};
-    const now = new Date();
-const today = now.toLocaleDateString('en-CA');  // "YYYY-MM-DD"
+                if (licenseType.value === 'EMAIL_ID') {
+                    const userEmail = document.getElementById('userEmail').value;
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(userEmail)) {
+                        alert('Please enter a valid email address');
+                        return;
+                    }
+                }
 
-    if (licenseType.value === 'MAC_ID') {
-        Array.from(macModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
-            const moduleName = input.name.match(/\[(.*)\]/)[1];
-            const expiryValue = input.value;
-            modulesExpiry[moduleName] = [expiryValue, today]; // 👈 Added current date
+                const modulesExpiry = {};
+                const now = new Date();
+                const today = now.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
+
+                let selectedModulesForSubmission = [];
+
+                if (licenseType.value === 'MAC_ID') {
+                    const selectedMacModules = Array.from(modulesSelect.selectedOptions).map(o => o.value);
+                    if (selectedMacModules.length > 0) {
+                        if (selectedMacModules.length === modulesSelect.options.length) {
+                            // All modules selected, use a special key
+                            const expiryInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]"]');
+                            if (!expiryInput || !expiryInput.value) {
+                                alert('Please enter expiry for all modules.');
+                                return;
+                            }
+                            modulesExpiry['ALL_MODULES'] = [expiryInput.value, today];
+                            selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
+                        } else {
+                            // Specific modules selected
+                            for (const moduleName of selectedMacModules) {
+                                const expiryInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]"]`);
+                                if (!expiryInput || !expiryInput.value) {
+                                    alert(`Please enter expiry for module: ${moduleName}`);
+                                    return;
+                                }
+                                modulesExpiry[moduleName] = [expiryInput.value, today];
+                            }
+                            selectedModulesForSubmission = selectedMacModules;
+                        }
+                    }
+                } else if (licenseType.value === 'EMAIL_ID') {
+                    const selectedEmailModules = Array.from(emailModulesSelect.selectedOptions).map(o => o.value);
+                    if (selectedEmailModules.length > 0) {
+                        if (selectedEmailModules.length === emailModulesSelect.options.length) {
+                            // All modules selected, use a special key
+                            const expiryInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]"]');
+                            if (!expiryInput || !expiryInput.value) {
+                                alert('Please enter expiry for all modules.');
+                                return;
+                            }
+                            modulesExpiry['ALL_MODULES'] = [expiryInput.value, today];
+                            selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
+                        } else {
+                            // Specific modules selected
+                            for (const moduleName of selectedEmailModules) {
+                                const expiryInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]"]`);
+                                if (!expiryInput || !expiryInput.value) {
+                                    alert(`Please enter expiry for module: ${moduleName}`);
+                                    return;
+                                }
+                                modulesExpiry[moduleName] = [expiryInput.value, today];
+                            }
+                            selectedModulesForSubmission = selectedEmailModules;
+                        }
+                    }
+                }
+
+                const formData = {
+                    companyName: document.getElementById('companyName').value,
+                    name: document.getElementById('contactPerson').value,
+                    email: document.getElementById('email').value,
+                    phoneNumber: document.getElementById('phone').value,
+                    primaryContactName: document.getElementById('primaryContactName').value,
+                    primaryContactNumber: document.getElementById('primaryContactNumber').value,
+                    scmContactName: document.getElementById('scmContactName').value,
+                    scmContactNumber: document.getElementById('scmContactNumber').value,
+                    licenseFor: licenseFor.value,
+                    licenseType: licenseType.value,
+                    type: document.getElementById('licensePurpose').value,
+                    macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
+                    macUsageCount: licenseType.value === 'MAC_ID' && document.getElementById('usageCount').value !== '' ? parseInt(document.getElementById('usageCount').value) : null,
+                    weeklyLimit: licenseType.value === 'EMAIL_ID' && document.getElementById('weeklyLimit').value !== '' ? parseInt(document.getElementById('weeklyLimit').value) : null,
+                    modules: selectedModulesForSubmission, // Use the processed list
+                    moduleExpiry: modulesExpiry,
+                    userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null,
+                    last_modified_at: new Date().toISOString()
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8181/licenses/createLicense', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(errorText || 'Error creating license');
+                    }
+
+                    const data = await response.json();
+                    console.log('Response:', data);
+
+                    if (data) {
+                        alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
+                        window.location.href = 'http://localhost:8181/users/home';
+                    } else {
+                        throw new Error('Error creating license');
+                    }
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    alert('Error: ' + error.message);
+                }
+            }
         });
-    } else if (licenseType.value === 'EMAIL_ID') {
-        Array.from(emailModuleExpiryContainer.querySelectorAll('input')).forEach(input => {
-            const moduleName = input.name.match(/\[(.*)\]/)[1];
-            const expiryValue = input.value;
-            modulesExpiry[moduleName] = [expiryValue, today]; // 👈 Added current date
-        });
-    }
-
-    const formData = {
-        companyName: document.getElementById('companyName').value,
-        name: document.getElementById('contactPerson').value,
-        email: document.getElementById('email').value,
-        phoneNumber: document.getElementById('phone').value,
-        primaryContactName: document.getElementById('primaryContactName').value,
-        primaryContactNumber: document.getElementById('primaryContactNumber').value,
-        scmContactName: document.getElementById('scmContactName').value,
-        scmContactNumber: document.getElementById('scmContactNumber').value,
-        licenseFor: licenseFor.value,
-        licenseType: licenseType.value,
-        type: document.getElementById('licensePurpose').value,
-        macId: licenseType.value === 'MAC_ID' ? document.getElementById('macId').value : null,
-        //duration: licenseType.value === 'EMAIL_ID'
-          //  ? document.getElementById('emailTenureDays').value
-          //  : licenseType.value === 'MAC_ID'
-           //    ? document.getElementById('macTenureDays').value
-             //   : null,
-        macUsageCount: licenseType.value === 'MAC_ID' ? document.getElementById('usageCount').value : null,
-        weeklyLimit: licenseType.value === 'EMAIL_ID' ? document.getElementById('weeklyLimit').value : null,
-        modules: licenseType.value === 'MAC_ID'
-            ? Array.from(modulesSelect.selectedOptions).map(o => o.value)
-            : licenseType.value === 'EMAIL_ID'
-                ? Array.from(emailModulesSelect.selectedOptions).map(o => o.value)
-                : [],
-        moduleExpiry: modulesExpiry,
-        userEmail: licenseType.value === 'EMAIL_ID' ? document.getElementById('userEmail').value : null,
-        last_modified_at: new Date().toISOString()
-    };
-
-    try {
-        const response = await fetch('http://localhost:8181/licenses/createLicense', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        const data = await response.json();
-        console.log('Response:', data);
-        
-        if (data) {
-            alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
-            window.location.href = 'http://localhost:8181/users/home';
-        } else {
-            throw new Error('Error creating license');
-        }
-    } catch (error) {
-        console.error('Submission error:', error);
-        alert('Error: ' + error.message);
-    }
-    }
-});
 
     </script>
 </body>

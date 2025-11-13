@@ -54,7 +54,7 @@ public class License {
 
     // Module expiry JSON stored in DB
     @Lob
-    @Column(name = "module_expiry")
+    @Column(name = "module_expiry", columnDefinition = "LONGTEXT")
     private String moduleExpiryString;
 
    @Transient

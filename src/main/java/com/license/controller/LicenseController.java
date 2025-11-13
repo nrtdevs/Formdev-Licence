@@ -56,15 +56,14 @@ public class LicenseController {
 
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_ACTUAL_LICENSE') or hasRole('ROLE_BUY_DEMO_LICENSE') ")
 	@PostMapping("/createLicense")
-	public ResponseEntity<License> createLicense(@RequestBody License license, HttpSession session) {
-
+	public ResponseEntity<?> createLicense(@RequestBody License license, HttpSession session) {
 		System.out.print(license);
-		License createdLicense = licenseService.createLicense(license, session);
-
-		if (createdLicense != null) {
+		try {
+			License createdLicense = licenseService.createLicense(license, session);
 			return new ResponseEntity<>(createdLicense, HttpStatus.OK);
-		} else {
-			// You can customize the response based on your requirements
+		} catch (com.license.exception.ModuleExpiryMissingException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -204,10 +203,12 @@ public class LicenseController {
 	// }
 	@PutMapping("/edit/{id}")
 @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
-public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+public ResponseEntity<?> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
     try {
         License resultLicense = licenseService.updateLicense(id, updatedLicense);
         return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+    } catch (com.license.exception.ModuleExpiryMissingException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     } catch (Exception e) {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
