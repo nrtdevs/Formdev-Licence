@@ -143,8 +143,8 @@
         <div class="logo">License Module</div>
         <nav>
             <ul>
-                <li><a href="http://localhost:8181/admin/homePage">Home</a></li>
-                <li><a href="http://localhost:8181/logout">Logout</a></li>
+                <li><a href="http://139.59.80.148:8181/admin/homePage">Home</a></li>
+                <li><a href="http://139.59.80.148:8181/logout">Logout</a></li>
             </ul>
         </nav>
     </header>
@@ -372,7 +372,9 @@
                         div.classList.add('form-group');
                         div.innerHTML = `
                             <label class="form-label">All Modules Expiry (days)</label>
-                            <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" required>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" required>
+                            <label class="form-label">All Modules Expiry (Date)</label>
+                            <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" required>
                         `;
                         macModuleExpiryContainer.appendChild(div);
                     } else {
@@ -382,7 +384,9 @@
                             div.classList.add('form-group');
                             div.innerHTML = `
                                 <label class="form-label">${module.value} Expiry (days)</label>
-                                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" required>
+                                <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" required>
+                                <label class="form-label">${module.value} Expiry (Date)</label>
+                                <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" required>
                             `;
                             macModuleExpiryContainer.appendChild(div);
                         });
@@ -400,7 +404,9 @@
                         div.classList.add('form-group');
                         div.innerHTML = `
                             <label class="form-label">All Modules Expiry (days)</label>
-                            <input type="number" name="moduleExpiry[ALL_MODULES]" class="form-control" min="1" required>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" required>
+                            <label class="form-label">All Modules Expiry (Date)</label>
+                            <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" required>
                         `;
                         emailModuleExpiryContainer.appendChild(div);
                     } else {
@@ -410,7 +416,9 @@
                             div.classList.add('form-group');
                             div.innerHTML = `
                                 <label class="form-label">${module.value} Expiry (days)</label>
-                                <input type="number" name="moduleExpiry[${module.value}]" class="form-control" min="1" required>
+                                <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" required>
+                                <label class="form-label">${module.value} Expiry (Date)</label>
+                                <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" required>
                             `;
                             emailModuleExpiryContainer.appendChild(div);
                         });
@@ -440,8 +448,6 @@
                 }
 
                 const modulesExpiry = {};
-                const now = new Date();
-                const today = now.toLocaleDateString('en-CA'); // "YYYY-MM-DD"
 
                 let selectedModulesForSubmission = [];
 
@@ -450,22 +456,24 @@
                     if (selectedMacModules.length > 0) {
                         if (selectedMacModules.length === modulesSelect.options.length) {
                             // All modules selected, use a special key
-                            const expiryInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]"]');
-                            if (!expiryInput || !expiryInput.value) {
-                                alert('Please enter expiry for all modules.');
+                            const expiryDaysInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_days"]');
+                            const expiryDateInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_date"]');
+                            if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                alert('Please enter both expiry days and date for all modules.');
                                 return;
                             }
-                            modulesExpiry['ALL_MODULES'] = [expiryInput.value, today];
+                            modulesExpiry['ALL_MODULES'] = [expiryDaysInput.value, expiryDateInput.value];
                             selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
                         } else {
                             // Specific modules selected
                             for (const moduleName of selectedMacModules) {
-                                const expiryInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]"]`);
-                                if (!expiryInput || !expiryInput.value) {
-                                    alert(`Please enter expiry for module: ${moduleName}`);
+                                const expiryDaysInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_days"]`);
+                                const expiryDateInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_date"]`);
+                                if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                    alert(`Please enter both expiry days and date for module: ${moduleName}`);
                                     return;
                                 }
-                                modulesExpiry[moduleName] = [expiryInput.value, today];
+                                modulesExpiry[moduleName] = [expiryDaysInput.value, expiryDateInput.value];
                             }
                             selectedModulesForSubmission = selectedMacModules;
                         }
@@ -475,22 +483,24 @@
                     if (selectedEmailModules.length > 0) {
                         if (selectedEmailModules.length === emailModulesSelect.options.length) {
                             // All modules selected, use a special key
-                            const expiryInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]"]');
-                            if (!expiryInput || !expiryInput.value) {
-                                alert('Please enter expiry for all modules.');
+                            const expiryDaysInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_days"]');
+                            const expiryDateInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_date"]');
+                            if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                alert('Please enter both expiry days and date for all modules.');
                                 return;
                             }
-                            modulesExpiry['ALL_MODULES'] = [expiryInput.value, today];
+                            modulesExpiry['ALL_MODULES'] = [expiryDaysInput.value, expiryDateInput.value];
                             selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
                         } else {
                             // Specific modules selected
                             for (const moduleName of selectedEmailModules) {
-                                const expiryInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]"]`);
-                                if (!expiryInput || !expiryInput.value) {
-                                    alert(`Please enter expiry for module: ${moduleName}`);
+                                const expiryDaysInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_days"]`);
+                                const expiryDateInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_date"]`);
+                                if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                    alert(`Please enter both expiry days and date for module: ${moduleName}`);
                                     return;
                                 }
-                                modulesExpiry[moduleName] = [expiryInput.value, today];
+                                modulesExpiry[moduleName] = [expiryDaysInput.value, expiryDateInput.value];
                             }
                             selectedModulesForSubmission = selectedEmailModules;
                         }
@@ -519,7 +529,7 @@
                 };
 
                 try {
-                    const response = await fetch('http://localhost:8181/licenses/createLicense', {
+                    const response = await fetch('http://139.59.80.148:8181/licenses/createLicense', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -538,7 +548,7 @@
 
                     if (data) {
                         alert('License Bought Successfully! \nFile Saved at: \n' + data.filePath);
-                        window.location.href = 'http://localhost:8181/users/home';
+                        window.location.href = 'http://139.59.80.148:8181/users/home';
                     } else {
                         throw new Error('Error creating license');
                     }
