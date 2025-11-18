@@ -10,13 +10,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.license.entity.License;
 import com.license.entity.User;
@@ -397,6 +403,53 @@ if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
 	@Override
 public Optional<License> getLicenseByKey(String licenseKey) {
     return licenseRepository.findByLicenseKey(licenseKey);
+}
+
+@Override
+public Resource getEncryptedLicenseFile(Long id) throws Exception {
+    Optional<License> optionalLicense = licenseRepository.findById(id);
+    if (optionalLicense.isEmpty()) {
+        throw new RuntimeException("License not found with ID: " + id);
+    }
+    License license = optionalLicense.get();
+    String filePath = license.getFilePath();
+
+    if (filePath == null || filePath.isEmpty()) {
+        throw new RuntimeException("License file path not found for license ID: " + id);
+    }
+
+    Path path = Paths.get(filePath);
+    if (!Files.exists(path)) {
+        throw new RuntimeException("License file not found at path: " + filePath);
+    }
+
+    // Read the content of the license file
+    String fileContent = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+
+    // Encrypt the content
+    String encryptedContent = encrypt(fileContent);
+
+    // Create a resource from the encrypted content
+    ByteArrayResource resource = new ByteArrayResource(encryptedContent.getBytes(StandardCharsets.UTF_8)) {
+        @Override
+        public String getFilename() {
+            return "encrypted_" + path.getFileName().toString();
+        }
+    };
+    return resource;
+}
+
+private String encrypt(String data) throws Exception {
+    byte[] keyBytes = new byte[16];
+    byte[] secretKeyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+    System.arraycopy(secretKeyBytes, 0, keyBytes, 0, Math.min(secretKeyBytes.length, keyBytes.length));
+    SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
+
+    Cipher cipher = Cipher.getInstance(ALGORITHM);
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+    byte[] encryptedBytes = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+    return Base64.getEncoder().encodeToString(encryptedBytes);
 }
 
 }

@@ -172,6 +172,7 @@
 					<th>Licence Type</th>
 					<th>Actions</th>
 					<th>Download</th>
+					<th>Download Encrypted</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -194,6 +195,9 @@
 					</td>
 					<td>
 						<a th:href="@{/licenses/download/{id}(id=${license.id})}" class="btn btn-primary">Download</a>
+					</td>
+					<td>
+						<a th:href="@{/licenses/downloadEncrypted/{id}(id=${license.id})}" class="btn btn-primary">Download Encrypted</a>
 					</td>
 				</tr>
 			</tbody>

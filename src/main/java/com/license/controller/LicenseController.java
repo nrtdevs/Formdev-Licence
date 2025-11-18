@@ -120,6 +120,24 @@ public class LicenseController {
 		}
 	}
 
+	@GetMapping("/downloadEncrypted/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Resource> downloadEncryptedLicense(@PathVariable Long id) {
+		try {
+			Resource resource = licenseService.getEncryptedLicenseFile(id);
+
+			String contentType = "application/octet-stream"; // Generic binary stream
+			String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+					.body(resource);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
 	@GetMapping("/demoLicense")
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_DEMO_LICENSE')")
 	public String demoLicense() {

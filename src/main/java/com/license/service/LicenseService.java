@@ -33,6 +33,8 @@ public interface LicenseService {
 
 	License findLicenseBySearchInput(String searchInput);
 	
-Optional<License> getLicenseByKey(String licenseKey);
+	Optional<License> getLicenseByKey(String licenseKey);
+
+	org.springframework.core.io.Resource getEncryptedLicenseFile(Long id) throws Exception;
 
 }
