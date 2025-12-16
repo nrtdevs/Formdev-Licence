@@ -133,7 +133,7 @@ public class LicenseServiceImpl implements LicenseService {
 			license.setCompanyName(updatedLicense.getCompanyName());
 			license.setLicenseFor(updatedLicense.getLicenseFor());
 			license.setLicenseType(updatedLicense.getLicenseType());
-			license.setDuration(updatedLicense.getDuration());
+			// license.setDuration(updatedLicense.getDuration());
 			license.setMacId(updatedLicense.getMacId());
 			license.setModules(updatedLicense.getModules());
 			license.setMacUsageCount(updatedLicense.getMacUsageCount());
