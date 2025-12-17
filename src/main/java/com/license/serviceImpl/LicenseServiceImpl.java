@@ -133,7 +133,7 @@ public class LicenseServiceImpl implements LicenseService {
 			license.setCompanyName(updatedLicense.getCompanyName());
 			license.setLicenseFor(updatedLicense.getLicenseFor());
 			license.setLicenseType(updatedLicense.getLicenseType());
-			// license.setDuration(updatedLicense.getDuration());
+			 license.setDuration(updatedLicense.getDuration());
 			license.setMacId(updatedLicense.getMacId());
 			license.setModules(updatedLicense.getModules());
 			license.setMacUsageCount(updatedLicense.getMacUsageCount());
@@ -271,7 +271,7 @@ public class LicenseServiceImpl implements LicenseService {
 				fileWriter.write("SCM Contact      = " + (license.getScmContactName() != null ? license.getScmContactName() : "N/A") + " ("
 						+ (license.getScmContactNumber() != null ? license.getScmContactNumber() : "N/A") + ")\n");
 				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
-				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
+				// fileWriter.write("License Duration = " + license.getDuration() + " days\n");
 				fileWriter.write("Expiration Date  = " + license.getExpirationDate() + "\n");
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
 				fileWriter.write("License For      = " + license.getLicenseFor() + "\n");
