@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const expiryData = currentModuleExpiry['ALL_MODULES'] || ['', ''];
                 div.innerHTML = `<label class="form-label">All Modules Expiry (days)</label>
                                  <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" value="${expiryData[0]}" required>
-                                 <label class="form-label">All Modules Expiry (Date)</label>
+                                 <label class="form-label">All Modules (Module Activation Date)</label>
                                  <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" value="${expiryData[1]}" required>`;
                 macModuleExpiryContainer.appendChild(div);
             } else {
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const expiryData = currentModuleExpiry[module.value] || ['', ''];
                     div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
                                      <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" value="${expiryData[0]}" required>
-                                     <label class="form-label">${module.value} Expiry (Date)</label>
+                                     <label class="form-label">${module.value} (Module Activation Date)</label>
                                      <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" value="${expiryData[1]}" required>`;
                     macModuleExpiryContainer.appendChild(div);
                 });
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const expiryData = currentModuleExpiry['ALL_MODULES'] || ['', ''];
                 div.innerHTML = `<label class="form-label">All Modules Expiry (days)</label>
                                  <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" value="${expiryData[0]}" required>
-                                 <label class="form-label">All Modules Expiry (Date)</label>
+                                 <label class="form-label">All Modules (Module Activation Date)</label>
                                  <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" value="${expiryData[1]}" required>`;
                 emailModuleExpiryContainer.appendChild(div);
             } else {
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     const expiryData = currentModuleExpiry[module.value] || ['', ''];
                     div.innerHTML = `<label class="form-label">${module.value} Expiry (days)</label>
                                      <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" value="${expiryData[0]}" required>
-                                     <label class="form-label">${module.value} Expiry (Date)</label>
+                                     <label class="form-label">${module.value} (Module Activation Date)</label>
                                      <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" value="${expiryData[1]}" required>`;
                     emailModuleExpiryContainer.appendChild(div);
                 });
