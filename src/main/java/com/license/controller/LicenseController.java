@@ -3,6 +3,14 @@ package com.license.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,15 +56,14 @@ public class LicenseController {
 
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_ACTUAL_LICENSE') or hasRole('ROLE_BUY_DEMO_LICENSE') ")
 	@PostMapping("/createLicense")
-	public ResponseEntity<License> createLicense(@RequestBody License license, HttpSession session) {
-
+	public ResponseEntity<?> createLicense(@RequestBody License license, HttpSession session) {
 		System.out.print(license);
-		License createdLicense = licenseService.createLicense(license, session);
-
-		if (createdLicense != null) {
+		try {
+			License createdLicense = licenseService.createLicense(license, session);
 			return new ResponseEntity<>(createdLicense, HttpStatus.OK);
-		} else {
-			// You can customize the response based on your requirements
+		} catch (com.license.exception.ModuleExpiryMissingException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -77,6 +84,58 @@ public class LicenseController {
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_ACTUAL_LICENSE')")
 	public String createLicense() {
 		return "createLicense";
+	}
+
+	// Serve the generated license file as a download attachment
+	@GetMapping("/download/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Resource> downloadLicense(@PathVariable Long id) {
+		Optional<License> optional = licenseService.getLicenseById(id);
+		if (optional.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		License license = optional.get();
+		String filePath = license.getFilePath();
+		if (filePath == null || filePath.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		try {
+			Path path = Paths.get(filePath);
+			if (!Files.exists(path)) {
+				return ResponseEntity.notFound().build();
+			}
+			Resource resource = new UrlResource(path.toUri());
+			String contentType = Files.probeContentType(path);
+			if (contentType == null) {
+				contentType = "application/octet-stream";
+			}
+
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@GetMapping("/downloadEncrypted/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<Resource> downloadEncryptedLicense(@PathVariable Long id) {
+		try {
+			Resource resource = licenseService.getEncryptedLicenseFile(id);
+
+			String contentType = "application/octet-stream"; // Generic binary stream
+			String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType(contentType))
+					.header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+					.body(resource);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@GetMapping("/demoLicense")
@@ -136,6 +195,43 @@ public class LicenseController {
 	public String showLicenseSearchPage() {
 		return "licenseSearch";
 	}
+
+	@GetMapping("/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	public String showEditLicenseForm(@PathVariable Long id, Model model) {
+		Optional<License> license = licenseService.getLicenseById(id);
+		if (license.isPresent()) {
+			model.addAttribute("license", license.get());
+			return "editLicense";
+		} else {
+			return "redirect:/licenses/getAllLicenses";
+		}
+	}
+
+	// @PostMapping("/edit/{id}")
+	// @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	// public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+	// 	try {
+	// 		License resultLicense = licenseService.updateLicense(id, updatedLicense);
+	// 		return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+	// 	} catch (Exception e) {
+	// 		// You can customize the error response based on your requirements
+	// 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// 	}
+	// }
+	@PutMapping("/edit/{id}")
+@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+public ResponseEntity<?> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+    try {
+        License resultLicense = licenseService.updateLicense(id, updatedLicense);
+        return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+    } catch (com.license.exception.ModuleExpiryMissingException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    } catch (Exception e) {
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+
 
 
 	//     @Autowired

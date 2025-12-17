@@ -1,0 +1,16 @@
+Company Name     = Pharmadem solutions
+Person Name      = Shivam Kumar
+Email            = shivamstm01@gmail.com
+Phone Number     = 06201763368
+Primary Contact  = Shivam Kumar (06201763368)
+SCM Contact      = Shivam Kumar (06201763368)
+Date Issued      = Tue Dec 16 15:20:53 IST 2025
+License Duration = 0 days
+Expiration Date  = 2025-12-16
+License Key      = 0D91337A-B19B-4578-B23D-F09411C60109
+License For      = FORMSCI
+License Type     = MAC_ID
+Modules          = Drug - Excipient comparability,Single Stability estimation
+Module Expiry    = {"Drug - Excipient comparability":["20","2025-12-16"],"Single Stability estimation":["20","2025-12-16"]}
+MacId Address    = f4:6b:8c:86:56:97
+Usage Count      = 20

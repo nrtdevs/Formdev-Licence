@@ -1,0 +1,16 @@
+Company Name     = Newrise Technosys 
+Person Name      = Shivam Kumar
+Email            = shivamstm01@gmail.com
+Phone Number     = 06201763368
+Primary Contact  = Shivam Kumar (06201763368)
+SCM Contact      = Shivam Kumar (06201763368)
+Date Issued      = 2025-11-13 15:39:29.183
+License Duration = 0 days
+Expiration Date  = 2025-11-13 23:59:59.182
+License Key      = A83F35AD-708B-4330-8E1F-309D0002F86A
+License For      = FORMSCI
+License Type     = EMAIL_ID
+Modules          = DEM file creation,Drug - Excipient comparability,Single Stability estimation,Multi formula stability,Permeation enhancers screening,Package screening,Dissolution screening,AI formulator,Virtual Formulation
+Module Expiry    = {"DEM file creation":["20","2025-11-13"],"Drug - Excipient comparability":["40","2025-11-13"],"Single Stability estimation":["40","2025-11-13"],"Multi formula stability":["50","2025-11-13"],"Permeation enhancers screening":["50","2025-11-13"],"Package screening":["50","2025-11-13"],"Dissolution screening":["50","2025-11-13"],"AI formulator":["40","2025-11-13"],"Virtual Formulation":["50","2025-11-13"]}
+Email Address    = shivamstm01@gmail.com
+Weekly Limit     = N/A

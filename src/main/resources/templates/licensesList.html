@@ -1,161 +1,294 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<title>License List</title>
-	<style>
-		body {
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-			margin: 0;
-			padding: 0;
-			background: linear-gradient(to right, rgb(128, 128, 195), #2c3e50);
-			color: #fff;
-		}
+  <title>License List</title>
 
-		h2 {
-			color: rgb(255, 255, 255);
-			text-align: center;
-			margin-top: 40px;
-		}
+  <style>
+    body {
+      margin: 0;
+      font-family: Segoe UI, sans-serif;
+      background: linear-gradient(to right, #667eea, #2c3e50);
+    }
 
-		table {
-			width: 100%;
-			border-collapse: collapse;
-			margin-top: 20px;
-			background-color: rgba(255, 255, 255, 0.9);
-			border-radius: 8px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-		}
+  header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #6366f1;
+    color: #fff;
+    padding: 18px 5px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+}
 
-		th,
-		td {
-			padding: 12px;
-			text-align: left;
-			border: 1px solid #ddd;
-		}
+    nav a {
+      color: #fff;
+      margin-right: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-		th {
-			background-color: rgb(128, 128, 255);
-			color: white;
-		}
+    main {
+      padding: 60px 20px 30px;
+    }
 
-		td {
-			color: rgb(0, 0, 0);
-			font-weight: bold;
-		}
+    h2 {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 20px;
+    }
 
-		tr:nth-child(even) {
-			background-color: #f9f9f9;
-		}
+    /* ---------- FILTER CARD (CENTERED) ---------- */
+    .filter-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
 
+   .filter-row {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 1507px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
 
-		header {
-			background-color: rgb(128, 128, 255);
-			color: #fff;
-			padding: 10px 20px;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			width: 100%;
-			/* Full width */
-			top: 0;
-			/* Top position */
-			z-index: 1000;
-			/* Ensure it's above other elements */
-			position: fixed;
-		}
+    .filter-row input,
+    .filter-row select,
+    .filter-row button {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      outline: none;
+      font-size: 14px;
+    }
 
-		.logo {
-			font-size: 24px;
-			font-weight: bold;
-		}
+    .reset-btn {
+      background: #dc2626;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+    }
 
-		nav ul {
-			list-style: none;
-			margin: 0;
-			padding: 0;
-			text-align: center;
-		}
+    /* ---------- TABLE ---------- */
+    .table-container {
+      background: #fff;
+      border-radius: 10px;
+      overflow-x: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
 
-		nav ul li {
-			display: inline;
-			margin-right: 30px;
-		}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1700px;
+    }
 
-		nav ul li a {
-			text-decoration: none;
-			color: #fff;
-			font-weight: bold;
-			font-size: 16px;
-			transition: color 0.3s ease-in-out;
-		}
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      white-space: nowrap;
+    }
 
-		nav ul li a:hover {
-			color: #ffcc00;
-		}
+    th {
+      background: #6366f1;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
 
-		main {
-			padding: 20px;
-		}
-	</style>
+    th span {
+      font-size: 11px;
+      margin-left: 5px;
+    }
+
+    tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .btn {
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: white;
+      text-decoration: none;
+      font-size: 13px;
+      margin-right: 5px;
+      display: inline-block;
+    }
+
+    .btn-primary { background: #2563eb; }
+    .btn-danger { background: #dc2626; }
+  </style>
 </head>
 
 <body>
-	<header>
-		<div class="logo">License Module</div>
-		<nav>
-			<ul>
-				<li><a href="http://localhost:8181/admin/homePage">Home</a></li>
-				<li><a href="http://localhost:8181/licenses/getAllLicenses">LicensesList</a></li>
-				<li><a href="http://localhost:8181/users/getAllUsers">UsersList</a></li>
-				<li><a href="http://localhost:8181/logout">Logout</a></li>
-			</ul>
-		</nav>
-	</header>
 
+<header>
+  <div><b>License Module</b></div>
+  <nav>
+    <a href="/admin/homePage">Home</a>
+    <a href="/licenses/getAllLicenses">Licenses</a>
+    <a href="/users/getAllUsers">Users</a>
+    <a href="/logout">Logout</a>
+  </nav>
+</header>
 
-	<main>
+<main>
 
-		<h2>License List</h2>
-		<p style="font-size: 25px;">Total Licenses: <span th:text="${#lists.size(licenses)}"></span></p>
+  <h2>License List</h2>
 
-		<table>
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Name</th>
-					<th>Email Address</th>
-					<th>Company Name</th> 
-					<th>MacId</th>
-					<th>License Key</th>
-					<th>License Type</th>
-					<th>License For</th>
-					<th>Duration(Day)</th>
-					<th>Created at</th>
-					<th>Expiration Date</th>
-					<th>Licence Type</th>
-						
-					
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="license : ${licenses}">
-					<td th:text="${license.id}"></td>
-					<td th:text="${license.name}"></td>
-					<td th:text="${license.email}"></td>
-					<td th:text="${license.companyName}"></td>
-					<td th:text="${license.macId}"></td>
-					<td th:text="${license.licenseKey}"></td>
-					<td th:text="${license.type}"></td>
-					<td th:text="${license.licenseFor}"></td>
-					<td th:text="${license.duration}"></td>	
-					<td th:text="${license.timeStamp}"></td>
-					<td th:text="${license.expirationDate}"></td>
-					<td th:text="${license.licenseType}"></td>	
-				
-			</tbody>
-		</table>
-	</main>
+  <!-- 🔍 FILTER CARD -->
+  <div class="filter-wrapper">
+    <div class="filter-row">
+      <input placeholder="Name" onkeyup="filterTable()">
+      <input placeholder="Email" onkeyup="filterTable()">
+      <input placeholder="MacId" onkeyup="filterTable()">
+      <input placeholder="License Key" onkeyup="filterTable()">
+
+      <select id="licenseForFilter" onchange="filterTable()">
+        <option value="">All License For</option>
+      </select>
+
+      <select id="createdFilter" onchange="filterTable()">
+        <option value="">All Created Dates</option>
+      </select>
+
+      <select id="typeFilter" onchange="filterTable()">
+        <option value="">All Licence Types</option>
+      </select>
+
+      <button class="reset-btn" onclick="resetFilters()">Reset</button>
+    </div>
+  </div>
+
+  <!-- 📊 TABLE -->
+  <div class="table-container">
+    <table id="licenseTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">ID <span id="s0">↕</span></th>
+          <th onclick="sortTable(1)">Name <span id="s1">↕</span></th>
+          <th onclick="sortTable(2)">Email <span id="s2">↕</span></th>
+          <th onclick="sortTable(3)">Company <span id="s3">↕</span></th>
+          <th onclick="sortTable(4)">MacId <span id="s4">↕</span></th>
+          <th onclick="sortTable(5)">License Key <span id="s5">↕</span></th>
+          <th onclick="sortTable(6)">License For <span id="s6">↕</span></th>
+          <th onclick="sortTable(7)">Created At <span id="s7">↕</span></th>
+          <th onclick="sortTable(8)">Licence Type <span id="s8">↕</span></th>
+          <th>Actions</th>
+          <th>Download</th>
+          <th>Encrypted</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr th:each="license : ${licenses}">
+          <td th:text="${license.id}"></td>
+          <td th:text="${license.name}"></td>
+          <td th:text="${license.email}"></td>
+          <td th:text="${license.companyName}"></td>
+          <td th:text="${license.macId}"></td>
+          <td th:text="${license.licenseKey}"></td>
+          <td th:text="${license.licenseFor}"></td>
+          <td th:text="${license.timeStamp}"></td>
+          <td th:text="${license.licenseType}"></td>
+          <td>
+            <a th:href="@{/licenses/edit/{id}(id=${license.id})}" class="btn btn-primary">Edit</a>
+            <a href="#" th:onclick="'deleteLicense(' + ${license.id} + ')'" class="btn btn-danger">Delete</a>
+          </td>
+          <td>
+            <a th:href="@{/licenses/download/{id}(id=${license.id})}" class="btn btn-primary">Download</a>
+          </td>
+          <td>
+            <a th:href="@{/licenses/downloadEncrypted/{id}(id=${license.id})}" class="btn btn-primary">Encrypted</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+let sortState = {};
+
+function sortTable(col) {
+  const table = document.getElementById("licenseTable");
+  const rows = Array.from(table.tBodies[0].rows);
+
+  sortState[col] = !sortState[col];
+  document.getElementById("s" + col).innerText = sortState[col] ? "▲" : "▼";
+
+  rows.sort((a, b) => {
+    let x = a.cells[col].innerText.toLowerCase();
+    let y = b.cells[col].innerText.toLowerCase();
+    return sortState[col] ? x.localeCompare(y) : y.localeCompare(x);
+  });
+
+  rows.forEach(r => table.tBodies[0].appendChild(r));
+}
+
+function filterTable() {
+  const inputs = document.querySelectorAll(".filter-row input");
+  const licenseFor = document.getElementById("licenseForFilter").value;
+  const created = document.getElementById("createdFilter").value;
+  const type = document.getElementById("typeFilter").value;
+
+  document.querySelectorAll("#licenseTable tbody tr").forEach(row => {
+    let show = true;
+
+    inputs.forEach((input, i) => {
+      if (input.value &&
+        !row.cells[i + 1].innerText.toLowerCase().includes(input.value.toLowerCase())) {
+        show = false;
+      }
+    });
+
+    if (licenseFor && row.cells[6].innerText !== licenseFor) show = false;
+    if (created && row.cells[7].innerText !== created) show = false;
+    if (type && row.cells[8].innerText !== type) show = false;
+
+    row.style.display = show ? "" : "none";
+  });
+}
+
+function resetFilters() {
+  document.querySelectorAll(".filter-row input").forEach(i => i.value = "");
+  document.querySelectorAll(".filter-row select").forEach(s => s.value = "");
+  filterTable();
+}
+
+window.onload = () => {
+  const licenseForSet = new Set();
+  const createdSet = new Set();
+  const typeSet = new Set();
+
+  document.querySelectorAll("#licenseTable tbody tr").forEach(row => {
+    licenseForSet.add(row.cells[6].innerText);
+    createdSet.add(row.cells[7].innerText);
+    typeSet.add(row.cells[8].innerText);
+  });
+
+  licenseForSet.forEach(v =>
+    licenseForFilter.innerHTML += `<option>${v}</option>`
+  );
+  createdSet.forEach(v =>
+    createdFilter.innerHTML += `<option>${v}</option>`
+  );
+  typeSet.forEach(v =>
+    typeFilter.innerHTML += `<option>${v}</option>`
+  );
+};
+</script>
+
 </body>
-
 </html>

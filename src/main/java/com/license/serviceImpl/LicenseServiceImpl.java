@@ -9,15 +9,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.license.entity.License;
 import com.license.entity.User;
+import com.license.exception.ModuleExpiryMissingException;
 import com.license.repository.LicenseRepository;
 import com.license.repository.UserRepository;
 import com.license.service.LicenseService;
@@ -54,6 +63,13 @@ public class LicenseServiceImpl implements LicenseService {
 		// Your @PrePersist method will automatically generate the license key,
 		// timestamp, and MAC address before saving]
 
+		// Validate module expiry if modules are selected
+		if (license.getModules() != null && !license.getModules().isEmpty()) {
+			if (license.getModuleExpiry() == null || license.getModuleExpiry().isEmpty()) {
+				throw new ModuleExpiryMissingException("Module expiry details are required when modules are selected.");
+			}
+		}
+
 		String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 
 		String LicenseFileName = "LicenseFile_" + license.getName() + "_" + license.getLicenseFor() + "_" + timestamp
@@ -61,14 +77,16 @@ public class LicenseServiceImpl implements LicenseService {
 		String LicenseKeyName = "LicenseKey_" + license.getName() + "_" + license.getLicenseFor() + "_" + timestamp
 				+ ".txt";
 
-		// for PharmaDEM
-		// String LicenseFilePath =
-		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseFileName;
-		// String LicenseKeyPath =
-		// "G:\\SOFTWARE\\NewRise_License\\Generated_licenses\\"+LicenseKeyName;
+		// Use a project-relative folder so generated files are stored predictably
+		String baseDir = System.getProperty("user.dir") + File.separator + "generated_licenses" + File.separator;
+		// ensure directory exists
+		File base = new File(baseDir);
+		if (!base.exists()) {
+			base.mkdirs();
+		}
 
-		String LicenseFilePath = "C://Users//Lenovo//Desktop//Java//" + LicenseFileName;
-		String LicenseKeyPath = "C://Users//Lenovo//Desktop//Java//" + LicenseKeyName;
+		String LicenseFilePath = baseDir + LicenseFileName;
+		String LicenseKeyPath = baseDir + LicenseKeyName;
 
 		String currentUser = userServiceImpl.getCurrentUser();
 
@@ -78,17 +96,13 @@ public class LicenseServiceImpl implements LicenseService {
 
 		// String selectedOptions= license.getSelectedOptions();
 
-		String macModuleName = license.getMacModuleName(); // For Module Based option
-		Integer macTenureDays = license.getMacTenureDays(); // For Tenure Based option
-		Integer macUsageCount = license.getMacUsageCount();
-		// For Count Based option
-
-		// Email Based License specific fields
-		String specificEmail = license.getSpecificEmail(); // For Email Specific option
-		// String emailModuleNamelicense.getemail(); // For Module Specific option
-		// Integer emailTenureDays=license.get()
-		; // For Tenure Bound option
-		Integer emailWeeklyLimit = license.getWeeklyLimit(); // For Count Based Weekly Limit option
+		// These fields are not directly updated via the edit form,
+		// so they are not relevant for the updateLicense method.
+		// String macModuleName = license.getMacModuleName();
+		// Integer macTenureDays = license.getMacTenureDays();
+		// String specificEmail = license.getSpecificEmail();
+		// String emailModuleName = license.getemail();
+		// Integer emailTenureDays = license.get();
 
 		Date expiryDate = calculateExpirationDate(duration);
 		license.setExpirationDate(convertToSqlDate(expiryDate));
@@ -112,17 +126,45 @@ public class LicenseServiceImpl implements LicenseService {
 
 	@Override
 	public License updateLicense(Long id, License updatedLicense) {
-
 		if (licenseRepository.existsById(id)) {
 			License license = licenseRepository.findById(id).get();
-			if (updatedLicense.getExpirationDate() != null)
-				license.setExpirationDate(updatedLicense.getExpirationDate());
-			if (updatedLicense.getEmail() != null)
-				license.setEmail(updatedLicense.getEmail());
-			if (updatedLicense.getName() != null)
-				license.setName(updatedLicense.getName());
+			license.setName(updatedLicense.getName());
+			license.setEmail(updatedLicense.getEmail());
+			license.setCompanyName(updatedLicense.getCompanyName());
+			license.setLicenseFor(updatedLicense.getLicenseFor());
+			license.setLicenseType(updatedLicense.getLicenseType());
+			// license.setDuration(updatedLicense.getDuration());
+			license.setMacId(updatedLicense.getMacId());
+			license.setModules(updatedLicense.getModules());
+			license.setMacUsageCount(updatedLicense.getMacUsageCount());
+			license.setUserEmail(updatedLicense.getUserEmail());
+			license.setWeeklyLimit(updatedLicense.getWeeklyLimit());
+			
+			// Validate module expiry if modules are selected
+			if (updatedLicense.getModules() != null && !updatedLicense.getModules().isEmpty()) {
+				if (updatedLicense.getModuleExpiry() == null || updatedLicense.getModuleExpiry().isEmpty()) {
+					throw new ModuleExpiryMissingException("Module expiry details are required when modules are selected.");
+				}
+			}
+			license.setModuleExpiry(updatedLicense.getModuleExpiry()); // Add this line to update moduleExpiry
 
-			return licenseRepository.save(license);
+			// Recalculate expiration date if duration is updated
+			if (updatedLicense.getDuration() > 0) {
+				Date expiryDate = calculateExpirationDate(updatedLicense.getDuration());
+				license.setExpirationDate(convertToSqlDate(expiryDate));
+			}
+
+			License savedLicense = licenseRepository.save(license);
+
+			// Regenerate license files after update
+			createLicenseFile(savedLicense, savedLicense.getFilePath());
+			// Assuming LicenseKeyPath can be derived or is stored similarly,
+			// for now, I'll assume it's stored in the license object or can be derived from filePath
+			// For simplicity, I'll derive it based on the existing pattern.
+			String licenseKeyPath = savedLicense.getFilePath().replace("LicenseFile_", "LicenseKey_");
+			createLicenseKey(savedLicense, licenseKeyPath);
+
+			return savedLicense;
 		}
 		return null; // or throw an exception indicating that the license doesn't exist
 	}
@@ -141,6 +183,10 @@ public class LicenseServiceImpl implements LicenseService {
 
 			//
 			File file = new File(filePath);
+			// ensure parent dirs exist (in case filePath points to nested dirs)
+			if (file.getParentFile() != null && !file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
@@ -161,8 +207,12 @@ public class LicenseServiceImpl implements LicenseService {
 						.encodeToString(cipher.doFinal(license.getName().getBytes(StandardCharsets.UTF_8)));
 				String encryptedEmail = Base64.getEncoder()
 						.encodeToString(cipher.doFinal(license.getEmail().getBytes(StandardCharsets.UTF_8)));
-				String encryptedMacId = Base64.getEncoder()
-						.encodeToString(cipher.doFinal(license.getMacId().getBytes(StandardCharsets.UTF_8)));
+				String encryptedMacId = "";
+				if (license.getMacId() != null) {
+					encryptedMacId = Base64.getEncoder()
+							.encodeToString(cipher.doFinal(license.getMacId().getBytes(StandardCharsets.UTF_8)));
+				}
+
 				String encryptedLicenseKey = Base64.getEncoder()
 						.encodeToString(cipher.doFinal(license.getLicenseKey().getBytes(StandardCharsets.UTF_8)));
 				String encryptedDuration = Base64.getEncoder().encodeToString(
@@ -172,10 +222,16 @@ public class LicenseServiceImpl implements LicenseService {
 				String encryptedTimeStamp = Base64.getEncoder().encodeToString(
 						cipher.doFinal(license.getTimeStamp().toString().getBytes(StandardCharsets.UTF_8)));
 
+				String encryptedModuleExpiry = "";
+				if (license.getModuleExpiryString() != null) {
+					encryptedModuleExpiry = Base64.getEncoder().encodeToString(
+							cipher.doFinal(license.getModuleExpiryString().getBytes(StandardCharsets.UTF_8)));
+				}
+
 				// Append encrypted data to the file
 				fileWriter.write(encryptedId + "$" + encryptedName + "$" + encryptedEmail + "$" + encryptedMacId + "$"
 						+ encryptedLicenseKey + "$" + encryptedDuration + "$" + encryptedExpirationDate + "$"
-						+ encryptedTimeStamp + "\n");
+						+ encryptedTimeStamp + "$" + encryptedModuleExpiry + "\n");
 
 				System.out.println("File generated successfully: " + filePath);
 
@@ -197,34 +253,39 @@ public class LicenseServiceImpl implements LicenseService {
 		System.out.println("Generating plain text file");
 
 		try {
-			// Generate a timestamp for the file name
-			String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-
 			File file = new File(filePath);
+			// ensure parent dirs exist
+			if (file.getParentFile() != null && !file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
 			file.createNewFile();
 
 			try (FileWriter fileWriter = new FileWriter(file)) {
 
 				fileWriter.write("Company Name     = " + license.getCompanyName() + "\n");
 				fileWriter.write("Person Name      = " + license.getName() + "\n");
+				fileWriter.write("Email            = " + license.getEmail() + "\n");
+				fileWriter.write("Phone Number     = " + (license.getPhoneNumber() != null ? license.getPhoneNumber() : "N/A") + "\n");
+				fileWriter.write("Primary Contact  = " + (license.getPrimaryContactName() != null ? license.getPrimaryContactName() : "N/A") + " ("
+						+ (license.getPrimaryContactNumber() != null ? license.getPrimaryContactNumber() : "N/A") + ")\n");
+				fileWriter.write("SCM Contact      = " + (license.getScmContactName() != null ? license.getScmContactName() : "N/A") + " ("
+						+ (license.getScmContactNumber() != null ? license.getScmContactNumber() : "N/A") + ")\n");
 				fileWriter.write("Date Issued      = " + license.getTimeStamp() + "\n");
 				fileWriter.write("License Duration = " + license.getDuration() + " days\n");
+				fileWriter.write("Expiration Date  = " + license.getExpirationDate() + "\n");
 				fileWriter.write("License Key      = " + license.getLicenseKey() + "\n");
-
 				fileWriter.write("License For      = " + license.getLicenseFor() + "\n");
 				fileWriter.write("License Type     = " + license.getLicenseType() + "\n");
-
-
+				fileWriter.write("Modules          = " + (license.getModulesString() != null ? license.getModulesString() : "N/A") + "\n");
+				fileWriter.write("Module Expiry    = " + (license.getModuleExpiryString() != null ? license.getModuleExpiryString() : "N/A") + "\n");
 
 // Conditional fields based on License Type
 if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
-    fileWriter.write("MacId Address    = " + license.getMacId() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
-    fileWriter.write("Usage Count      = " + license.getMacUsageCount() + "\n");
+    fileWriter.write("MacId Address    = " + (license.getMacId() != null ? license.getMacId() : "N/A") + "\n");
+    fileWriter.write("Usage Count      = " + (license.getMacUsageCount() != null ? license.getMacUsageCount() : "N/A") + "\n");
 } else if ("EMAIL_ID".equalsIgnoreCase(license.getLicenseType())) {
-    fileWriter.write("Email Address    = " + license.getUserEmail() + "\n");
-    fileWriter.write("Modules          = " + license.getModules() + "\n");
-    fileWriter.write("Weekly Limit     = " + license.getWeeklyLimit() + "\n");
+    fileWriter.write("Email Address    = " + (license.getUserEmail() != null ? license.getUserEmail() : "N/A") + "\n");
+    fileWriter.write("Weekly Limit     = " + (license.getWeeklyLimit() != null ? license.getWeeklyLimit() : "N/A") + "\n");
 }
 
 
@@ -342,6 +403,53 @@ if ("MAC_ID".equalsIgnoreCase(license.getLicenseType())) {
 	@Override
 public Optional<License> getLicenseByKey(String licenseKey) {
     return licenseRepository.findByLicenseKey(licenseKey);
+}
+
+@Override
+public Resource getEncryptedLicenseFile(Long id) throws Exception {
+    Optional<License> optionalLicense = licenseRepository.findById(id);
+    if (optionalLicense.isEmpty()) {
+        throw new RuntimeException("License not found with ID: " + id);
+    }
+    License license = optionalLicense.get();
+    String filePath = license.getFilePath();
+
+    if (filePath == null || filePath.isEmpty()) {
+        throw new RuntimeException("License file path not found for license ID: " + id);
+    }
+
+    Path path = Paths.get(filePath);
+    if (!Files.exists(path)) {
+        throw new RuntimeException("License file not found at path: " + filePath);
+    }
+
+    // Read the content of the license file
+    String fileContent = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+
+    // Encrypt the content
+    String encryptedContent = encrypt(fileContent);
+
+    // Create a resource from the encrypted content
+    ByteArrayResource resource = new ByteArrayResource(encryptedContent.getBytes(StandardCharsets.UTF_8)) {
+        @Override
+        public String getFilename() {
+            return "encrypted_" + path.getFileName().toString();
+        }
+    };
+    return resource;
+}
+
+private String encrypt(String data) throws Exception {
+    byte[] keyBytes = new byte[16];
+    byte[] secretKeyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
+    System.arraycopy(secretKeyBytes, 0, keyBytes, 0, Math.min(secretKeyBytes.length, keyBytes.length));
+    SecretKeySpec secretKey = new SecretKeySpec(keyBytes, ALGORITHM);
+
+    Cipher cipher = Cipher.getInstance(ALGORITHM);
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+    byte[] encryptedBytes = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+    return Base64.getEncoder().encodeToString(encryptedBytes);
 }
 
 }

@@ -82,8 +82,8 @@
 		<input type="password" id="password" name="password" required>
 
 		<button type="submit">Login</button>
-		<p>Don't have an account? <a href="http://localhost:8181/users/registration">Register here</a></p>
-		<p><a href="http://localhost:8181/users/forgotPage">Forgot password</a></p>
+		<p>Don't have an account? <a href="http://139.59.80.148:8181/users/registration">Register here</a></p>
+		<p><a href="http://139.59.80.148:8181/users/forgotPage">Forgot password</a></p>
 	</form>
 
 
@@ -111,7 +111,7 @@
 				alert('Please fill in all fields');
 				return;
 			}
-			const url = "http://localhost:8181/login/jwt";
+			const url = "http://139.59.80.148:8181/login/jwt";
 
 			const requestBody = {
 				email: email,
@@ -140,7 +140,7 @@
 								// Follow the redirect
 								console.log("userToken  :", response.payload.userToken);
 								alert('Login successful!');
-								window.location.href = "http://localhost:8181/admin/homePage";
+								window.location.href = "http://139.59.80.148:8181/admin/homePage";
 							}
 						} else {
 							console.log(response.payload.userToken);

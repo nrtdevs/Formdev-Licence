@@ -4,17 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.license.entity.License;
 import com.license.service.LicenseService;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @RestController
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 @RequestMapping("/public") // सभी public APIs
 public class PublicLicenseController {
 
@@ -25,42 +34,91 @@ public class PublicLicenseController {
 // public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
 //     Map<String, Object> response = new HashMap<>();
 
-//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-//     if (optionalLicense.isPresent()) {
-//         License license = optionalLicense.get();
-//         boolean isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
 
-//         response.put("licenseKey", licenseKey);
-//         response.put("status", isValid);
-//         response.put("expirationDate", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(license.getExpirationDate()));
 
-//         if (isValid) {
-//             response.put("message", "License is valid");
-//         } else {
-//             response.put("message", "License expired");
-//         }
-//     } else {
-//         response.put("licenseKey", licenseKey);
-//         response.put("status", false);
-//         response.put("message", "License not found");
-//     }
 
-//     return ResponseEntity.ok(response);
-// }
+
 @GetMapping("/check-validity/{licenseKey}")
-public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
+    Map<String, Object> response = new HashMap<>();
 
     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
-
-    boolean isValid = false;
-
-    if (optionalLicense.isPresent()) {
-        License license = optionalLicense.get();
-        isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+    if (!optionalLicense.isPresent()) {
+        response.put("status", false);
+        response.put("message", "License not found");
+        return ResponseEntity.ok(response);
     }
 
-    return ResponseEntity.ok(isValid); // sirf true ya false
+    License license = optionalLicense.get();
+
+    try {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Map<String, List<String>> moduleMap =
+            mapper.readValue(license.getModuleExpiryString(), new TypeReference<Map<String, List<String>>>() {});
+
+        // ✅ FIX: FORCE INDIA TIME
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Kolkata"));
+
+        boolean atLeastOneModuleValid = false;
+
+        for (Map.Entry<String, List<String>> entry : moduleMap.entrySet()) {
+
+            int validityDays = Integer.parseInt(entry.getValue().get(0));
+            String creationDateStr = entry.getValue().get(1);
+
+            LocalDate creationDate = LocalDate.parse(creationDateStr);
+
+            LocalDate moduleExpiry = creationDate.plusDays(validityDays);
+
+            if (today.isBefore(moduleExpiry)) {
+                atLeastOneModuleValid = true;
+                break;
+            }
+        }
+
+        if (atLeastOneModuleValid) {
+            response.put("status", true);
+            response.put("message", "License is valid");
+            Map<String, Object> licenseMap = new ObjectMapper().convertValue(license, new TypeReference<Map<String, Object>>() {});
+            licenseMap.put("last_modified_at", license.getLastModifiedAt());
+            response.put("license", licenseMap);
+        } else {
+            response.put("status", false);
+            response.put("message", "License expired or invalid");
+        }
+
+    } catch (Exception e) {
+        response.put("status", false);
+        response.put("message", "Invalid module expiry data");
+    }
+
+    return ResponseEntity.ok(response);
 }
+
+
+
+
+@GetMapping("/check-license/{licenseKey}")
+public ResponseEntity<Map<String, Object>> checkLicense(@PathVariable String licenseKey) {
+    return checkLicenseValidity(licenseKey);
+}
+
+
+// @GetMapping("/check-validity/{licenseKey}")
+// public ResponseEntity<Boolean> checkLicenseValidity(@PathVariable String licenseKey) {
+
+//     Optional<License> optionalLicense = licenseService.getLicenseByKey(licenseKey);
+
+//     boolean isValid = false;
+
+//     if (optionalLicense.isPresent()) {
+//         License license = optionalLicense.get();
+//         isValid = new Date().before(license.getExpirationDate()) && new Date().after(license.getTimeStamp());
+//     }
+
+//     return ResponseEntity.ok(isValid); // sirf true ya false
+// }
 
 
 //  @GetMapping("/all-licenses")

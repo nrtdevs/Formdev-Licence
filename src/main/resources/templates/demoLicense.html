@@ -124,8 +124,8 @@
 		<div class="logo">License Module</div>
 		<nav>
 
-			<a href="http://localhost:8181/users/home" class="logout-button">Home</a>
-			<a href="http://localhost:8181/logout" class="logout-button">Logout</a>
+			<a href="http://139.59.80.148:8181/users/home" class="logout-button">Home</a>
+			<a href="http://139.59.80.148:8181/logout" class="logout-button">Logout</a>
 
 		</nav>
 	</header>
@@ -211,7 +211,7 @@
 				type: type
 			};
 
-			fetch('http://localhost:8181/licenses/createLicense', {
+			fetch('http://139.59.80.148:8181/licenses/createLicense', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -236,7 +236,7 @@
 					console.log('License Bought Successfully');
 					alert('License Bought Successfully \n File Saved at location: \n'+ data.filePath);
 					
-					window.location.href = 'http://localhost:8181/users/home'; // redirect after buying a license 
+					window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after buying a license 
 					licenseForm.reset();
 				})
 				.catch(error => {
