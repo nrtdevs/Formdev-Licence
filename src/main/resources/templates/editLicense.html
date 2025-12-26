@@ -131,8 +131,8 @@
         <div class="logo">License Module</div>
         <nav>
             <ul>
-                <li><a href="http://139.59.80.148:8181/admin/homePage">Home</a></li>
-                <li><a href="http://139.59.80.148:8181/logout">Logout</a></li>
+                <li><a href="http://localhost:8181/admin/homePage">Home</a></li>
+                <li><a href="http://localhost:8181/logout">Logout</a></li>
             </ul>
         </nav>
     </header>
@@ -412,7 +412,7 @@
 
                     if (response.ok) {
                         alert('License updated successfully!');
-                        window.location.href = 'http://139.59.80.148:8181/admin/homePage';
+                        window.location.href = 'http://localhost:8181/admin/homePage';
                     } else {
                         const errorText = await response.text();
                         alert('Error updating license: ' + errorText);
