@@ -207,7 +207,7 @@
 				email: email,
 				macId: macId,
 				duration: duration,
-				licenseFor:licenseFor,
+				licenseFor: licenseFor,
 				type: type
 			};
 
@@ -232,10 +232,10 @@
 				})
 				.then(data => {
 					// Handle success
-				 
+
 					console.log('License Bought Successfully');
-					alert('License Bought Successfully \n File Saved at location: \n'+ data.filePath);
-					
+					alert('License Bought Successfully \n File Saved at location: \n' + data.filePath);
+
 					window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after buying a license 
 					licenseForm.reset();
 				})

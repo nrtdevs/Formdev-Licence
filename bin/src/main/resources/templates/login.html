@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
     <style>
-         body {
+        body {
             background-image: url('https://img.lovepik.com/photo/45009/7677.jpg_wh860.jpg');
             height: 750px;
             background-size: 100% 100%;
@@ -30,7 +30,7 @@
             padding: 20px;
             border-radius: 10px;
             margin-top: 40px;
-           
+
         }
 
         label {
@@ -64,7 +64,7 @@
 
 <body>
 
- 
+
     <br>
     <form id="loginForm" method="post">
         <h2>User Login</h2>
@@ -75,9 +75,9 @@
         <input type="password" id="password" name="password" required>
 
         <button type="submit">Login</button>
-         <p>Don't have an account? <a href="http://139.59.80.148:8181/users/registration">Register here</a></p>
+        <p>Don't have an account? <a href="http://139.59.80.148:8181/users/registration">Register here</a></p>
     </form>
-  
+
 
 
     <div id="successMessage" style="display: none; text-align: center; color: green; margin-top: 20px;">
@@ -121,8 +121,8 @@
                         // Display a success message
                         console.log('Login successful');
                         alert('Login successful');
-                         // Redirect to the desired page
-                    window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after login user 
+                        // Redirect to the desired page
+                        window.location.href = 'http://139.59.80.148:8181/users/home'; // redirect after login user 
 
                         loginForm.reset();
                         return response.json();

@@ -1,0 +1,15 @@
+Company Name     = Soldem
+Person Name      = Ravi
+Email            = ravisa@pharm.in
+Phone Number     = 6201763368
+Primary Contact  = 9155143291 (9155143291)
+SCM Contact      = nhvhg (9155143291)
+Date Issued      = 2025-12-26 13:52:26.959
+Expiration Date  = 2025-12-26 23:59:59.957
+License Key      = C7915143-2021-43EB-82E9-2728E05700C6
+License For      = SOLUDEM
+License Type     = EMAIL_ID
+Modules          = Pure solvents screening,Binary solvents screening,Ternary solvents screening,ASD screening,pH solubility screening,Salt screening,XRD analysis,Formulation Solubility screening,NCE BCS classification,NCE stability,Reaction Solvent screening,Reaction base screening
+Module Expiry    = {"Pure solvents screening":["20","2025-12-26"],"Binary solvents screening":["20","2025-12-26"],"Ternary solvents screening":["20","2025-12-26"],"ASD screening":["20","2025-12-26"],"pH solubility screening":["20","2025-12-26"],"Salt screening":["20","2025-12-26"],"XRD analysis":["20","2025-12-26"],"Formulation Solubility screening":["20","2025-12-26"],"NCE BCS classification":["20","2025-12-26"],"NCE stability":["20","2025-12-26"],"Reaction Solvent screening":["20","2025-12-26"],"Reaction base screening":["20","2025-12-26"]}
+Email Address    = ravi@jyg.in
+Weekly Limit     = 20

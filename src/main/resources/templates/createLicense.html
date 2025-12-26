@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Create License</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
+    <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -138,6 +139,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="logo">License Module</div>
@@ -153,7 +155,7 @@
         <div class="form-container">
             <h1>Create New License</h1>
             <form id="licenseForm">
-                
+
                 <!-- Section 1: Company Details -->
                 <div class="form-section">
                     <h3>1. Company Details</h3>
@@ -161,47 +163,49 @@
                         <label for="companyName" class="form-label">Company Name</label>
                         <input type="text" id="companyName" name="companyName" class="form-control" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="contactPerson" class="form-label">Contact Person's Name</label>
                         <input type="text" id="contactPerson" name="name" class="form-control" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-control" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="phone" class="form-label">Phone Number</label>
                         <input type="tel" id="phone" name="phoneNumber" class="form-control" required>
                     </div>
                 </div>
-                
+
                 <!-- Section 2: Contact Information -->
                 <div class="form-section">
                     <h3>2. Contact Information</h3>
                     <div class="form-group">
                         <label for="primaryContactName" class="form-label">Primary Contact Name</label>
-                        <input type="text" id="primaryContactName" name="primaryContactName" class="form-control" required>
+                        <input type="text" id="primaryContactName" name="primaryContactName" class="form-control"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="primaryContactNumber" class="form-label">Primary Contact Number</label>
-                        <input type="tel" id="primaryContactNumber" name="primaryContactNumber" class="form-control" required>
+                        <input type="tel" id="primaryContactNumber" name="primaryContactNumber" class="form-control"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="scmContactName" class="form-label">SCM Contact Name</label>
                         <input type="text" id="scmContactName" name="scmContactName" class="form-control" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="scmContactNumber" class="form-label">SCM Contact Number</label>
                         <input type="tel" id="scmContactNumber" name="scmContactNumber" class="form-control" required>
                     </div>
                 </div>
-                
+
                 <!-- Section 3: License Selection -->
                 <div class="form-section">
                     <h3>3. License Selection</h3>
@@ -214,7 +218,7 @@
                             <option value="ELABNOTE">ELABNOTE</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="licenseType" class="form-label">License Type</label>
                         <select id="licenseType" name="licenseType" class="form-control" required>
@@ -223,14 +227,15 @@
                             <option value="EMAIL_ID">Email Based</option>
                         </select>
                     </div>
-                    
+
                     <!-- Mac Based Fields -->
                     <div id="macBasedFields" class="conditional-field">
                         <div class="form-group">
                             <label for="macId" class="form-label">MAC ID (e.g., 00:1A:2B:3C:4D:5E)</label>
-                            <input type="text" id="macId" name="macId" class="form-control" placeholder="00:1A:2B:3C:4D:5E">
+                            <input type="text" id="macId" name="macId" class="form-control"
+                                placeholder="00:1A:2B:3C:4D:5E">
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="modules" class="form-label">Select Modules</label>
                             <select id="modules" name="modules" class="form-control" multiple>
@@ -240,30 +245,30 @@
 
                         <!-- Module Expiry Inputs -->
                         <div id="macModuleExpiryContainer"></div>
-                        
-                      <!--   <div class="form-group">
+
+                        <!--   <div class="form-group">
                             <label for="macTenureDays" class="form-label">Tenure (in days)</label>
                             <input type="number" id="macTenureDays" name="macTenureDays" class="form-control" min="1">
                         </div>-->
-                        
+
                         <div class="form-group">
                             <label for="usageCount" class="form-label">Number of Usages</label>
                             <input type="number" id="usageCount" name="usageCount" class="form-control" min="1">
                         </div>
                     </div>
-                    
+
                     <!-- Email Based Fields -->
                     <div id="emailBasedFields" class="conditional-field">
                         <div class="form-group">
                             <label for="userEmail" class="form-label">Email</label>
                             <input type="email" id="userEmail" name="userEmail" class="form-control">
                         </div>
-                     <!--      
+                        <!--      
                         <div class="form-group">
                             <label for="emailTenureDays" class="form-label">Tenure (in days)</label>
                             <input type="number" id="emailTenureDays" name="duration" class="form-control" min="1">
                         </div> -->
-                        
+
                         <div class="form-group">
                             <label for="emailModules" class="form-label">Select Modules</label>
                             <select id="emailModules" name="modules" class="form-control" multiple>
@@ -273,14 +278,14 @@
 
                         <!-- Module Expiry Inputs -->
                         <div id="emailModuleExpiryContainer"></div>
-                        
+
                         <div class="form-group">
                             <label for="weeklyLimit" class="form-label">Weekly Usage Limit</label>
                             <input type="number" id="weeklyLimit" name="weeklyLimit" class="form-control" min="1">
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- License Purpose -->
                 <div class="form-section">
                     <label for="licensePurpose" class="form-label">License Purpose</label>
@@ -289,7 +294,7 @@
                         <option value="demo">Demo</option>
                     </select>
                 </div>
-                
+
                 <button type="submit" class="btn-submit">Create License</button>
             </form>
         </div>
@@ -342,10 +347,10 @@
 
                 const moduleList = {
                     FORMSCI: [
-                        'DEM file creation','Drug - Excipient comparability','Single Stability estimation','Multi formula stability','Impurity control','ASD screening','Permeation enhancers screening','Package screening','Dissolution screening','AI formulator','Virtual Formulation'
+                        'DEM file creation', 'Drug - Excipient comparability', 'Single Stability estimation', 'Multi formula stability', 'Impurity control', 'ASD screening', 'Permeation enhancers screening', 'Package screening', 'Dissolution screening', 'AI formulator', 'Virtual Formulation'
                     ],
                     SOLUDEM: [
-                        'Pure solvents screening','Binary solvents screening','Ternary solvents screening','ASD screening','pH solubility screening','Salt screening','XRD analysis','Formulation Solubility screening','NCE BCS classification','NCE stability','Reaction Solvent screening','Reaction base screening','Impurity control analysis','Bio & Dissolution media solubility','Polymorph screening'
+                        'Pure solvents screening', 'Binary solvents screening', 'Ternary solvents screening', 'ASD screening', 'pH solubility screening', 'Salt screening', 'XRD analysis', 'Formulation Solubility screening', 'NCE BCS classification', 'NCE stability', 'Reaction Solvent screening', 'Reaction base screening', 'Impurity control analysis', 'Bio & Dissolution media solubility', 'Polymorph screening'
                     ]
                 };
 
@@ -362,14 +367,14 @@
                 updateModuleExpiryInputsEmail();
             }
 
-           function updateModuleExpiryInputs() {
-    macModuleExpiryContainer.innerHTML = '';
-    const selectedModules = Array.from(modulesSelect.selectedOptions);
+            function updateModuleExpiryInputs() {
+                macModuleExpiryContainer.innerHTML = '';
+                const selectedModules = Array.from(modulesSelect.selectedOptions);
 
-    selectedModules.forEach(module => {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
-        div.innerHTML = `
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    div.innerHTML = `
             <label class="form-label">${module.value} Expiry (days)</label>
             <input type="number"
                    name="moduleExpiry[${module.value}]_days"
@@ -383,19 +388,19 @@
                    class="form-control"
                    required>
         `;
-        macModuleExpiryContainer.appendChild(div);
-    });
-}
-        
+                    macModuleExpiryContainer.appendChild(div);
+                });
+            }
 
-          function updateModuleExpiryInputsEmail() {
-    emailModuleExpiryContainer.innerHTML = '';
-    const selectedModules = Array.from(emailModulesSelect.selectedOptions);
 
-    selectedModules.forEach(module => {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
-        div.innerHTML = `
+            function updateModuleExpiryInputsEmail() {
+                emailModuleExpiryContainer.innerHTML = '';
+                const selectedModules = Array.from(emailModulesSelect.selectedOptions);
+
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    div.innerHTML = `
             <label class="form-label">${module.value} Expiry (days)</label>
             <input type="number"
                    name="moduleExpiry[${module.value}]_days"
@@ -409,9 +414,9 @@
                    class="form-control"
                    required>
         `;
-        emailModuleExpiryContainer.appendChild(div);
-    });
-}
+                    emailModuleExpiryContainer.appendChild(div);
+                });
+            }
 
 
             async function handleFormSubmit(e) {
@@ -440,68 +445,68 @@
                 let selectedModulesForSubmission = [];
 
                 if (licenseType.value === 'MAC_ID') {
-    const selectedMacModules =
-        Array.from(modulesSelect.selectedOptions).map(o => o.value);
+                    const selectedMacModules =
+                        Array.from(modulesSelect.selectedOptions).map(o => o.value);
 
-    if (selectedMacModules.length === 0) {
-        alert('Please select at least one module.');
-        return;
-    }
+                    if (selectedMacModules.length === 0) {
+                        alert('Please select at least one module.');
+                        return;
+                    }
 
-    for (const moduleName of selectedMacModules) {
-        const expiryDaysInput =
-            macModuleExpiryContainer.querySelector(
-                `input[name="moduleExpiry[${moduleName}]_days"]`
-            );
-        const expiryDateInput =
-            macModuleExpiryContainer.querySelector(
-                `input[name="moduleExpiry[${moduleName}]_date"]`
-            );
+                    for (const moduleName of selectedMacModules) {
+                        const expiryDaysInput =
+                            macModuleExpiryContainer.querySelector(
+                                `input[name="moduleExpiry[${moduleName}]_days"]`
+                            );
+                        const expiryDateInput =
+                            macModuleExpiryContainer.querySelector(
+                                `input[name="moduleExpiry[${moduleName}]_date"]`
+                            );
 
-        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
-            alert(`Please enter both expiry days and date for module: ${moduleName}`);
-            return;
-        }
+                        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
+                            alert(`Please enter both expiry days and date for module: ${moduleName}`);
+                            return;
+                        }
 
-        modulesExpiry[moduleName] = [
-            expiryDaysInput.value,
-            expiryDateInput.value
-        ];
-    }
+                        modulesExpiry[moduleName] = [
+                            expiryDaysInput.value,
+                            expiryDateInput.value
+                        ];
+                    }
 
-    selectedModulesForSubmission = selectedMacModules;
-}else if (licenseType.value === 'EMAIL_ID') {
-    const selectedEmailModules =
-        Array.from(emailModulesSelect.selectedOptions).map(o => o.value);
+                    selectedModulesForSubmission = selectedMacModules;
+                } else if (licenseType.value === 'EMAIL_ID') {
+                    const selectedEmailModules =
+                        Array.from(emailModulesSelect.selectedOptions).map(o => o.value);
 
-    if (selectedEmailModules.length === 0) {
-        alert('Please select at least one module.');
-        return;
-    }
+                    if (selectedEmailModules.length === 0) {
+                        alert('Please select at least one module.');
+                        return;
+                    }
 
-    for (const moduleName of selectedEmailModules) {
-        const expiryDaysInput =
-            emailModuleExpiryContainer.querySelector(
-                `input[name="moduleExpiry[${moduleName}]_days"]`
-            );
-        const expiryDateInput =
-            emailModuleExpiryContainer.querySelector(
-                `input[name="moduleExpiry[${moduleName}]_date"]`
-            );
+                    for (const moduleName of selectedEmailModules) {
+                        const expiryDaysInput =
+                            emailModuleExpiryContainer.querySelector(
+                                `input[name="moduleExpiry[${moduleName}]_days"]`
+                            );
+                        const expiryDateInput =
+                            emailModuleExpiryContainer.querySelector(
+                                `input[name="moduleExpiry[${moduleName}]_date"]`
+                            );
 
-        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
-            alert(`Please enter both expiry days and date for module: ${moduleName}`);
-            return;
-        }
+                        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
+                            alert(`Please enter both expiry days and date for module: ${moduleName}`);
+                            return;
+                        }
 
-        modulesExpiry[moduleName] = [
-            expiryDaysInput.value,
-            expiryDateInput.value
-        ];
-    }
+                        modulesExpiry[moduleName] = [
+                            expiryDaysInput.value,
+                            expiryDateInput.value
+                        ];
+                    }
 
-    selectedModulesForSubmission = selectedEmailModules;
-}
+                    selectedModulesForSubmission = selectedEmailModules;
+                }
 
 
 

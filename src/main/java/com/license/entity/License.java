@@ -4,13 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.UUID;
 import java.util.Arrays;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Entity
@@ -42,28 +40,24 @@ public class License {
     private String scmContactNumber;
 
     // MAC ID Based License specific fields
-    private String macModuleName;       // For Module Based option
-    private Integer macTenureDays;      // For Tenure Based option
-    private Integer macUsageCount;      // For Count Based option
+    private String macModuleName;
+    private Integer macTenureDays;
+    private Integer macUsageCount;
 
     // Email Based License specific fields
-    private String specificEmail;       // For Email Specific option
-    private String emailModuleName;     // For Module Specific option
-    private Integer emailTenureDays;    // For Tenure Bound option
-    private Integer weeklyLimit;        // For Count Based Weekly Limit option
+    private String specificEmail;
+    private String emailModuleName;
+    private Integer emailTenureDays;
+    private Integer weeklyLimit;
 
-    // Module expiry JSON stored in DB
+    /*
+     * =========================================================
+     * MODULES (comma-separated string in DB)
+     * =========================================================
+     */
+
     @Lob
-    @Column(name = "module_expiry", columnDefinition = "LONGTEXT")
-    private String moduleExpiryString;
-
-   @Transient
-private Map<String, List<Object>> moduleExpiry;
-
-
-    // ✅ Store modules as comma-separated string in DB, handle as List<String> in Java
-    @Lob
-    @Column(name = "modules")
+    @Column(name = "modules", columnDefinition = "LONGTEXT")
     private String modulesString;
 
     @Transient
@@ -78,97 +72,90 @@ private Map<String, List<Object>> moduleExpiry;
 
     public void setModules(List<String> modules) {
         this.modules = modules;
-        if (modules != null) {
+        if (modules != null && !modules.isEmpty()) {
             this.modulesString = String.join(",", modules);
         } else {
             this.modulesString = null;
         }
     }
 
+    /*
+     * =========================================================
+     * MODULE EXPIRY (JSON stored as LONGTEXT)
+     * =========================================================
+     */
+
+    @Lob
+    @Column(name = "module_expiry", columnDefinition = "LONGTEXT")
+    private String moduleExpiryString;
+
+    @Transient
+    private Map<String, List<String>> moduleExpiry;
+
+    public Map<String, List<String>> getModuleExpiry() {
+        if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(
+                        this.moduleExpiryString,
+                        new TypeReference<Map<String, List<String>>>() {
+                        });
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to parse moduleExpiry JSON", e);
+            }
+        }
+        return null;
+    }
+
+    public void setModuleExpiry(Map<String, List<String>> moduleExpiry) {
+        this.moduleExpiry = moduleExpiry;
+        if (moduleExpiry != null && !moduleExpiry.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to serialize moduleExpiry JSON", e);
+            }
+        } else {
+            this.moduleExpiryString = null;
+        }
+    }
+
+    /*
+     * =========================================================
+     * OTHER FIELDS
+     * =========================================================
+     */
+
     private String userEmail;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
-
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified_at")
     @com.fasterxml.jackson.annotation.JsonProperty("last_modified_at")
     private Date lastModifiedAt;
 
-    @PreUpdate
-    public void preUpdate() {
-        this.lastModifiedAt = new Date(); // update timestamp whenever record changes
-    }
+    /*
+     * =========================================================
+     * JPA LIFECYCLE HOOKS
+     * =========================================================
+     */
 
     @PrePersist
     public void prePersist() {
-        // Generate a unique license key using UUID
         this.licenseKey = UUID.randomUUID().toString().toUpperCase();
-
-        // Set the current timestamp
         this.timeStamp = new Date();
 
-        // Calculate expiration date based on duration (days)
         if (this.duration > 0) {
             long durationInMillis = this.duration * 24L * 60 * 60 * 1000;
             this.expirationDate = new Date(System.currentTimeMillis() + durationInMillis);
         }
     }
 
-    // ModuleExpiry getter and setter with JSON handling
-    // public Map<String, Integer> getModuleExpiry() {
-    //     if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
-    //         try {
-    //             ObjectMapper mapper = new ObjectMapper();
-    //             return mapper.readValue(this.moduleExpiryString, Map.class);
-    //         } catch (JsonProcessingException e) {
-    //             e.printStackTrace();
-    //         }
-    //     }
-    //     return null;
-    // }
-
-    // public void setModuleExpiry(Map<String, Integer> moduleExpiry) {
-    //     this.moduleExpiry = moduleExpiry;
-    //     if (moduleExpiry != null) {
-    //         try {
-    //             ObjectMapper mapper = new ObjectMapper();
-    //             this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
-    //         } catch (JsonProcessingException e) {
-    //             e.printStackTrace();
-    //         }
-    //     } else {
-    //         this.moduleExpiryString = null;
-    //     }
-    // }
-
-    // Updated getter
-public Map<String, List<Object>> getModuleExpiry() {
-    if (this.moduleExpiryString != null && !this.moduleExpiryString.isEmpty()) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(this.moduleExpiryString, Map.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    @PreUpdate
+    public void preUpdate() {
+        this.lastModifiedAt = new Date();
     }
-    return null;
-}
-
-// Updated setter
-public void setModuleExpiry(Map<String, List<Object>> moduleExpiry) {
-    this.moduleExpiry = moduleExpiry;
-    if (moduleExpiry != null) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            this.moduleExpiryString = mapper.writeValueAsString(moduleExpiry);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    } else {
-        this.moduleExpiryString = null;
-    }
-}
-
 }

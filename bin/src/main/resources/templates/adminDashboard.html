@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - License Module</title>
- <style>
+    <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -107,7 +107,7 @@
         <div class="logo">License Module</div>
         <nav>
             <ul>
-                
+
                 <li><a href="http://139.59.80.148:8181/licenses/getAllLicenses">LicensesList</a></li>
                 <li><a href="http://139.59.80.148:8181/users/getAllUsers">UsersList</a></li>
                 <li><a href="http://139.59.80.148:8181/users/logout">Logout</a></li>
@@ -126,8 +126,8 @@
                 </div>
                 <div class="stat">
                     <h3>Total Users</h3>
-                  <p th:text="${#lists.size(users)}"></p>
-                </div>  
+                    <p th:text="${#lists.size(users)}"></p>
+                </div>
             </div>
         </div>
     </main>

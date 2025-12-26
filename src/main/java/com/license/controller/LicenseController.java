@@ -36,10 +36,10 @@ public class LicenseController {
 		this.licenseService = licenseService;
 	}
 
-//    @GetMapping("/getAllLicenses")
-//    public List<License> getAllLicenses() {
-//        return licenseService.getAllLicenses();
-//    }
+	// @GetMapping("/getAllLicenses")
+	// public List<License> getAllLicenses() {
+	// return licenseService.getAllLicenses();
+	// }
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/getAllLicenses")
 	public String getAllLicenses(Model model) {
@@ -57,14 +57,18 @@ public class LicenseController {
 	@PreAuthorize("hasRole('ADMIN')  or hasRole('ROLE_BUY_ACTUAL_LICENSE') or hasRole('ROLE_BUY_DEMO_LICENSE') ")
 	@PostMapping("/createLicense")
 	public ResponseEntity<?> createLicense(@RequestBody License license, HttpSession session) {
-		System.out.print(license);
+		System.out.println(license); // optional
 		try {
 			License createdLicense = licenseService.createLicense(license, session);
 			return new ResponseEntity<>(createdLicense, HttpStatus.OK);
+
 		} catch (com.license.exception.ModuleExpiryMissingException e) {
+			e.printStackTrace(); // 👈 ADD
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			e.printStackTrace(); // 🔥 MUST ADD
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -113,7 +117,8 @@ public class LicenseController {
 
 			return ResponseEntity.ok()
 					.contentType(MediaType.parseMediaType(contentType))
-					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+							"attachment; filename=\"" + path.getFileName().toString() + "\"")
 					.body(resource);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -210,56 +215,57 @@ public class LicenseController {
 
 	// @PostMapping("/edit/{id}")
 	// @PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
-	// public ResponseEntity<License> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
-	// 	try {
-	// 		License resultLicense = licenseService.updateLicense(id, updatedLicense);
-	// 		return new ResponseEntity<>(resultLicense, HttpStatus.OK);
-	// 	} catch (Exception e) {
-	// 		// You can customize the error response based on your requirements
-	// 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	// 	}
+	// public ResponseEntity<License> editLicense(@PathVariable Long id,
+	// @RequestBody License updatedLicense) {
+	// try {
+	// License resultLicense = licenseService.updateLicense(id, updatedLicense);
+	// return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+	// } catch (Exception e) {
+	// // You can customize the error response based on your requirements
+	// return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
 	// }
 	@PutMapping("/edit/{id}")
-@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
-public ResponseEntity<?> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
-    try {
-        License resultLicense = licenseService.updateLicense(id, updatedLicense);
-        return new ResponseEntity<>(resultLicense, HttpStatus.OK);
-    } catch (com.license.exception.ModuleExpiryMissingException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    } catch (Exception e) {
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-}
+	@PreAuthorize("hasRole('ADMIN') or hasRole('ROLE_UPDATE_ACTUAL_LICENSE')")
+	public ResponseEntity<?> editLicense(@PathVariable Long id, @RequestBody License updatedLicense) {
+		try {
+			License resultLicense = licenseService.updateLicense(id, updatedLicense);
+			return new ResponseEntity<>(resultLicense, HttpStatus.OK);
+		} catch (com.license.exception.ModuleExpiryMissingException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
+	// @Autowired
+	// private LicenseService licenseService;
 
+	// @GetMapping("/public/check-validity/{licenseKey}")
+	// public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable
+	// String licenseKey) {
+	// Map<String, Object> response = new HashMap<>();
+	// try {
+	// boolean isValid = licenseService.isLicenseValid(licenseKey);
 
-	//     @Autowired
-//     private LicenseService licenseService;
-
-//  @GetMapping("/public/check-validity/{licenseKey}")
-// public ResponseEntity<Map<String, Object>> checkLicenseValidity(@PathVariable String licenseKey) {
-//     Map<String, Object> response = new HashMap<>();
-//     try {
-//         boolean isValid = licenseService.isLicenseValid(licenseKey);
-
-//         if (isValid) {
-//             response.put("status", true);
-//             response.put("licenseKey", licenseKey);
-//             response.put("message", "License is valid");
-//             return ResponseEntity.ok(response);
-//         } else {
-//             response.put("status", false);
-//             response.put("licenseKey", licenseKey);
-//             response.put("message", "License not found or expired");
-//             return ResponseEntity.ok(response); // हमेशा 200 ही देना है जैसा तूने बोला
-//         }
-//     } catch (Exception e) {
-//         response.put("status", false);
-//         response.put("licenseKey", licenseKey);
-//         response.put("message", "Error while checking license: " + e.getMessage());
-//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//     }
-// }
+	// if (isValid) {
+	// response.put("status", true);
+	// response.put("licenseKey", licenseKey);
+	// response.put("message", "License is valid");
+	// return ResponseEntity.ok(response);
+	// } else {
+	// response.put("status", false);
+	// response.put("licenseKey", licenseKey);
+	// response.put("message", "License not found or expired");
+	// return ResponseEntity.ok(response); // हमेशा 200 ही देना है जैसा तूने बोला
+	// }
+	// } catch (Exception e) {
+	// response.put("status", false);
+	// response.put("licenseKey", licenseKey);
+	// response.put("message", "Error while checking license: " + e.getMessage());
+	// return
+	// ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	// }
+	// }
 
 }

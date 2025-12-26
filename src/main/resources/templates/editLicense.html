@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
             background: linear-gradient(to right, rgb(128, 128, 195), #2c3e50);
             color: #fff;
         }
+
         header {
             background-color: rgb(128, 128, 255);
             color: #fff;
@@ -21,11 +23,34 @@
             justify-content: space-between;
             align-items: center;
         }
-        .logo { font-size: 24px; font-weight: bold; }
-        nav ul { list-style: none; margin: 0; padding: 0; }
-        nav ul li { display: inline; margin-right: 20px; }
-        nav ul li a { text-decoration: none; color: #fff; font-weight: bold; font-size: 16px; }
-        main { padding: 20px; }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
         .form-container {
             max-width: 800px;
             margin: 0 auto;
@@ -34,323 +59,373 @@
             border-radius: 8px;
             color: #333;
         }
-        h1 { color: rgb(128, 128, 255); text-align: center; margin-bottom: 30px; }
-        .form-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-        .form-section h3 { color: rgb(128, 128, 255); margin-bottom: 20px; }
-        .form-group { margin-bottom: 20px; }
-        .form-label { font-weight: bold; display: block; margin-bottom: 5px; }
-        .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+
+        h1 {
+            color: rgb(128, 128, 255);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section h3 {
+            color: rgb(128, 128, 255);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
         .btn-submit {
-            background-color: rgb(128, 128, 255); color: white;
-            padding: 12px 20px; border: none; border-radius: 4px;
-            cursor: pointer; font-size: 16px; font-weight: bold; display: block; margin: 30px auto 0; width: 200px;
+            background-color: rgb(128, 128, 255);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin: 30px auto 0;
+            width: 200px;
         }
-        .btn-submit:hover { background-color: rgb(100, 100, 220); }
+
+        .btn-submit:hover {
+            background-color: rgb(100, 100, 220);
+        }
+
         .conditional-field {
-            margin-top: 15px; padding: 15px;
-            background-color: #f8f9fa; border-radius: 4px; border-left: 4px solid rgb(128, 128, 255);
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid rgb(128, 128, 255);
         }
-        select[multiple] { min-height: 100px; }
+
+        select[multiple] {
+            min-height: 100px;
+        }
     </style>
 </head>
+
 <body>
-<header>
-    <div class="logo">License Module</div>
-    <nav>
-        <ul>
-            <li><a href="http://139.59.80.148:8181/admin/homePage">Home</a></li>
-            <li><a href="http://139.59.80.148:8181/logout">Logout</a></li>
-        </ul>
-    </nav>
-</header>
-<main>
-    <div class="form-container">
-        <h1>Edit License</h1>
-        <form id="licenseForm" th:action="@{/licenses/edit/{id}(id=${license.id})}" th:object="${license}" method="post">
-            <!-- Company Details -->
-            <div class="form-section">
-                <h3>Company Details</h3>
-                <div class="form-group">
-                    <label class="form-label">Company Name</label>
-                    <input type="text" class="form-control" th:field="*{companyName}">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Contact Person Name</label>
-                    <input type="text" class="form-control" th:field="*{name}">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" th:field="*{email}">
-                </div>
-            </div>
-
-            <!-- License Selection -->
-            <div class="form-section">
-                <h3>License Selection</h3>
-                <div class="form-group">
-                    <label class="form-label">License For</label>
-                    <select class="form-control" id="licenseFor" th:field="*{licenseFor}">
-                        <option value="">Select Product</option>
-                        <option value="FORMSCI">FORMSCI</option>
-                        <option value="SOLUDEM">SOLUDEM</option>
-                        <option value="ELABNOTE">ELABNOTE</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">License Type</label>
-                    <select class="form-control" id="licenseType" th:field="*{licenseType}">
-                        <option value="">Select Type</option>
-                        <option value="MAC_ID">Mac Based</option>
-                        <option value="EMAIL_ID">Email Based</option>
-                    </select>
-                </div>
-
-                <!-- MAC Fields -->
-                <div id="macBasedFields" class="conditional-field">
+    <header>
+        <div class="logo">License Module</div>
+        <nav>
+            <ul>
+                <li><a href="http://139.59.80.148:8181/admin/homePage">Home</a></li>
+                <li><a href="http://139.59.80.148:8181/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="form-container">
+            <h1>Edit License</h1>
+            <form id="licenseForm" th:action="@{/licenses/edit/{id}(id=${license.id})}" th:object="${license}"
+                method="post">
+                <!-- Company Details -->
+                <div class="form-section">
+                    <h3>Company Details</h3>
                     <div class="form-group">
-                        <label class="form-label">MAC ID</label>
-                        <input type="text" class="form-control" id="macId" th:field="*{macId}">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" class="form-control" th:field="*{companyName}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Select Modules</label>
-                        <select id="modules" class="form-control" multiple th:field="*{modules}"></select>
+                        <label class="form-label">Contact Person Name</label>
+                        <input type="text" class="form-control" th:field="*{name}">
                     </div>
-                    <div id="macModuleExpiryContainer"></div>
-                    <div class="form-group">
-                        <label class="form-label">Number of Usages</label>
-                        <input type="number" class="form-control" th:field="*{macUsageCount}">
-                    </div>
-                </div>
-
-                <!-- Email Fields -->
-                <div id="emailBasedFields" class="conditional-field">
                     <div class="form-group">
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" id="userEmail" th:field="*{userEmail}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tenure (days)</label>
-                        <input type="number" class="form-control" th:field="*{duration}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Select Modules</label>
-                        <select id="emailModules" class="form-control" multiple th:field="*{modules}"></select>
-                    </div>
-                    <div id="emailModuleExpiryContainer"></div>
-                    <div class="form-group">
-                        <label class="form-label">Weekly Limit</label>
-                        <input type="number" class="form-control" th:field="*{weeklyLimit}">
+                        <input type="email" class="form-control" th:field="*{email}">
                     </div>
                 </div>
-            </div>
-            <button type="submit" class="btn-submit">Update License</button>
-        </form>
-    </div>
-</main>
 
-<script th:inline="javascript">
-document.addEventListener('DOMContentLoaded', function () {
-    const licenseType = document.getElementById('licenseType');
-    const macBasedFields = document.getElementById('macBasedFields');
-    const emailBasedFields = document.getElementById('emailBasedFields');
-    const licenseFor = document.getElementById('licenseFor');
-    const modulesSelect = document.getElementById('modules');
-    const emailModulesSelect = document.getElementById('emailModules');
-    const macModuleExpiryContainer = document.getElementById('macModuleExpiryContainer');
-    const emailModuleExpiryContainer = document.getElementById('emailModuleExpiryContainer');
-    const form = document.getElementById('licenseForm');
+                <!-- License Selection -->
+                <div class="form-section">
+                    <h3>License Selection</h3>
+                    <div class="form-group">
+                        <label class="form-label">License For</label>
+                        <select class="form-control" id="licenseFor" th:field="*{licenseFor}">
+                            <option value="">Select Product</option>
+                            <option value="FORMSCI">FORMSCI</option>
+                            <option value="SOLUDEM">SOLUDEM</option>
+                            <option value="ELABNOTE">ELABNOTE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">License Type</label>
+                        <select class="form-control" id="licenseType" th:field="*{licenseType}">
+                            <option value="">Select Type</option>
+                            <option value="MAC_ID">Mac Based</option>
+                            <option value="EMAIL_ID">Email Based</option>
+                        </select>
+                    </div>
 
-    const currentModules = /*[[${license.modules}]]*/ [];
-    const currentModuleExpiry = /*[[${license.moduleExpiry}]]*/ {};
+                    <!-- MAC Fields -->
+                    <div id="macBasedFields" class="conditional-field">
+                        <div class="form-group">
+                            <label class="form-label">MAC ID</label>
+                            <input type="text" class="form-control" id="macId" th:field="*{macId}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Modules</label>
+                            <select id="modules" class="form-control" multiple th:field="*{modules}"></select>
+                        </div>
+                        <div id="macModuleExpiryContainer"></div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Usages</label>
+                            <input type="number" class="form-control" th:field="*{macUsageCount}">
+                        </div>
+                    </div>
 
-    function initForm() {
-        toggleLicenseTypeFields();
-        populateModules();
-    }
+                    <!-- Email Fields -->
+                    <div id="emailBasedFields" class="conditional-field">
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail" th:field="*{userEmail}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tenure (days)</label>
+                            <input type="number" class="form-control" th:field="*{duration}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select Modules</label>
+                            <select id="emailModules" class="form-control" multiple th:field="*{modules}"></select>
+                        </div>
+                        <div id="emailModuleExpiryContainer"></div>
+                        <div class="form-group">
+                            <label class="form-label">Weekly Limit</label>
+                            <input type="number" class="form-control" th:field="*{weeklyLimit}">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Update License</button>
+            </form>
+        </div>
+    </main>
 
-    function toggleLicenseTypeFields() {
-        const type = licenseType.value;
-        macBasedFields.style.display = (type === 'MAC_ID') ? 'block' : 'none';
-        emailBasedFields.style.display = (type === 'EMAIL_ID') ? 'block' : 'none';
-    }
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const licenseType = document.getElementById('licenseType');
+            const macBasedFields = document.getElementById('macBasedFields');
+            const emailBasedFields = document.getElementById('emailBasedFields');
+            const licenseFor = document.getElementById('licenseFor');
+            const modulesSelect = document.getElementById('modules');
+            const emailModulesSelect = document.getElementById('emailModules');
+            const macModuleExpiryContainer = document.getElementById('macModuleExpiryContainer');
+            const emailModuleExpiryContainer = document.getElementById('emailModuleExpiryContainer');
+            const form = document.getElementById('licenseForm');
 
-    function populateModules() {
-        const product = licenseFor.value;
-        modulesSelect.innerHTML = '';
-        emailModulesSelect.innerHTML = '';
-        macModuleExpiryContainer.innerHTML = '';
-        emailModuleExpiryContainer.innerHTML = '';
+            const currentModules = /*[[${license.modules}]]*/[];
+            const currentModuleExpiry = /*[[${license.moduleExpiry}]]*/ {};
 
-        const moduleList = {
-            FORMSCI: ['DEM file creation','Drug - Excipient comparability','Single Stability estimation','Multi formula stability','Impurity control','ASD screening','Permeation enhancers screening','Package screening','Dissolution screening','AI formulator','Virtual Formulation'],
-            SOLUDEM: ['Pure solvents screening','Binary solvents screening','Ternary solvents screening','ASD screening','pH solubility screening','Salt screening','XRD analysis','Formulation Solubility screening','NCE BCS classification','NCE stability','Reaction Solvent screening','Reaction base screening','Impurity control analysis','Bio & Dissolution media solubility','Polymorph screening']
-        };
-        const selectedModules = moduleList[product] || [];
-        selectedModules.forEach(m => {
-            const option1 = new Option(m, m);
-            const option2 = new Option(m, m);
-            if (currentModules && currentModules.includes(m)) { option1.selected = true; option2.selected = true; }
-            modulesSelect.add(option1);
-            emailModulesSelect.add(option2);
-        });
-        updateExpiryInputs();
-        updateExpiryInputsEmail();
-    }
-
-  function updateExpiryInputs() {
-    macModuleExpiryContainer.innerHTML = '';
-    const selectedModules = Array.from(modulesSelect.selectedOptions);
-
-    selectedModules.forEach(module => {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
-        const expiryData = currentModuleExpiry[module.value] || ['', ''];
-
-        div.innerHTML = `
-            <label class="form-label">${module.value} Expiry (days)</label>
-            <input type="number"
-                   name="moduleExpiry[${module.value}]_days"
-                   class="form-control"
-                   min="1"
-                   value="${expiryData[0]}"
-                   required>
-
-            <label class="form-label">${module.value} (Module Activation Date)</label>
-            <input type="date"
-                   name="moduleExpiry[${module.value}]_date"
-                   class="form-control"
-                   value="${expiryData[1]}"
-                   required>
-        `;
-        macModuleExpiryContainer.appendChild(div);
-    });
-}
-
-
-function updateExpiryInputsEmail() {
-    emailModuleExpiryContainer.innerHTML = '';
-    const selectedModules = Array.from(emailModulesSelect.selectedOptions);
-
-    selectedModules.forEach(module => {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
-        const expiryData = currentModuleExpiry[module.value] || ['', ''];
-
-        div.innerHTML = `
-            <label class="form-label">${module.value} Expiry (days)</label>
-            <input type="number"
-                   name="moduleExpiry[${module.value}]_days"
-                   class="form-control"
-                   min="1"
-                   value="${expiryData[0]}"
-                   required>
-
-            <label class="form-label">${module.value} (Module Activation Date)</label>
-            <input type="date"
-                   name="moduleExpiry[${module.value}]_date"
-                   class="form-control"
-                   value="${expiryData[1]}"
-                   required>
-        `;
-        emailModuleExpiryContainer.appendChild(div);
-    });
-}
-
-
-    licenseType.addEventListener('change', toggleLicenseTypeFields);
-    licenseFor.addEventListener('change', populateModules);
-    modulesSelect.addEventListener('change', updateExpiryInputs);
-    emailModulesSelect.addEventListener('change', updateExpiryInputsEmail);
-
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-        const data = {};
-
-        // Collect basic form fields
-        for (let [key, value] of formData.entries()) {
-            if (key === 'modules') {
-                data[key] = data[key] || [];
-                data[key].push(value);
-            } else {
-                data[key] = value;
+            function initForm() {
+                toggleLicenseTypeFields();
+                populateModules();
             }
-        }
 
-        // Handle integer fields that might be empty strings
-        data.macUsageCount = data.macUsageCount !== '' ? parseInt(data.macUsageCount) : null;
-        data.weeklyLimit = data.weeklyLimit !== '' ? parseInt(data.weeklyLimit) : null;
-        data.duration = data.duration !== '' ? parseInt(data.duration) : null;
+            function toggleLicenseTypeFields() {
+                const type = licenseType.value;
+                macBasedFields.style.display = (type === 'MAC_ID') ? 'block' : 'none';
+                emailBasedFields.style.display = (type === 'EMAIL_ID') ? 'block' : 'none';
+            }
 
-        // Process modules and moduleExpiry
-       const modulesExpiry = {};
-let selectedModulesForSubmission = [];
+            function populateModules() {
+                const product = licenseFor.value;
+                modulesSelect.innerHTML = '';
+                emailModulesSelect.innerHTML = '';
+                macModuleExpiryContainer.innerHTML = '';
+                emailModuleExpiryContainer.innerHTML = '';
 
-let currentModulesSelect =
-    (licenseType.value === 'MAC_ID') ? modulesSelect : emailModulesSelect;
+                const moduleList = {
+                    FORMSCI: ['DEM file creation', 'Drug - Excipient comparability', 'Single Stability estimation', 'Multi formula stability', 'Impurity control', 'ASD screening', 'Permeation enhancers screening', 'Package screening', 'Dissolution screening', 'AI formulator', 'Virtual Formulation'],
+                    SOLUDEM: ['Pure solvents screening', 'Binary solvents screening', 'Ternary solvents screening', 'ASD screening', 'pH solubility screening', 'Salt screening', 'XRD analysis', 'Formulation Solubility screening', 'NCE BCS classification', 'NCE stability', 'Reaction Solvent screening', 'Reaction base screening', 'Impurity control analysis', 'Bio & Dissolution media solubility', 'Polymorph screening']
+                };
+                const selectedModules = moduleList[product] || [];
+                selectedModules.forEach(m => {
+                    const option1 = new Option(m, m);
+                    const option2 = new Option(m, m);
+                    if (currentModules && currentModules.includes(m)) { option1.selected = true; option2.selected = true; }
+                    modulesSelect.add(option1);
+                    emailModulesSelect.add(option2);
+                });
+                updateExpiryInputs();
+                updateExpiryInputsEmail();
+            }
 
-let currentModuleExpiryContainer =
-    (licenseType.value === 'MAC_ID') ? macModuleExpiryContainer : emailModuleExpiryContainer;
+            function updateExpiryInputs() {
+                macModuleExpiryContainer.innerHTML = '';
+                const selectedModules = Array.from(modulesSelect.selectedOptions);
 
-const selectedOptions =
-    Array.from(currentModulesSelect.selectedOptions).map(o => o.value);
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    const expiryData = currentModuleExpiry[module.value] || ['', ''];
 
-if (selectedOptions.length === 0) {
-    alert('Please select at least one module.');
-    return;
-}
+                    div.innerHTML = `
+            <label class="form-label">${module.value} Expiry (days)</label>
+            <input type="number"
+                   name="moduleExpiry[${module.value}]_days"
+                   class="form-control"
+                   min="1"
+                   value="${expiryData[0]}"
+                   required>
 
-for (const moduleName of selectedOptions) {
-    const expiryDaysInput =
-        currentModuleExpiryContainer.querySelector(
-            `input[name="moduleExpiry[${moduleName}]_days"]`
-        );
-    const expiryDateInput =
-        currentModuleExpiryContainer.querySelector(
-            `input[name="moduleExpiry[${moduleName}]_date"]`
-        );
+            <label class="form-label">${module.value} (Module Activation Date)</label>
+            <input type="date"
+                   name="moduleExpiry[${module.value}]_date"
+                   class="form-control"
+                   value="${expiryData[1]}"
+                   required>
+        `;
+                    macModuleExpiryContainer.appendChild(div);
+                });
+            }
 
-    if (!expiryDaysInput?.value || !expiryDateInput?.value) {
-        alert(`Please enter both expiry days and date for module: ${moduleName}`);
-        return;
-    }
 
-    modulesExpiry[moduleName] = [
-        expiryDaysInput.value,
-        expiryDateInput.value
-    ];
-}
+            function updateExpiryInputsEmail() {
+                emailModuleExpiryContainer.innerHTML = '';
+                const selectedModules = Array.from(emailModulesSelect.selectedOptions);
 
-selectedModulesForSubmission = selectedOptions;
+                selectedModules.forEach(module => {
+                    const div = document.createElement('div');
+                    div.classList.add('form-group');
+                    const expiryData = currentModuleExpiry[module.value] || ['', ''];
 
-data.modules = selectedModulesForSubmission;
-data.moduleExpiry = modulesExpiry;
+                    div.innerHTML = `
+            <label class="form-label">${module.value} Expiry (days)</label>
+            <input type="number"
+                   name="moduleExpiry[${module.value}]_days"
+                   class="form-control"
+                   min="1"
+                   value="${expiryData[0]}"
+                   required>
 
-        data.last_modified_at = new Date().toISOString();
+            <label class="form-label">${module.value} (Module Activation Date)</label>
+            <input type="date"
+                   name="moduleExpiry[${module.value}]_date"
+                   class="form-control"
+                   value="${expiryData[1]}"
+                   required>
+        `;
+                    emailModuleExpiryContainer.appendChild(div);
+                });
+            }
 
-        try {
-            const response = await fetch(form.action, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+
+            licenseType.addEventListener('change', toggleLicenseTypeFields);
+            licenseFor.addEventListener('change', populateModules);
+            modulesSelect.addEventListener('change', updateExpiryInputs);
+            emailModulesSelect.addEventListener('change', updateExpiryInputsEmail);
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const data = {};
+
+                // Collect basic form fields
+                for (let [key, value] of formData.entries()) {
+                    if (key === 'modules') {
+                        data[key] = data[key] || [];
+                        data[key].push(value);
+                    } else {
+                        data[key] = value;
+                    }
+                }
+
+                // Handle integer fields that might be empty strings
+                data.macUsageCount = data.macUsageCount !== '' ? parseInt(data.macUsageCount) : null;
+                data.weeklyLimit = data.weeklyLimit !== '' ? parseInt(data.weeklyLimit) : null;
+                data.duration = data.duration !== '' ? parseInt(data.duration) : null;
+
+                // Process modules and moduleExpiry
+                const modulesExpiry = {};
+                let selectedModulesForSubmission = [];
+
+                let currentModulesSelect =
+                    (licenseType.value === 'MAC_ID') ? modulesSelect : emailModulesSelect;
+
+                let currentModuleExpiryContainer =
+                    (licenseType.value === 'MAC_ID') ? macModuleExpiryContainer : emailModuleExpiryContainer;
+
+                const selectedOptions =
+                    Array.from(currentModulesSelect.selectedOptions).map(o => o.value);
+
+                if (selectedOptions.length === 0) {
+                    alert('Please select at least one module.');
+                    return;
+                }
+
+                for (const moduleName of selectedOptions) {
+                    const expiryDaysInput =
+                        currentModuleExpiryContainer.querySelector(
+                            `input[name="moduleExpiry[${moduleName}]_days"]`
+                        );
+                    const expiryDateInput =
+                        currentModuleExpiryContainer.querySelector(
+                            `input[name="moduleExpiry[${moduleName}]_date"]`
+                        );
+
+                    if (!expiryDaysInput?.value || !expiryDateInput?.value) {
+                        alert(`Please enter both expiry days and date for module: ${moduleName}`);
+                        return;
+                    }
+
+                    modulesExpiry[moduleName] = [
+                        expiryDaysInput.value,
+                        expiryDateInput.value
+                    ];
+                }
+
+                selectedModulesForSubmission = selectedOptions;
+
+                data.modules = selectedModulesForSubmission;
+                data.moduleExpiry = modulesExpiry;
+
+                data.last_modified_at = new Date().toISOString();
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        alert('License updated successfully!');
+                        window.location.href = 'http://139.59.80.148:8181/admin/homePage';
+                    } else {
+                        const errorText = await response.text();
+                        alert('Error updating license: ' + errorText);
+                    }
+                } catch (err) {
+                    alert('Error: ' + err.message);
+                }
             });
 
-            if (response.ok) {
-                alert('License updated successfully!');
-                window.location.href = 'http://139.59.80.148:8181/admin/homePage';
-            } else {
-                const errorText = await response.text();
-                alert('Error updating license: ' + errorText);
-            }
-        } catch (err) {
-            alert('Error: ' + err.message);
-        }
-    });
 
-
-    initForm();
-});
-</script>
+            initForm();
+        });
+    </script>
 </body>
+
 </html>
