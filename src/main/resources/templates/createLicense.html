@@ -370,54 +370,66 @@
             function updateModuleExpiryInputs() {
                 macModuleExpiryContainer.innerHTML = '';
                 const selectedModules = Array.from(modulesSelect.selectedOptions);
-
-                selectedModules.forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    div.innerHTML = `
-            <label class="form-label">${module.value} Expiry (days)</label>
-            <input type="number"
-                   name="moduleExpiry[${module.value}]_days"
-                   class="form-control"
-                   min="1"
-                   required>
-
-            <label class="form-label">${module.value} (Module Activation Date)</label>
-            <input type="date"
-                   name="moduleExpiry[${module.value}]_date"
-                   class="form-control"
-                   required>
-        `;
-                    macModuleExpiryContainer.appendChild(div);
-                });
+                if (selectedModules.length > 0) {
+                    if (selectedModules.length === modulesSelect.options.length) {
+                        // All modules selected
+                        const div = document.createElement('div');
+                        div.classList.add('form-group');
+                        div.innerHTML = `
+                            <label class="form-label">All Modules Expiry (days)</label>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" required>
+                            <label class="form-label">All Modules (Module Activation Date)</label>
+                            <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" required>
+                        `;
+                        macModuleExpiryContainer.appendChild(div);
+                    } else {
+                        // Specific modules selected
+                        selectedModules.forEach(module => {
+                            const div = document.createElement('div');
+                            div.classList.add('form-group');
+                            div.innerHTML = `
+                                <label class="form-label">${module.value} Expiry (days)</label>
+                                <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" required>
+                                <label class="form-label">${module.value} (Module Activation Date)</label>
+                                <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" required>
+                            `;
+                            macModuleExpiryContainer.appendChild(div);
+                        });
+                    }
+                }
             }
-
 
             function updateModuleExpiryInputsEmail() {
                 emailModuleExpiryContainer.innerHTML = '';
                 const selectedModules = Array.from(emailModulesSelect.selectedOptions);
-
-                selectedModules.forEach(module => {
-                    const div = document.createElement('div');
-                    div.classList.add('form-group');
-                    div.innerHTML = `
-            <label class="form-label">${module.value} Expiry (days)</label>
-            <input type="number"
-                   name="moduleExpiry[${module.value}]_days"
-                   class="form-control"
-                   min="1"
-                   required>
-
-            <label class="form-label">${module.value} (Module Activation Date)</label>
-            <input type="date"
-                   name="moduleExpiry[${module.value}]_date"
-                   class="form-control"
-                   required>
-        `;
-                    emailModuleExpiryContainer.appendChild(div);
-                });
+                if (selectedModules.length > 0) {
+                    if (selectedModules.length === emailModulesSelect.options.length) {
+                        // All modules selected
+                        const div = document.createElement('div');
+                        div.classList.add('form-group');
+                        div.innerHTML = `
+                            <label class="form-label">All Modules Expiry (days)</label>
+                            <input type="number" name="moduleExpiry[ALL_MODULES]_days" class="form-control" min="1" required>
+                            <label class="form-label">All Modules (Module Activation Date)</label>
+                            <input type="date" name="moduleExpiry[ALL_MODULES]_date" class="form-control" required>
+                        `;
+                        emailModuleExpiryContainer.appendChild(div);
+                    } else {
+                        // Specific modules selected
+                        Array.from(emailModulesSelect.selectedOptions).forEach(module => {
+                            const div = document.createElement('div');
+                            div.classList.add('form-group');
+                            div.innerHTML = `
+                                <label class="form-label">${module.value} Expiry (days)</label>
+                                <input type="number" name="moduleExpiry[${module.value}]_days" class="form-control" min="1" required>
+                                <label class="form-label">${module.value} (Module Activation Date)</label>
+                                <input type="date" name="moduleExpiry[${module.value}]_date" class="form-control" required>
+                            `;
+                            emailModuleExpiryContainer.appendChild(div);
+                        });
+                    }
+                }
             }
-
 
             async function handleFormSubmit(e) {
                 e.preventDefault();
@@ -445,70 +457,60 @@
                 let selectedModulesForSubmission = [];
 
                 if (licenseType.value === 'MAC_ID') {
-                    const selectedMacModules =
-                        Array.from(modulesSelect.selectedOptions).map(o => o.value);
-
-                    if (selectedMacModules.length === 0) {
-                        alert('Please select at least one module.');
-                        return;
-                    }
-
-                    for (const moduleName of selectedMacModules) {
-                        const expiryDaysInput =
-                            macModuleExpiryContainer.querySelector(
-                                `input[name="moduleExpiry[${moduleName}]_days"]`
-                            );
-                        const expiryDateInput =
-                            macModuleExpiryContainer.querySelector(
-                                `input[name="moduleExpiry[${moduleName}]_date"]`
-                            );
-
-                        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
-                            alert(`Please enter both expiry days and date for module: ${moduleName}`);
-                            return;
+                    const selectedMacModules = Array.from(modulesSelect.selectedOptions).map(o => o.value);
+                    if (selectedMacModules.length > 0) {
+                        if (selectedMacModules.length === modulesSelect.options.length) {
+                            // All modules selected, use a special key
+                            const expiryDaysInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_days"]');
+                            const expiryDateInput = macModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_date"]');
+                            if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                alert('Please enter both expiry days and date for all modules.');
+                                return;
+                            }
+                            modulesExpiry['ALL_MODULES'] = [expiryDaysInput.value, expiryDateInput.value];
+                            selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
+                        } else {
+                            // Specific modules selected
+                            for (const moduleName of selectedMacModules) {
+                                const expiryDaysInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_days"]`);
+                                const expiryDateInput = macModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_date"]`);
+                                if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                    alert(`Please enter both expiry days and date for module: ${moduleName}`);
+                                    return;
+                                }
+                                modulesExpiry[moduleName] = [expiryDaysInput.value, expiryDateInput.value];
+                            }
+                            selectedModulesForSubmission = selectedMacModules;
                         }
-
-                        modulesExpiry[moduleName] = [
-                            expiryDaysInput.value,
-                            expiryDateInput.value
-                        ];
                     }
-
-                    selectedModulesForSubmission = selectedMacModules;
                 } else if (licenseType.value === 'EMAIL_ID') {
-                    const selectedEmailModules =
-                        Array.from(emailModulesSelect.selectedOptions).map(o => o.value);
-
-                    if (selectedEmailModules.length === 0) {
-                        alert('Please select at least one module.');
-                        return;
-                    }
-
-                    for (const moduleName of selectedEmailModules) {
-                        const expiryDaysInput =
-                            emailModuleExpiryContainer.querySelector(
-                                `input[name="moduleExpiry[${moduleName}]_days"]`
-                            );
-                        const expiryDateInput =
-                            emailModuleExpiryContainer.querySelector(
-                                `input[name="moduleExpiry[${moduleName}]_date"]`
-                            );
-
-                        if (!expiryDaysInput?.value || !expiryDateInput?.value) {
-                            alert(`Please enter both expiry days and date for module: ${moduleName}`);
-                            return;
+                    const selectedEmailModules = Array.from(emailModulesSelect.selectedOptions).map(o => o.value);
+                    if (selectedEmailModules.length > 0) {
+                        if (selectedEmailModules.length === emailModulesSelect.options.length) {
+                            // All modules selected, use a special key
+                            const expiryDaysInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_days"]');
+                            const expiryDateInput = emailModuleExpiryContainer.querySelector('input[name="moduleExpiry[ALL_MODULES]_date"]');
+                            if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                alert('Please enter both expiry days and date for all modules.');
+                                return;
+                            }
+                            modulesExpiry['ALL_MODULES'] = [expiryDaysInput.value, expiryDateInput.value];
+                            selectedModulesForSubmission = ['ALL_MODULES']; // Represent all modules
+                        } else {
+                            // Specific modules selected
+                            for (const moduleName of selectedEmailModules) {
+                                const expiryDaysInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_days"]`);
+                                const expiryDateInput = emailModuleExpiryContainer.querySelector(`input[name="moduleExpiry[${moduleName}]_date"]`);
+                                if (!expiryDaysInput || !expiryDaysInput.value || !expiryDateInput || !expiryDateInput.value) {
+                                    alert(`Please enter both expiry days and date for module: ${moduleName}`);
+                                    return;
+                                }
+                                modulesExpiry[moduleName] = [expiryDaysInput.value, expiryDateInput.value];
+                            }
+                            selectedModulesForSubmission = selectedEmailModules;
                         }
-
-                        modulesExpiry[moduleName] = [
-                            expiryDaysInput.value,
-                            expiryDateInput.value
-                        ];
                     }
-
-                    selectedModulesForSubmission = selectedEmailModules;
                 }
-
-
 
                 const formData = {
                     companyName: document.getElementById('companyName').value,

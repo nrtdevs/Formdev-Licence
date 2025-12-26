@@ -1,0 +1,15 @@
+Company Name     = Formsci
+Person Name      = Ravi
+Email            = ravisa@pharmadem.in
+Phone Number     = 9155143291
+Primary Contact  = Ravi (9155149458)
+SCM Contact      = Ravi (9155143291)
+Date Issued      = 2025-12-26 19:18:20.106
+Expiration Date  = 2025-12-26 23:59:59.106
+License Key      = 3E339CEE-8DA5-46D3-9B15-D07D3C9FF927
+License For      = FORMSCI
+License Type     = EMAIL_ID
+Modules          = ALL_MODULES
+Module Expiry    = {"ALL_MODULES":["20","2025-12-26"]}
+Email Address    = ravisa@pharmadem.in
+Weekly Limit     = 20
